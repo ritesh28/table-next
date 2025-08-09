@@ -1,11 +1,12 @@
 'use client';
 
-import { Task } from '@/model/task';
+import { PRIORITY_ICON, STATUS_ICON, Task } from '@/model/task';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import moment from 'moment';
 
 import { DataTableColumnHeader } from '@/components/task/column-header';
+import { DataTableColumnHeaderCheckbox } from '@/components/task/column-header-checkbox';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -16,62 +17,111 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
   {
     id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
+    header: ({ table, column }) => <DataTableColumnHeaderCheckbox table={table} column={column} />,
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label='Select row' />,
     enableSorting: false,
     enableHiding: false,
+    size: 30,
   },
   {
     accessorKey: 'task_id',
-    header: () => <div className='text-right'>Task ID</div>,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Task ID' pinningPosition='left' />,
     cell: ({ row }) => {
-      return <div className='text-right font-medium'>{row.getValue('task_id')}</div>;
+      const { task_id } = row.original;
+      const startPart = task_id.slice(0, -5);
+      const endPart = task_id.slice(-5);
+      return (
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger>...{endPart}</TooltipTrigger>
+          <TooltipContent>
+            <p>
+              {startPart}
+              <span className='text-green-300'>{endPart}</span>
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      );
     },
+    enableSorting: false,
+    enableHiding: false,
+    size: 90,
   },
   {
     accessorKey: 'title',
-    header: 'Title',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
     cell: ({ row }) => {
       const { title, label } = row.original;
       return (
-        <div className='text-right font-medium'>
-          {label} {title[0].toUpperCase() + title.substring(1)}
-        </div>
+        <p className='overflow-hidden whitespace-nowrap text-ellipsis'>
+          <Badge asChild>
+            <span className='mr-2'>{label}</span>
+          </Badge>
+          {title}
+        </p>
       );
     },
+    size: 800,
+    minSize: 500,
+    maxSize: 1000,
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
+    cell: ({ row }) => {
+      const { status } = row.original;
+      const Icon = STATUS_ICON[status];
+      return (
+        <Badge>
+          <Icon />
+          <span className='ml-1'>{status}</span>
+        </Badge>
+      );
+    },
+    size: 125,
   },
   {
     accessorKey: 'priority',
-    header: 'Priority',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Priority' />,
+    cell: ({ row }) => {
+      const { priority } = row.original;
+      const Icon = PRIORITY_ICON[priority];
+      return (
+        <Badge>
+          <Icon />
+          <span className='ml-1'>{priority}</span>
+        </Badge>
+      );
+    },
+    size: 100,
   },
   {
     accessorKey: 'estimated_hours',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Est. Hours' />,
+    cell: ({ row }) => {
+      const { estimated_hours } = row.original;
+      return <p className='px-3'>{estimated_hours}</p>;
+    },
+    size: 120,
   },
   {
     accessorKey: 'created_at',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Created At' />,
     cell: ({ row }) => {
       const created_at = (row.getValue('created_at') as string).trim();
       const formatted_date = moment(created_at, 'DD/MM/YYYY').format('ll');
-      return <div className='text-right font-medium'>{formatted_date}</div>;
+      return <div className='px-3'>{formatted_date}</div>;
     },
+    size: 120,
   },
   {
     id: 'actions',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='' pinningPosition='right' />,
     cell: ({ row }) => {
       const task = row.original;
 
@@ -93,5 +143,6 @@ export const columns: ColumnDef<Task>[] = [
         </DropdownMenu>
       );
     },
+    size: 40,
   },
 ];

@@ -7,7 +7,7 @@ import { Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
-export function DataTableViewOptions<TData>({ table }: { table: Table<TData> }) {
+export function DataTableToggleColumn<TData>({ table }: { table: Table<TData> }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

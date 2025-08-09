@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Column,
   ColumnDef,
   ColumnFiltersState,
   flexRender,
@@ -13,11 +14,13 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 
-import { DataTableViewOptions } from '@/components/task/column-toggle';
-import { DataTablePagination } from '@/components/task/pagination';
-import { Input } from '@/components/ui/input';
+import { DataTablePagination } from '@/components/task/table-pagination';
+import { DataTableToggleColumn } from '@/components/task/table-toggle-column';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
+import { DataTableFilterSimple } from './table-filter-simple';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,23 +54,24 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <div>
+      <div>
+        <ToggleGroup type='single'>
+          <ToggleGroupItem value='a'>Simple Filters</ToggleGroupItem>
+          <ToggleGroupItem value='b'>Advance Filters</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
       <div className='flex items-center py-4'>
-        <Input
-          placeholder='Filter titles...'
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
-          className='max-w-sm'
-        />
-        <DataTableViewOptions table={table} />
+        <DataTableFilterSimple table={table} />
+        <DataTableToggleColumn table={table} />
       </div>
       <div className='overflow-hidden rounded-md border'>
-        <Table>
+        <Table className='table-fixed'>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className='bg-background' style={{ ...getCommonPinningStyles(header.column) }}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -80,7 +84,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id} className='bg-background' style={{ ...getCommonPinningStyles(cell.column) }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -94,12 +100,26 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </TableBody>
         </Table>
       </div>
-      <div className='flex items-center justify-end space-x-2 py-4'>
+      <div className='my-4'>
         <DataTablePagination table={table} />
-      </div>
-      <div className='text-muted-foreground flex-1 text-sm'>
-        {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
     </div>
   );
+}
+
+function getCommonPinningStyles<TData>(column: Column<TData>): CSSProperties {
+  const isPinned = column.getIsPinned();
+  const isLastLeftPinnedColumn = isPinned === 'left' && column.getIsLastColumn('left');
+  const isFirstRightPinnedColumn = isPinned === 'right' && column.getIsFirstColumn('right');
+
+  return {
+    boxShadow: isLastLeftPinnedColumn ? '-4px 0 4px -4px gray inset' : isFirstRightPinnedColumn ? '4px 0 4px -4px gray inset' : undefined,
+    left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+    right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+    opacity: isPinned ? 0.95 : 1,
+    position: isPinned ? 'sticky' : 'relative',
+    width: column.getSize(),
+    marginInline: '5px',
+    zIndex: isPinned ? 1 : 0,
+  };
 }
