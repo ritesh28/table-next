@@ -1,9 +1,8 @@
 'use client';
 
-import { PRIORITY_ICON, STATUS_ICON, Task } from '@/model/task';
+import { PRIORITY_ICON, PRIORITY_ORDER, STATUS_ICON, STATUS_ORDER, Task } from '@/model/task';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
-import moment from 'moment';
 
 import { DataTableColumnHeader } from '@/components/task/column-header';
 import { DataTableColumnHeaderCheckbox } from '@/components/task/column-header-checkbox';
@@ -83,6 +82,13 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
+    sortingFn: (rowA, rowB, _) => {
+      const statusA = rowA.original.status;
+      const statusB = rowB.original.status;
+      if (STATUS_ORDER[statusA] < STATUS_ORDER[statusB]) return -1;
+      if (STATUS_ORDER[statusA] === STATUS_ORDER[statusB]) return 0;
+      if (STATUS_ORDER[statusA] > STATUS_ORDER[statusB]) return 1;
+    },
     size: 125,
   },
   {
@@ -98,6 +104,13 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
+    sortingFn: (rowA, rowB, _) => {
+      const priorityA = rowA.original.priority;
+      const priorityB = rowB.original.priority;
+      if (PRIORITY_ORDER[priorityA] < PRIORITY_ORDER[priorityB]) return -1;
+      if (PRIORITY_ORDER[priorityA] === PRIORITY_ORDER[priorityB]) return 0;
+      if (PRIORITY_ORDER[priorityA] > PRIORITY_ORDER[priorityB]) return 1;
+    },
     size: 100,
   },
   {
@@ -105,7 +118,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title='Est. Hours' />,
     cell: ({ row }) => {
       const { estimated_hours } = row.original;
-      return <p className='px-3'>{estimated_hours}</p>;
+      return <p className='text-right pr-6'>{estimated_hours}</p>;
     },
     size: 120,
   },
@@ -113,9 +126,8 @@ export const columns: ColumnDef<Task>[] = [
     accessorKey: 'created_at',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Created At' />,
     cell: ({ row }) => {
-      const created_at = (row.getValue('created_at') as string).trim();
-      const formatted_date = moment(created_at, 'DD/MM/YYYY').format('ll');
-      return <div className='px-3'>{formatted_date}</div>;
+      const { created_at } = row.original;
+      return <div className='px-3'>{created_at.format('ll')}</div>;
     },
     size: 120,
   },
@@ -143,6 +155,8 @@ export const columns: ColumnDef<Task>[] = [
         </DropdownMenu>
       );
     },
+    enableSorting: false,
+    enableHiding: false,
     size: 40,
   },
 ];

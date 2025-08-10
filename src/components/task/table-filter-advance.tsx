@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Table } from '@tanstack/react-table';
 
 interface DataTableFilterAdvanceProps<TData> {
@@ -7,13 +7,9 @@ interface DataTableFilterAdvanceProps<TData> {
 
 export function DataTableFilterAdvance<TData>({ table }: DataTableFilterAdvanceProps<TData>) {
   return (
-    <div>
-      <Input
-        placeholder='Filter titles...'
-        value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-        onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
-        className='max-w-sm'
-      />
+    <div className='flex gap-2'>
+      <Button>Sort</Button>
+      <Button>Filter</Button>
     </div>
   );
 }
