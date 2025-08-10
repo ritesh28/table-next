@@ -10,7 +10,7 @@ interface DataTableColumnHeaderCheckboxProps<TData> {
 export function DataTableColumnHeaderCheckbox<TData>({ table, column }: DataTableColumnHeaderCheckboxProps<TData>) {
   useEffect(() => {
     column.pin('left');
-  }, []);
+  }, [column]);
   return (
     <Checkbox
       // @ts-ignore - Type 'true | "" | "indeterminate"' is not assignable to type 'CheckedState'. Type '""' is not assignable to type 'CheckedState'.ts(2322)

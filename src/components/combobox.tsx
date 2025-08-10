@@ -1,0 +1,106 @@
+'use client';
+
+import { Check } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Dispatch, ReactNode, SetStateAction, useCallback, useState } from 'react';
+
+interface ComboboxItem<T extends string> {
+  name: T;
+  reactNode: ReactNode;
+  totalCount?: number;
+}
+
+interface ComboboxProps<T extends string> {
+  items: ComboboxItem<T>[];
+  selectedItems: T[];
+  setSelectedItems: Dispatch<SetStateAction<T[]>>;
+  isMultiSelect: boolean;
+  buttonChildren: ReactNode;
+  searchPlaceholder?: string;
+  emptySearchString?: string;
+  includeClearButton?: boolean;
+}
+export function Combobox<T extends string>({
+  items,
+  selectedItems,
+  setSelectedItems,
+  isMultiSelect,
+  buttonChildren,
+  searchPlaceholder,
+  emptySearchString,
+  includeClearButton,
+}: ComboboxProps<T>) {
+  const [open, setOpen] = useState(false);
+
+  const handleItemSelect = useCallback(
+    (itemName: T) => {
+      if (isMultiSelect) {
+        // check if the item is already selected. If so, unselect it
+        if (selectedItems.includes(itemName)) {
+          setSelectedItems((oldVals) => oldVals.filter((val) => val !== itemName));
+        } else {
+          setSelectedItems((oldVals) => [...oldVals, itemName]);
+        }
+      } else {
+        if (selectedItems.includes(itemName)) {
+          setSelectedItems([]);
+        } else {
+          setSelectedItems([itemName]);
+        }
+        setOpen(false);
+      }
+    },
+    [isMultiSelect, selectedItems, setSelectedItems],
+  );
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedItems([]);
+    setOpen(false);
+  }, [setSelectedItems]);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant='outline' role='combobox' aria-expanded={open} className='w-[200px] justify-between'>
+          {buttonChildren}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className='w-[200px] p-0'>
+        <Command>
+          <CommandInput placeholder={searchPlaceholder ? searchPlaceholder : 'Search...'} className='h-9' />
+          <CommandList>
+            <CommandEmpty>{emptySearchString ? emptySearchString : 'No results found.'}</CommandEmpty>
+            <CommandGroup>
+              {items.map((item) => (
+                <CommandItem key={item.name} value={item.name} onSelect={(currentValue) => handleItemSelect(currentValue as T)}>
+                  {isMultiSelect && <Checkbox checked={selectedItems.includes(item.name)} />}
+                  {!isMultiSelect && item.totalCount !== undefined && (
+                    <Check className={cn('mr-1', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />
+                  )}
+                  {item.reactNode}
+                  {item.totalCount !== undefined && <p className='ml-auto'>{item.totalCount}</p>}
+                  {item.totalCount === undefined && !isMultiSelect && (
+                    <Check className={cn('ml-auto', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />
+                  )}
+                </CommandItem>
+              ))}
+              {includeClearButton && selectedItems.length > 0 && (
+                <>
+                  <CommandSeparator />
+                  <CommandItem onSelect={handleClearSelection}>
+                    <p className='w-full py-1 text-center'>Clear Selection</p>
+                  </CommandItem>
+                </>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}

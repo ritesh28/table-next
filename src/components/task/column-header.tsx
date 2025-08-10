@@ -20,7 +20,7 @@ export function DataTableColumnHeader<TData, TValue>({
 }: DataTableColumnHeaderProps<TData, TValue>) {
   useEffect(() => {
     column.pin(pinningPosition);
-  }, []);
+  }, [column, pinningPosition]);
 
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;

@@ -16,13 +16,12 @@ import {
 
 import { DataTablePagination } from '@/components/task/table-pagination';
 import { DataTableToggleColumn } from '@/components/task/table-toggle-column';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
-import { DataTableFilterAdvance } from '@/components/task/table-filter-advance';
+import { DataTableFilterAdvanced } from '@/components/task/table-filter-advanced';
 import { DataTableFilterSimple } from '@/components/task/table-filter-simple';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CSSProperties, useState } from 'react';
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -33,7 +32,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [filterType, setFilterType] = useState<'simple' | 'advance'>('simple');
 
   const table = useReactTable({
     data,
@@ -56,19 +54,18 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <div>
-      <div>
-        <ToggleGroup
-          type='single'
-          value={filterType}
-          onValueChange={(val) => (val === 'advance' ? setFilterType('advance') : setFilterType('simple'))}
-        >
-          <ToggleGroupItem value='simple'>Simple Filters</ToggleGroupItem>
-          <ToggleGroupItem value='advance'>Advance Filters</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
       <div className='flex items-center justify-between gap-2 py-4'>
-        <div className='grow'>{filterType === 'advance' ? <DataTableFilterAdvance table={table} /> : <DataTableFilterSimple table={table} />}</div>
-        <DataTableToggleColumn table={table} />
+        <div className='flex gap-2'>
+          <DataTableFilterSimple table={table} />
+          <Button>Advanced Search</Button>
+        </div>
+        <div className='flex gap-2'>
+          <Button>Sort</Button>
+          <DataTableToggleColumn table={table} />
+        </div>
+      </div>
+      <div>
+        <DataTableFilterAdvanced table={table} />
       </div>
       <div className='overflow-hidden rounded-md border'>
         <Table className='table-fixed'>
