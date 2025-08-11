@@ -3,15 +3,12 @@
 import {
   Column,
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
-  VisibilityState,
 } from '@tanstack/react-table';
 
 import { DataTablePagination } from '@/components/task/table-pagination';
@@ -21,35 +18,21 @@ import { DataTableFilterAdvanced } from '@/components/task/table-filter-advanced
 import { DataTableFilterSimple } from '@/components/task/table-filter-simple';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CSSProperties, useState } from 'react';
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+import { Task } from '@/model/task';
+import { CSSProperties } from 'react';
+interface DataTableProps<TValue> {
+  columns: ColumnDef<Task, TValue>[];
+  data: Task[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
-
+export function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(), // pagination
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(), // sorting
-    onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(), // filtering
-    onColumnVisibilityChange: setColumnVisibility, // visibility
-    onRowSelectionChange: setRowSelection, // row selection
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
 
   return (

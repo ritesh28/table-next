@@ -1,7 +1,7 @@
 'use client';
 
 import { PRIORITY_ICON, PRIORITY_ORDER, STATUS_ICON, STATUS_ORDER, Task } from '@/model/task';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 
 import { DataTableColumnHeader } from '@/components/task/column-header';
@@ -46,6 +46,10 @@ export const columns: ColumnDef<Task>[] = [
           </TooltipContent>
         </Tooltip>
       );
+    },
+    filterFn: (row: Row<Task>, columnId: string, filterValue: string[]) => {
+      const { status } = row.original;
+      return filterValue.includes(status);
     },
     enableSorting: false,
     enableHiding: false,

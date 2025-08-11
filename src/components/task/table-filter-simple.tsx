@@ -1,8 +1,10 @@
 import { Combobox } from '@/components/combobox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
+import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DataTableFilterSimpleProps<TData> {
   table: Table<TData>;
@@ -28,6 +30,31 @@ const items = [
 
 export function DataTableFilterSimple<TData>({ table }: DataTableFilterSimpleProps<TData>) {
   const [selectedItems, setSelectedItems] = useState([]);
+  useEffect(() => {
+    if (selectedItems.length === 0) {
+      table.resetColumnFilters();
+    } else {
+      table.getColumn('task_id').setFilterValue(selectedItems);
+    }
+  }, [selectedItems]);
+
+  const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
+  // update status cache
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Something went wrong...</div>;
+  }
+
+  // todo: mutation
+  //  const [addSign] = useMutation(ADD_SIGN, {
+  //   onCompleted() {
+  //     router.push('/');
+  //   },
+  // });
+
   return (
     <div className='flex justify-between gap-2'>
       <Input
@@ -40,7 +67,7 @@ export function DataTableFilterSimple<TData>({ table }: DataTableFilterSimplePro
         items={items}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
-        isMultiSelect={false}
+        isMultiSelect
         buttonChildren={selectedItems.length ? selectedItems[0] : 'Status'}
         searchPlaceholder='Status'
         includeClearButton

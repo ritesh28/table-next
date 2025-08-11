@@ -66,7 +66,7 @@ export function Combobox<T extends string>({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant='outline' role='combobox' aria-expanded={open} className='w-[200px] justify-between'>
+        <Button variant='outline' role='combobox' aria-expanded={open} className='justify-between'>
           {buttonChildren}
         </Button>
       </PopoverTrigger>

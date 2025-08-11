@@ -1,0 +1,7 @@
+type Query {
+  statuses: [Status!]!
+}
+type Status {
+  name: String!
+  count: Int!
+}
