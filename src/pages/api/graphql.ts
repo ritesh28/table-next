@@ -21,6 +21,16 @@ const resolvers: Resolvers = {
       const resultArr = Object.entries(resultObject).map(([name, count]) => ({ name, count }));
       return resultArr;
     },
+    priorities: async () => {
+      const data = await getData();
+      const resultObject: Record<string, number> = {};
+      for (const { priority } of data) {
+        if (priority in resultObject) resultObject[priority] += 1;
+        else resultObject[priority] = 1;
+      }
+      const resultArr = Object.entries(resultObject).map(([name, count]) => ({ name, count }));
+      return resultArr;
+    },
   },
 };
 

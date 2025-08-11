@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ModelFilterGroup } from '@/model/table-filter';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -47,10 +48,7 @@ export const columns: ColumnDef<Task>[] = [
         </Tooltip>
       );
     },
-    filterFn: (row: Row<Task>, columnId: string, filterValue: string[]) => {
-      const { status } = row.original;
-      return filterValue.includes(status);
-    },
+    filterFn: tableWholesomeFilter,
     enableSorting: false,
     enableHiding: false,
     size: 90,
@@ -164,3 +162,12 @@ export const columns: ColumnDef<Task>[] = [
     size: 40,
   },
 ];
+
+function tableWholesomeFilter(row: Row<Task>, columnId: string, filterGroups: ModelFilterGroup[]) {
+  // this is the only filter function. This filter for all parameters
+  // caters all possible scenarios
+  const { status } = row.original;
+  // return filterValue.includes(status);
+  return true;
+  // todo
+}

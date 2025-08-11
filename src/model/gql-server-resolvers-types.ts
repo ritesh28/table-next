@@ -15,8 +15,15 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type Priority = {
+  __typename?: 'Priority';
+  count: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  priorities: Array<Priority>;
   statuses: Array<Status>;
 };
 
@@ -100,6 +107,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Priority: ResolverTypeWrapper<Priority>;
   Query: ResolverTypeWrapper<{}>;
   Status: ResolverTypeWrapper<Status>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -109,12 +117,20 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   Int: Scalars['Int']['output'];
+  Priority: Priority;
   Query: {};
   Status: Status;
   String: Scalars['String']['output'];
 }>;
 
+export type PriorityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Priority'] = ResolversParentTypes['Priority']> = ResolversObject<{
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  priorities?: Resolver<Array<ResolversTypes['Priority']>, ParentType, ContextType>;
   statuses?: Resolver<Array<ResolversTypes['Status']>, ParentType, ContextType>;
 }>;
 
@@ -125,6 +141,7 @@ export type StatusResolvers<ContextType = any, ParentType extends ResolversParen
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  Priority?: PriorityResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Status?: StatusResolvers<ContextType>;
 }>;

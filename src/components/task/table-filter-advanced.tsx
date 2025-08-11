@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { UIFilterGroup } from '@/model/table-filter';
 import { Table } from '@tanstack/react-table';
 import { Fragment } from 'react';
 
@@ -7,29 +8,15 @@ interface DataTableFilterAdvanceProps<TData> {
   table: Table<TData>;
 }
 
-interface Filters {
-  field: string;
-  operator: string;
-  value: string;
-  andOr: false | 'And' | 'Or';
-}
-interface FilterGroup {
-  name: string;
-  canCancel: boolean;
-  isEditable: boolean;
-  andOr: false | 'And' | 'Or';
-  filters: Filters[];
-}
-
-const filterGroups: FilterGroup[] = [
+const filterGroups: UIFilterGroup[] = [
   {
     name: 'Filter Group 1',
     canCancel: false,
     isEditable: false,
     andOr: false,
     filters: [
-      { field: 'Department', operator: '=', value: 'HouseKeeping', andOr: 'And' },
-      { field: 'Assignee', operator: '=', value: 'Ritesh', andOr: false },
+      { field: 'Department', operator: 'is', value: 'HouseKeeping', andOr: 'And' },
+      { field: 'Assignee', operator: 'is', value: 'Ritesh', andOr: false },
     ],
   },
   {
@@ -37,11 +24,11 @@ const filterGroups: FilterGroup[] = [
     canCancel: true,
     isEditable: true,
     andOr: 'Or',
-    filters: [{ field: 'Department', operator: '=', value: 'HouseKeeping', andOr: false }],
+    filters: [{ field: 'Department', operator: 'is', value: 'HouseKeeping', andOr: false }],
   },
 ];
 
-function getFilterGroupGridRowSpanStyle(filterGroups: FilterGroup[], filterGroupIndex: number) {
+function getFilterGroupGridRowSpanStyle(filterGroups: UIFilterGroup[], filterGroupIndex: number) {
   let totalPreviousFilters = 0;
   for (let index = 0; index < filterGroupIndex; index++) {
     totalPreviousFilters += filterGroups[index].filters.length;
@@ -84,7 +71,7 @@ export function DataTableFilterAdvanced<TData>({ table }: DataTableFilterAdvance
                     </div>
                     <div>
                       {FilterIndex == 0 && <p>Value</p>}
-                      <Button>{filter.value}</Button>
+                      <Button>{'value' in filter ? filter.value : ''}</Button>
                     </div>
                     <div>
                       {FilterIndex == 0 && <p>And/Or</p>}

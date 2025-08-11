@@ -11,7 +11,7 @@ import { Dispatch, ReactNode, SetStateAction, useCallback, useState } from 'reac
 
 interface ComboboxItem<T extends string> {
   name: T;
-  reactNode: ReactNode;
+  content: ReactNode;
   totalCount?: number;
 }
 
@@ -70,7 +70,7 @@ export function Combobox<T extends string>({
           {buttonChildren}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-[200px] p-0'>
+      <PopoverContent align='start' className='w-[200px] p-0'>
         <Command>
           <CommandInput placeholder={searchPlaceholder ? searchPlaceholder : 'Search...'} className='h-9' />
           <CommandList>
@@ -82,7 +82,7 @@ export function Combobox<T extends string>({
                   {!isMultiSelect && item.totalCount !== undefined && (
                     <Check className={cn('mr-1', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />
                   )}
-                  {item.reactNode}
+                  {item.content}
                   {item.totalCount !== undefined && <p className='ml-auto'>{item.totalCount}</p>}
                   {item.totalCount === undefined && !isMultiSelect && (
                     <Check className={cn('ml-auto', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />

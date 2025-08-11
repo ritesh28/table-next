@@ -1,7 +1,13 @@
 type Query {
   statuses: [Status!]!
+  priorities: [Priority!]!
 }
 type Status {
+  name: String!
+  count: Int!
+}
+
+type Priority {
   name: String!
   count: Int!
 }
