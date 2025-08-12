@@ -9,7 +9,7 @@ export interface InputProps
   endIcon?: LucideIcon;
 }
 
-export const InputWithIcon = React.forwardRef<HTMLInputElement, InputProps>(
+const InputWithIcon = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, startIcon, endIcon, ...props }, ref) => {
     const StartIcon = startIcon;
     const EndIcon = endIcon;
@@ -42,3 +42,6 @@ export const InputWithIcon = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
+InputWithIcon.displayName = "InputWithIcon";
+export { InputWithIcon };

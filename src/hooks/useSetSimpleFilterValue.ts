@@ -61,7 +61,7 @@ export function useSetSimpleFilterValue(table: Table<Task>, columnName: string, 
       }
     });
     table.getColumn(FILTER_COLUMN_ID).setFilterValue(nextFilterGroups);
-  }, [selectedItems, columnName, table]);
+  }, [selectedItems, columnName, valueType, table]);
 
   const filterCount = useGetFilterCount(table);
   useEffect(() => {
