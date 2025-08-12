@@ -15,14 +15,21 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type EstimatedHour = {
+  __typename?: 'EstimatedHour';
+  max: Scalars['Int']['output'];
+  min: Scalars['Int']['output'];
+};
+
 export type Priority = {
   __typename?: 'Priority';
   count: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  name: Scalars['ID']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
+  estimatedHour: EstimatedHour;
   priorities: Array<Priority>;
   statuses: Array<Status>;
 };
@@ -30,7 +37,7 @@ export type Query = {
 export type Status = {
   __typename?: 'Status';
   count: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  name: Scalars['ID']['output'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -106,6 +113,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  EstimatedHour: ResolverTypeWrapper<EstimatedHour>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Priority: ResolverTypeWrapper<Priority>;
   Query: ResolverTypeWrapper<{}>;
@@ -116,6 +125,8 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
+  EstimatedHour: EstimatedHour;
+  ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Priority: Priority;
   Query: {};
@@ -123,24 +134,32 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String']['output'];
 }>;
 
+export type EstimatedHourResolvers<ContextType = any, ParentType extends ResolversParentTypes['EstimatedHour'] = ResolversParentTypes['EstimatedHour']> = ResolversObject<{
+  max?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  min?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PriorityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Priority'] = ResolversParentTypes['Priority']> = ResolversObject<{
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  estimatedHour?: Resolver<ResolversTypes['EstimatedHour'], ParentType, ContextType>;
   priorities?: Resolver<Array<ResolversTypes['Priority']>, ParentType, ContextType>;
   statuses?: Resolver<Array<ResolversTypes['Status']>, ParentType, ContextType>;
 }>;
 
 export type StatusResolvers<ContextType = any, ParentType extends ResolversParentTypes['Status'] = ResolversParentTypes['Status']> = ResolversObject<{
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  EstimatedHour?: EstimatedHourResolvers<ContextType>;
   Priority?: PriorityResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Status?: StatusResolvers<ContextType>;

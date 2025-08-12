@@ -1,15 +1,14 @@
 interface Filter {
   field: string;
-  andOr: false | 'And' | 'Or';
 }
-interface FilterEmpty extends Filter {
+export interface FilterEmpty extends Filter {
   operator: 'is empty' | 'is not empty';
 }
 interface FilterString extends Filter {
   operator: 'contains' | 'does not contain' | 'is' | 'is not';
   value: string;
 }
-interface FilterList extends Filter {
+export interface FilterList extends Filter {
   operator: 'has any of' | 'has none of';
   values: string[];
 }
@@ -36,12 +35,42 @@ interface FilterDateRelative extends Filter {
   value: string;
 }
 
-export interface UIFilterGroup {
+type AndOr = false | 'And' | 'Or';
+interface UIFilterGroup {
   name: string;
   canCancel: boolean;
   isEditable: boolean;
-  andOr: false | 'And' | 'Or';
+  /**
+   * this 'andOr' is a predicate among the filter list
+   */
+  filterListAndOr: AndOr;
   filters: (FilterEmpty | FilterString | FilterList | FilterNumber | FilterNumberRange | FilterDate | FilterDateRange | FilterDateRelative)[];
 }
 
-export type ModelFilterGroup = Pick<UIFilterGroup, 'andOr' | 'filters'>;
+export interface UIFilterGroups {
+  /**
+   * this 'andOr' is a predicate among the filter-group list
+   */
+  filterGroupListAndOr: AndOr;
+  filterGroups: UIFilterGroup[];
+}
+
+export interface ModelFilterGroups {
+  /**
+   * this 'andOr' is a predicate among the filter-group list
+   */
+  filterGroupListAndOr: AndOr;
+  filterGroups: Pick<UIFilterGroup, 'filterListAndOr' | 'filters'>[];
+}
+
+export const DEFAULT_MODEL_FILTER_GROUPS: ModelFilterGroups = {
+  filterGroupListAndOr: false,
+  filterGroups: [
+    {
+      filterListAndOr: false,
+      filters: [],
+    },
+  ],
+};
+
+export const DEFAULT_FILTER_LIST_AND_OR: AndOr = 'And';

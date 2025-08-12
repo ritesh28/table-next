@@ -1,13 +1,19 @@
 type Query {
   statuses: [Status!]!
   priorities: [Priority!]!
+  estimatedHour: EstimatedHour!
 }
 type Status {
-  name: String!
+  name: ID!
   count: Int!
 }
 
 type Priority {
-  name: String!
+  name: ID!
   count: Int!
+}
+
+type EstimatedHour {
+  min: Int!
+  max: Int!
 }

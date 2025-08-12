@@ -17,5 +17,7 @@ export async function getCsvRecords() {
     serializableTasks.push(record);
   }
 
+  // todo: when session is implemented, update this function
+
   return serializableTasks;
 }

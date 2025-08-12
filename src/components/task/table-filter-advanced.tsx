@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { UIFilterGroup } from '@/model/table-filter';
+import { UIFilterGroups } from '@/model/table-filter';
 import { Table } from '@tanstack/react-table';
 import { Fragment } from 'react';
 
@@ -8,34 +8,37 @@ interface DataTableFilterAdvanceProps<TData> {
   table: Table<TData>;
 }
 
-const filterGroups: UIFilterGroup[] = [
-  {
-    name: 'Filter Group 1',
-    canCancel: false,
-    isEditable: false,
-    andOr: false,
-    filters: [
-      { field: 'Department', operator: 'is', value: 'HouseKeeping', andOr: 'And' },
-      { field: 'Assignee', operator: 'is', value: 'Ritesh', andOr: false },
-    ],
-  },
-  {
-    name: 'Filter Group 2',
-    canCancel: true,
-    isEditable: true,
-    andOr: 'Or',
-    filters: [{ field: 'Department', operator: 'is', value: 'HouseKeeping', andOr: false }],
-  },
-];
+const filterGroups: UIFilterGroups = {
+  filterGroupListAndOr: 'And',
+  filterGroups: [
+    {
+      name: 'Filter Group 1',
+      canCancel: false,
+      isEditable: false,
+      filterListAndOr: 'And',
+      filters: [
+        { field: 'Department', operator: 'is', value: 'HouseKeeping' },
+        { field: 'Assignee', operator: 'is', value: 'Ritesh' },
+      ],
+    },
+    {
+      name: 'Filter Group 2',
+      canCancel: true,
+      isEditable: true,
+      filterListAndOr: false,
+      filters: [{ field: 'Department', operator: 'is', value: 'HouseKeeping' }],
+    },
+  ],
+};
 
-function getFilterGroupGridRowSpanStyle(filterGroups: UIFilterGroup[], filterGroupIndex: number) {
+function getFilterGroupGridRowSpanStyle(filterGroups: UIFilterGroups, filterGroupIndex: number) {
   let totalPreviousFilters = 0;
   for (let index = 0; index < filterGroupIndex; index++) {
-    totalPreviousFilters += filterGroups[index].filters.length;
+    totalPreviousFilters += filterGroups.filterGroups[index].filters.length;
     totalPreviousFilters += 1; // for <hr/>
   }
   const gridRowStart = totalPreviousFilters + 1;
-  const gridRowEnd = gridRowStart + filterGroups[filterGroupIndex].filters.length;
+  const gridRowEnd = gridRowStart + filterGroups.filterGroups[filterGroupIndex].filters.length;
   return { gridRowStart, gridRowEnd };
 }
 
@@ -45,7 +48,7 @@ export function DataTableFilterAdvanced<TData>({ table }: DataTableFilterAdvance
       <Card>
         <CardContent>
           <div className='grid grid-cols-9 gap-1'>
-            {filterGroups.map((filterGroup, filterGroupIndex) => (
+            {filterGroups.filterGroups.map((filterGroup, filterGroupIndex) => (
               <Fragment key={filterGroup.name}>
                 <div className='col-start-1' style={{ ...getFilterGroupGridRowSpanStyle(filterGroups, filterGroupIndex) }}>
                   <p>{filterGroup.name}</p>
@@ -54,10 +57,10 @@ export function DataTableFilterAdvanced<TData>({ table }: DataTableFilterAdvance
                 {filterGroup.filters.map((filter, FilterIndex) => (
                   <Fragment key={FilterIndex}>
                     <div className='col-start-2' style={{ ...getFilterGroupGridRowSpanStyle(filterGroups, filterGroupIndex) }}>
-                      {filterGroup.andOr && FilterIndex == 0 && (
+                      {filterGroup.filterListAndOr && FilterIndex == 0 && (
                         <>
                           <p>And/Or</p>
-                          <Button>{filterGroup.andOr}</Button>
+                          <Button>{filterGroup.filterListAndOr}</Button>
                         </>
                       )}
                     </div>

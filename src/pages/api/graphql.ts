@@ -4,15 +4,10 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { readFileSync } from 'node:fs';
 
-function getData() {
-  // todo: when session is implemented, update this function
-  return getCsvRecords();
-}
-
 const resolvers: Resolvers = {
   Query: {
     statuses: async () => {
-      const data = await getData();
+      const data = await getCsvRecords();
       const resultObject: Record<string, number> = {};
       for (const { status } of data) {
         if (status in resultObject) resultObject[status] += 1;
@@ -22,7 +17,7 @@ const resolvers: Resolvers = {
       return resultArr;
     },
     priorities: async () => {
-      const data = await getData();
+      const data = await getCsvRecords();
       const resultObject: Record<string, number> = {};
       for (const { priority } of data) {
         if (priority in resultObject) resultObject[priority] += 1;
@@ -30,6 +25,14 @@ const resolvers: Resolvers = {
       }
       const resultArr = Object.entries(resultObject).map(([name, count]) => ({ name, count }));
       return resultArr;
+    },
+    estimatedHour: async () => {
+      const data = await getCsvRecords();
+      const estHrList = data.map((d) => d.estimated_hours);
+      return {
+        min: Math.min(...estHrList),
+        max: Math.max(...estHrList),
+      };
     },
   },
 };

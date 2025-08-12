@@ -1,28 +1,20 @@
 import { Combobox } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
+import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
 import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
 import { PRIORITY_ICON } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
 import { CirclePlus, CircleX } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface DataTableFilterSimplePriorityProps<TData> {
   table: Table<TData>;
 }
 
 export function DataTableFilterSimplePriority<TData>({ table }: DataTableFilterSimplePriorityProps<TData>) {
-  const [selectedItems, setSelectedItems] = useState([]);
-  useEffect(() => {
-    if (selectedItems.length === 0) {
-      table.resetColumnFilters();
-    } else {
-      table.getColumn('task_id').setFilterValue(selectedItems);
-    }
-  }, [selectedItems]);
+  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<TData>(table, 'priority');
 
   const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
-  // todo: update status cache
 
   if (loading) {
     return <div>Loading...</div>;

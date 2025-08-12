@@ -1,28 +1,20 @@
 import { Combobox } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
+import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
 import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
 import { STATUS_ICON } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
 import { CirclePlus, CircleX } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface DataTableFilterSimpleStatusProps<TData> {
   table: Table<TData>;
 }
 
 export function DataTableFilterSimpleStatus<TData>({ table }: DataTableFilterSimpleStatusProps<TData>) {
-  const [selectedItems, setSelectedItems] = useState([]);
-  useEffect(() => {
-    if (selectedItems.length === 0) {
-      table.resetColumnFilters();
-    } else {
-      table.getColumn('task_id').setFilterValue(selectedItems);
-    }
-  }, [selectedItems]);
+  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<TData>(table, 'status');
 
   const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
-  // todo: update status cache
 
   if (loading) {
     return <div>Loading...</div>;

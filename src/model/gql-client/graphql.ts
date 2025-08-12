@@ -16,14 +16,21 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type EstimatedHour = {
+  __typename?: 'EstimatedHour';
+  max: Scalars['Int']['output'];
+  min: Scalars['Int']['output'];
+};
+
 export type Priority = {
   __typename?: 'Priority';
   count: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  name: Scalars['ID']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
+  estimatedHour: EstimatedHour;
   priorities: Array<Priority>;
   statuses: Array<Status>;
 };
@@ -31,8 +38,13 @@ export type Query = {
 export type Status = {
   __typename?: 'Status';
   count: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  name: Scalars['ID']['output'];
 };
+
+export type GetEstimatedHourMinMaxQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetEstimatedHourMinMaxQuery = { __typename?: 'Query', estimatedHour: { __typename?: 'EstimatedHour', min: number, max: number } };
 
 export type GetPrioritiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -45,5 +57,6 @@ export type GetStatusesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetStatusesQuery = { __typename?: 'Query', statuses: Array<{ __typename?: 'Status', name: string, count: number }> };
 
 
+export const GetEstimatedHourMinMaxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEstimatedHourMinMax"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"estimatedHour"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"min"}},{"kind":"Field","name":{"kind":"Name","value":"max"}}]}}]}}]} as unknown as DocumentNode<GetEstimatedHourMinMaxQuery, GetEstimatedHourMinMaxQueryVariables>;
 export const GetPrioritiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPriorities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priorities"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<GetPrioritiesQuery, GetPrioritiesQueryVariables>;
 export const GetStatusesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStatuses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"statuses"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]} as unknown as DocumentNode<GetStatusesQuery, GetStatusesQueryVariables>;

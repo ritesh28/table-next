@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ModelFilterGroup } from '@/model/table-filter';
+import { FilterEmpty, FilterList, ModelFilterGroups } from '@/model/table-filter';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -163,11 +163,80 @@ export const columns: ColumnDef<Task>[] = [
   },
 ];
 
-function tableWholesomeFilter(row: Row<Task>, columnId: string, filterGroups: ModelFilterGroup[]) {
+export const FILTER_COLUMN_ID = 'task_id';
+
+function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: ModelFilterGroups) {
   // this is the only filter function. This filter for all parameters
   // caters all possible scenarios
-  const { status } = row.original;
-  // return filterValue.includes(status);
-  return true;
-  // todo
+  const { task_id, title, label, status, priority, estimated_hours, created_at } = row.original;
+
+  let showRow = true;
+  for (let filterGroup of filterGroups.filterGroups) {
+    let filterGroupResult = true;
+    for (let filter of filterGroup.filters) {
+      let filterResult = true;
+      switch (filter.field) {
+        case 'status':
+          if ('values' in filter) {
+            filter = filter as FilterList;
+            if (filter.operator === 'has any of') filterResult = filter.values.includes(status);
+            else if (filter.operator === 'has none of') filterResult = !filter.values.includes(status);
+          } else {
+            filter = filter as FilterEmpty;
+            if (filter.operator === 'is empty') filterResult = !!status;
+            else if (filter.operator === 'is not empty') filterResult = !status;
+          }
+          break;
+        case 'priority':
+          if ('values' in filter) {
+            filter = filter as FilterList;
+            if (filter.operator === 'has any of') filterResult = filter.values.includes(priority);
+            else if (filter.operator === 'has none of') filterResult = !filter.values.includes(priority);
+          } else {
+            filter = filter as FilterEmpty;
+            if (filter.operator === 'is empty') filterResult = !!priority;
+            else if (filter.operator === 'is not empty') filterResult = !priority;
+          }
+          break;
+        // todo
+        default:
+          throw new Error('filter.field is not resolved');
+      }
+      switch (filterGroup.filterListAndOr) {
+        case false:
+          filterGroupResult = filterResult;
+          break;
+        case 'And':
+          filterGroupResult = filterGroupResult && filterResult;
+          break;
+        case 'Or':
+          filterGroupResult = filterGroupResult || filterResult;
+          break;
+        default:
+          throw new Error('filterGroup.andOr is not resolved');
+      }
+      if (!filterGroupResult && filterGroup.filterListAndOr === 'And') {
+        // no meaning to continue since it will always return false
+        break;
+      }
+    }
+    switch (filterGroups.filterGroupListAndOr) {
+      case false:
+        showRow = filterGroupResult;
+        break;
+      case 'And':
+        showRow = showRow && filterGroupResult;
+        break;
+      case 'Or':
+        showRow = showRow || filterGroupResult;
+        break;
+      default:
+        throw new Error('filterGroups.andOr is not resolved');
+    }
+    if (!showRow && filterGroups.filterGroupListAndOr === 'And') {
+      // no meaning to continue since it will always return false
+      break;
+    }
+  }
+  return showRow;
 }

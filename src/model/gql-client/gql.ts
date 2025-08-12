@@ -14,10 +14,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query GetEstimatedHourMinMax {\n    estimatedHour {\n      min\n      max\n    }\n  }\n": typeof types.GetEstimatedHourMinMaxDocument,
     "\n  query GetPriorities {\n    priorities {\n      name\n      count\n    }\n  }\n": typeof types.GetPrioritiesDocument,
     "\n  query GetStatuses {\n    statuses {\n      name\n      count\n    }\n  }\n": typeof types.GetStatusesDocument,
 };
 const documents: Documents = {
+    "\n  query GetEstimatedHourMinMax {\n    estimatedHour {\n      min\n      max\n    }\n  }\n": types.GetEstimatedHourMinMaxDocument,
     "\n  query GetPriorities {\n    priorities {\n      name\n      count\n    }\n  }\n": types.GetPrioritiesDocument,
     "\n  query GetStatuses {\n    statuses {\n      name\n      count\n    }\n  }\n": types.GetStatusesDocument,
 };
@@ -36,6 +38,10 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetEstimatedHourMinMax {\n    estimatedHour {\n      min\n      max\n    }\n  }\n"): (typeof documents)["\n  query GetEstimatedHourMinMax {\n    estimatedHour {\n      min\n      max\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
