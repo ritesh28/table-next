@@ -1,5 +1,5 @@
-import { columns } from '@/components/task/columns';
-import { DataTable } from '@/components/task/table';
+import { columns } from '@/components/task-table/columns';
+import { DataTable } from '@/components/task-table/table';
 import { getCsvRecords, type SerializableTask } from '@/lib/get-csv-records';
 import moment from 'moment';
 import type { GetStaticProps, InferGetStaticPropsType } from 'next';

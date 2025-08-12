@@ -4,8 +4,8 @@ import { PRIORITY_ICON, PRIORITY_ORDER, STATUS_ICON, STATUS_ORDER, Task } from '
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 
-import { DataTableColumnHeader } from '@/components/task/column-header';
-import { DataTableColumnHeaderCheckbox } from '@/components/task/column-header-checkbox';
+import { DataTableColumnHeader } from '@/components/task-table/column-header';
+import { DataTableColumnHeaderCheckbox } from '@/components/task-table/column-header-checkbox';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FilterEmpty, FilterList, ModelFilterGroups } from '@/model/table-filter';
+import { FilterEmpty, FilterList, FilterNumber, FilterNumberRange, ModelFilterGroups } from '@/model/table-filter';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -187,6 +187,7 @@ function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: M
             else if (filter.operator === 'is not empty') filterResult = !status;
           }
           break;
+
         case 'priority':
           if ('values' in filter) {
             filter = filter as FilterList;
@@ -196,6 +197,21 @@ function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: M
             filter = filter as FilterEmpty;
             if (filter.operator === 'is empty') filterResult = !!priority;
             else if (filter.operator === 'is not empty') filterResult = !priority;
+          }
+          break;
+        case 'estimated_hours':
+          if ('value' in filter) {
+            filter = filter as FilterNumber;
+            if (filter.operator === 'is') filterResult = filter.value === estimated_hours;
+            else if (filter.operator === 'is not') filterResult = filter.value !== estimated_hours;
+            // todo
+          } else if ('valueA' in filter) {
+            filter = filter as FilterNumberRange;
+            if (filter.operator === 'is between') filterResult = filter.valueA <= estimated_hours && filter.valueB >= estimated_hours;
+          } else {
+            filter = filter as FilterEmpty;
+            if (filter.operator === 'is empty') filterResult = !!estimated_hours;
+            else if (filter.operator === 'is not empty') filterResult = !estimated_hours;
           }
           break;
         // todo

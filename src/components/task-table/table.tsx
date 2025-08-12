@@ -11,21 +11,21 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { DataTablePagination } from '@/components/task/table-pagination';
-import { DataTableToggleColumn } from '@/components/task/table-toggle-column';
+import { DataTablePagination } from '@/components/task-table/table-pagination';
+import { DataTableToggleColumn } from '@/components/task-table/table-toggle-column';
 
-import { DataTableFilterAdvanced } from '@/components/task/table-filter-advanced';
-import { DataTableFilterSimple } from '@/components/task/table-filter-simple';
+import { DataTableFilterAdvanced } from '@/components/task-table/table-filter-advanced';
+import { DataTableFilterSimple } from '@/components/task-table/table-filter-simple';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Task } from '@/model/task';
 import { CSSProperties } from 'react';
-interface DataTableProps<TValue> {
-  columns: ColumnDef<Task, TValue>[];
+interface DataTableProps {
+  columns: ColumnDef<Task>[];
   data: Task[];
 }
 
-export function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
+export function DataTable({ columns, data }: DataTableProps) {
   const table = useReactTable({
     data,
     columns,
@@ -93,7 +93,7 @@ export function DataTable<TValue>({ columns, data }: DataTableProps<TValue>) {
   );
 }
 
-function getCommonPinningStyles<TData>(column: Column<TData>): CSSProperties {
+function getCommonPinningStyles(column: Column<Task>): CSSProperties {
   const isPinned = column.getIsPinned();
   const isLastLeftPinnedColumn = isPinned === 'left' && column.getIsLastColumn('left');
   const isFirstRightPinnedColumn = isPinned === 'right' && column.getIsFirstColumn('right');

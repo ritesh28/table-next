@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { UIFilterGroups } from '@/model/table-filter';
+import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { Fragment } from 'react';
 
-interface DataTableFilterAdvanceProps<TData> {
-  table: Table<TData>;
+interface DataTableFilterAdvanceProps {
+  table: Table<Task>;
 }
 
 const filterGroups: UIFilterGroups = {
@@ -42,7 +43,7 @@ function getFilterGroupGridRowSpanStyle(filterGroups: UIFilterGroups, filterGrou
   return { gridRowStart, gridRowEnd };
 }
 
-export function DataTableFilterAdvanced<TData>({ table }: DataTableFilterAdvanceProps<TData>) {
+export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) {
   return (
     <div>
       <Card>

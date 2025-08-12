@@ -1,32 +1,32 @@
 import { Combobox } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
 import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
-import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
-import { STATUS_ICON } from '@/model/task';
+import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
+import { PRIORITY_ICON, Task } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
 import { CirclePlus, CircleX } from 'lucide-react';
 
-interface DataTableFilterSimpleStatusProps<TData> {
-  table: Table<TData>;
+interface DataTableFilterSimplePriorityProps {
+  table: Table<Task>;
 }
 
-export function DataTableFilterSimpleStatus<TData>({ table }: DataTableFilterSimpleStatusProps<TData>) {
-  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<TData>(table, 'status');
+export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePriorityProps) {
+  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue(table, 'priority', 'list');
 
-  const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
+  const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
 
   if (loading) {
     return <div>Loading...</div>;
   }
   if (error) {
-    // silent failure
+    // hide component
     return null;
   }
   return (
     <Combobox
-      items={data.statuses.map(({ name, count: totalCount }) => {
-        const Icon = STATUS_ICON[name];
+      items={data.priorities.map(({ name, count: totalCount }) => {
+        const Icon = PRIORITY_ICON[name];
         return {
           name,
           totalCount,
@@ -53,7 +53,7 @@ export function DataTableFilterSimpleStatus<TData>({ table }: DataTableFilterSim
             >
               <CircleX />
             </div>
-            <span>Status</span>
+            <span>Priority</span>
             {selectedItems.map((item) => (
               <Badge key={item}>{item}</Badge>
             ))}
@@ -61,11 +61,11 @@ export function DataTableFilterSimpleStatus<TData>({ table }: DataTableFilterSim
         ) : (
           <div className='flex items-center gap-1'>
             <CirclePlus />
-            <span>Status</span>
+            <span>Priority</span>
           </div>
         )
       }
-      searchPlaceholder='Status'
+      searchPlaceholder='Priority'
       includeClearButton
     />
   );

@@ -1,13 +1,14 @@
+import { Task } from '@/model/task';
 import { Column, Table } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { Checkbox } from '../ui/checkbox';
 
-interface DataTableColumnHeaderCheckboxProps<TData> {
-  table: Table<TData>;
-  column: Column<TData>;
+interface DataTableColumnHeaderCheckboxProps {
+  table: Table<Task>;
+  column: Column<Task>;
 }
 
-export function DataTableColumnHeaderCheckbox<TData>({ table, column }: DataTableColumnHeaderCheckboxProps<TData>) {
+export function DataTableColumnHeaderCheckbox({ table, column }: DataTableColumnHeaderCheckboxProps) {
   useEffect(() => {
     column.pin('left');
   }, [column]);

@@ -12,11 +12,11 @@ export interface FilterList extends Filter {
   operator: 'has any of' | 'has none of';
   values: string[];
 }
-interface FilterNumber extends Filter {
+export interface FilterNumber extends Filter {
   operator: 'is' | 'is not' | 'is less than' | 'is less than or equal to' | 'is greater then' | 'is greater then or equal to';
   value: number;
 }
-interface FilterNumberRange extends Filter {
+export interface FilterNumberRange extends Filter {
   operator: 'is between';
   valueA: number;
   valueB: number;

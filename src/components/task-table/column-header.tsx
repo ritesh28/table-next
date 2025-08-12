@@ -4,20 +4,16 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { Task } from '@/model/task';
 import { useEffect } from 'react';
 
-interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
-  column: Column<TData, TValue>;
+interface DataTableColumnHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  column: Column<Task>;
   title: string;
   pinningPosition?: ColumnPinningPosition;
 }
 
-export function DataTableColumnHeader<TData, TValue>({
-  column,
-  title,
-  className,
-  pinningPosition = false,
-}: DataTableColumnHeaderProps<TData, TValue>) {
+export function DataTableColumnHeader({ column, title, className, pinningPosition = false }: DataTableColumnHeaderProps) {
   useEffect(() => {
     column.pin(pinningPosition);
   }, [column, pinningPosition]);
