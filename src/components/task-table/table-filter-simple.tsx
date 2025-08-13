@@ -30,9 +30,10 @@ export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
   // });
 
   return (
-    <div className='flex justify-between gap-2'>
+    <div className='flex-row md:flex justify-between gap-2'>
       <Input
-        placeholder='Filter titles...'
+        id='filter-title'
+        placeholder='Filter titles or task ID...'
         value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
         onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
         className='max-w-sm'

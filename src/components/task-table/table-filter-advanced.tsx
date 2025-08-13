@@ -9,28 +9,28 @@ interface DataTableFilterAdvanceProps {
   table: Table<Task>;
 }
 
-const filterGroups: UIFilterGroups = {
-  filterGroupListAndOr: 'And',
-  filterGroups: [
-    {
-      name: 'Filter Group 1',
-      canCancel: false,
-      isEditable: false,
-      filterListAndOr: 'And',
-      filters: [
-        { field: 'Department', operator: 'is', value: 'HouseKeeping' },
-        { field: 'Assignee', operator: 'is', value: 'Ritesh' },
-      ],
-    },
-    {
-      name: 'Filter Group 2',
-      canCancel: true,
-      isEditable: true,
-      filterListAndOr: false,
-      filters: [{ field: 'Department', operator: 'is', value: 'HouseKeeping' }],
-    },
-  ],
-};
+// const filterGroups: UIFilterGroups = {
+//   filterGroupListAndOr: 'And',
+//   filterGroups: [
+//     {
+//       name: 'Filter Group 1',
+//       canCancel: false,
+//       isEditable: false,
+//       filterListAndOr: 'And',
+//       filters: [
+//         { field: 'Department', _operator: 'is', value: 'HouseKeeping' },
+//         { field: 'Assignee', _operator: 'is', value: 'Ritesh' },
+//       ],
+//     },
+//     {
+//       name: 'Filter Group 2',
+//       canCancel: true,
+//       isEditable: true,
+//       filterListAndOr: false,
+//       filters: [{ field: 'Department', _operator: 'is', value: 'HouseKeeping' }],
+//     },
+//   ],
+// };
 
 function getFilterGroupGridRowSpanStyle(filterGroups: UIFilterGroups, filterGroupIndex: number) {
   let totalPreviousFilters = 0;

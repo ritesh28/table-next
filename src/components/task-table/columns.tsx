@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FilterEmpty, FilterList, FilterNumber, FilterNumberRange, ModelFilterGroups } from '@/model/table-filter';
+import { ModelFilterGroups } from '@/model/table-filter';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -174,50 +174,7 @@ function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: M
   for (let filterGroup of filterGroups.filterGroups) {
     let filterGroupResult = true;
     for (let filter of filterGroup.filters) {
-      let filterResult = true;
-      switch (filter.field) {
-        case 'status':
-          if ('values' in filter) {
-            filter = filter as FilterList;
-            if (filter.operator === 'has any of') filterResult = filter.values.includes(status);
-            else if (filter.operator === 'has none of') filterResult = !filter.values.includes(status);
-          } else {
-            filter = filter as FilterEmpty;
-            if (filter.operator === 'is empty') filterResult = !!status;
-            else if (filter.operator === 'is not empty') filterResult = !status;
-          }
-          break;
-
-        case 'priority':
-          if ('values' in filter) {
-            filter = filter as FilterList;
-            if (filter.operator === 'has any of') filterResult = filter.values.includes(priority);
-            else if (filter.operator === 'has none of') filterResult = !filter.values.includes(priority);
-          } else {
-            filter = filter as FilterEmpty;
-            if (filter.operator === 'is empty') filterResult = !!priority;
-            else if (filter.operator === 'is not empty') filterResult = !priority;
-          }
-          break;
-        case 'estimated_hours':
-          if ('value' in filter) {
-            filter = filter as FilterNumber;
-            if (filter.operator === 'is') filterResult = filter.value === estimated_hours;
-            else if (filter.operator === 'is not') filterResult = filter.value !== estimated_hours;
-            // todo
-          } else if ('valueA' in filter) {
-            filter = filter as FilterNumberRange;
-            if (filter.operator === 'is between') filterResult = filter.valueA <= estimated_hours && filter.valueB >= estimated_hours;
-          } else {
-            filter = filter as FilterEmpty;
-            if (filter.operator === 'is empty') filterResult = !!estimated_hours;
-            else if (filter.operator === 'is not empty') filterResult = !estimated_hours;
-          }
-          break;
-        // todo
-        default:
-          throw new Error('filter.field is not resolved');
-      }
+      const filterResult = filter.filterRow(row.original);
       switch (filterGroup.filterListAndOr) {
         case false:
           filterGroupResult = filterResult;

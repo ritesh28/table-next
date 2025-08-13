@@ -58,6 +58,7 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
             max={range[1] ?? max}
             value={range[0] ?? ''}
             onChange={(e) => setRange(([_val1, val2]) => [parseInt(e.target.value, 10), val2 ?? max])}
+            // todo: fix input min max boundary
           />
           <InputWithIcon
             type='number'
