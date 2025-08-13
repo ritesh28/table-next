@@ -12,7 +12,7 @@ interface DataTableFilterSimplePriorityProps {
 }
 
 export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePriorityProps) {
-  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue(table, 'priority');
+  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<string[]>(table, 'priority');
 
   const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
 

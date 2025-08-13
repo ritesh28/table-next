@@ -10,7 +10,7 @@ interface DataTableFilterSimpleEstimatedHourProps {
 }
 
 export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSimpleEstimatedHourProps) {
-  const [range, setRange] = useSetSimpleFilterValue(table, 'estimated_hours');
+  const [range, setRange] = useSetSimpleFilterValue<number[]>(table, 'estimated_hours');
 
   const { loading, error, data } = useQuery(GET_ESTIMATED_HOUR_MIN_MAX);
 

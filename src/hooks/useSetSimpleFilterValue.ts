@@ -6,8 +6,13 @@ import { Table } from '@tanstack/react-table';
 import { produce } from 'immer';
 import { useEffect, useState } from 'react';
 
-export function useSetSimpleFilterValue(table: Table<Task>, columnId: keyof Task) {
-  const [selectedItems, setSelectedItems] = useState([]);
+function defaultState(columnId: keyof Task) {
+  if (columnId === 'title') return '';
+  return [];
+}
+
+export function useSetSimpleFilterValue<TSelection extends string | unknown[]>(table: Table<Task>, columnId: keyof Task) {
+  const [selection, setSelection] = useState(() => defaultState(columnId) as TSelection);
 
   useEffect(() => {
     const filterGroups = (table.getColumn(FILTER_COLUMN_ID).getFilterValue() ?? DEFAULT_MODEL_FILTER_GROUPS) as ModelFilterGroups;
@@ -17,19 +22,23 @@ export function useSetSimpleFilterValue(table: Table<Task>, columnId: keyof Task
       // remove filter
       filterGroup.filters = filterGroup.filters.filter((filter) => filter.columnId !== columnId);
       // if user has removed the filter
-      if (selectedItems.length === 0) {
+      if ((selection as string) === '' || (selection as unknown[]).length === 0) {
         if (filterGroup.filters.length < 2) filterGroup.filterListAndOr = false;
       } else {
         // add filter
         switch (columnId) {
           case 'status':
           case 'priority':
-            filterGroup.filters.push(new FilterList(columnId, 'has any of', selectedItems));
+            if (selection instanceof Array) {
+              filterGroup.filters.push(new FilterList(columnId, 'has any of', selection));
+            }
             break;
           case 'estimated_hours':
-            const minValue = selectedItems[0] ?? 0;
-            const maxValue = selectedItems[1] ?? minValue;
-            filterGroup.filters.push(new FilterNumberRange(columnId, 'is between', minValue, maxValue));
+            if (selection instanceof Array) {
+              const minValue = (selection[0] as number) ?? 0;
+              const maxValue = (selection[1] as number) ?? minValue;
+              filterGroup.filters.push(new FilterNumberRange(columnId, 'is between', minValue, maxValue));
+            }
             break;
           default:
             throw Error('columnId not implemented');
@@ -39,14 +48,14 @@ export function useSetSimpleFilterValue(table: Table<Task>, columnId: keyof Task
       }
     });
     table.getColumn(FILTER_COLUMN_ID).setFilterValue(nextFilterGroups);
-  }, [selectedItems, columnId, table]);
+  }, [selection, columnId, table]);
 
   const filterCount = useGetFilterCount(table);
   useEffect(() => {
     if (filterCount === 0) {
-      setSelectedItems([]);
+      setSelection(defaultState(columnId) as TSelection);
     }
   }, [filterCount]);
 
-  return [selectedItems, setSelectedItems] as const;
+  return [selection, setSelection] as const;
 }

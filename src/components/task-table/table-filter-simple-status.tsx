@@ -12,7 +12,7 @@ interface DataTableFilterSimpleStatusProps {
 }
 
 export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStatusProps) {
-  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue(table, 'status');
+  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<string[]>(table, 'status');
 
   const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
 
