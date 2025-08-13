@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { DataTableFilterSimpleEstimatedHour } from '@/components/task-table/table-filter-simple-estimated-hour';
 import { DataTableFilterSimplePriority } from '@/components/task-table/table-filter-simple-priority';
 import { DataTableFilterSimpleStatus } from '@/components/task-table/table-filter-simple-status';
+import { DataTableFilterTextInput } from '@/components/task-table/table-filter-text-input';
 import { useGetFilterCount } from '@/hooks/useGetFilterCount';
 import { DEFAULT_MODEL_FILTER_GROUPS } from '@/model/table-filter';
 import { Task } from '@/model/task';
@@ -31,13 +31,7 @@ export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
 
   return (
     <div className='flex-row md:flex justify-between gap-2'>
-      <Input
-        id='filter-title'
-        placeholder='Filter titles or task ID...'
-        value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-        onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
-        className='max-w-sm'
-      />
+      <DataTableFilterTextInput table={table} />
       <DataTableFilterSimpleStatus table={table} />
       <DataTableFilterSimplePriority table={table} />
       <DataTableFilterSimpleEstimatedHour table={table} />

@@ -6,14 +6,14 @@ import { Table } from '@tanstack/react-table';
 interface DataTableFilterTextInputProps {
   table: Table<Task>;
 }
-function DataTableFilterTextInput({ table }: DataTableFilterTextInputProps) {
-  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<string>(table, 'title');
+export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProps) {
+  const [selectedTitle, setSelectedTitle] = useSetSimpleFilterValue<string>(table, 'title');
   return (
     <Input
       id='filter-title'
-      placeholder='Filter titles or task ID...'
-      value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-      onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)}
+      placeholder='Filter titles...'
+      value={selectedTitle}
+      onChange={(event) => setSelectedTitle(event.target.value)}
       className='max-w-sm'
     />
   );
