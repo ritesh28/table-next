@@ -53,21 +53,32 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
           <InputWithIcon
             type='number'
             endIcon={Timer}
-            placeholder={String(min)}
             min={min}
             max={range[1] ?? max}
-            value={range[0] ?? ''}
-            onChange={(e) => setRange(([_val1, val2]) => [parseInt(e.target.value, 10), val2 ?? max])}
-            // todo: fix input min max boundary
+            value={range[0] ?? min}
+            onChange={(e) =>
+              setRange(([oldVal1, oldVal2]) => {
+                const newVal2 = oldVal2 ?? max;
+                const newVal1 = parseInt(e.target.value, 10);
+                if (Number.isNaN(newVal1) || newVal1 > newVal2 || newVal1 < min) return [oldVal1, newVal2];
+                return [newVal1, newVal2];
+              })
+            }
           />
           <InputWithIcon
             type='number'
             endIcon={Timer}
-            placeholder={String(max)}
             min={range[0] ?? min}
             max={max}
-            value={range[1] ?? ''}
-            onChange={(e) => setRange(([val1, _val2]) => [val1 ?? min, parseInt(e.target.value, 10)])}
+            value={range[1] ?? max}
+            onChange={(e) =>
+              setRange(([oldVal1, oldVal2]) => {
+                const newVal1 = oldVal1 ?? min;
+                let newVal2 = parseInt(e.target.value, 10);
+                if (Number.isNaN(newVal2) || newVal2 < newVal1 || newVal2 > max) return [newVal1, oldVal2];
+                return [newVal1, newVal2];
+              })
+            }
           />
         </div>
         <div className='my-4'>

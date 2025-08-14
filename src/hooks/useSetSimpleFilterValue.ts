@@ -3,6 +3,7 @@ import { useGetFilterCount } from '@/hooks/useGetFilterCount';
 import {
   DEFAULT_FILTER_LIST_AND_OR,
   DEFAULT_MODEL_FILTER_GROUPS,
+  FilterDateRange,
   FilterList,
   FilterNumberRange,
   FilterString,
@@ -11,6 +12,7 @@ import {
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { produce } from 'immer';
+import moment from 'moment';
 import { useEffect, useState } from 'react';
 
 function isString(value: unknown): value is string {
@@ -53,15 +55,22 @@ export function useSetSimpleFilterValue<TState extends string | unknown[]>(table
             }
             break;
           case 'estimated_hours':
-            if (isArray(selection)) {
-              const minValue = (isInteger(selection[0]) && selection[0]) ?? 0;
-              const maxValue = (isInteger(selection[1]) && selection[1]) ?? minValue;
+            if (isArray(selection) && selection.length === 2) {
+              const minValue = isInteger(selection[0]) && selection[0];
+              const maxValue = isInteger(selection[1]) && selection[1];
               filterGroup.filters.push(new FilterNumberRange(columnId, 'is between', minValue, maxValue));
             }
             break;
           case 'title':
             if (isString(selection)) {
               filterGroup.filters.push(new FilterString(columnId, 'contains', selection));
+            }
+            break;
+          case 'created_at':
+            if (isArray(selection) && selection.length === 2) {
+              const startDate = moment.isMoment(selection[0]) && selection[0];
+              const endDate = moment.isMoment(selection[1]) && selection[1];
+              filterGroup.filters.push(new FilterDateRange(columnId, 'is between', startDate, endDate));
             }
             break;
           default:

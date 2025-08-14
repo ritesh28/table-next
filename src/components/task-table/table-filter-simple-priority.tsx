@@ -1,5 +1,6 @@
 import { Combobox } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
 import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
 import { PRIORITY_ICON, Task } from '@/model/task';
@@ -17,7 +18,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
   const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Skeleton className='h-full basis-[60px] rounded-sm' />;
   }
   if (error) {
     // hide component

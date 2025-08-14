@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
+import { DataTableFilterSimpleCreatedAt } from '@/components/task-table/table-filter-simple-created-at';
 import { DataTableFilterSimpleEstimatedHour } from '@/components/task-table/table-filter-simple-estimated-hour';
 import { DataTableFilterSimplePriority } from '@/components/task-table/table-filter-simple-priority';
 import { DataTableFilterSimpleStatus } from '@/components/task-table/table-filter-simple-status';
@@ -35,7 +36,7 @@ export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
       <DataTableFilterSimpleStatus table={table} />
       <DataTableFilterSimplePriority table={table} />
       <DataTableFilterSimpleEstimatedHour table={table} />
-      <Button>Created At</Button>
+      <DataTableFilterSimpleCreatedAt table={table} />
       {showReset && <Button onClick={() => table.getColumn(FILTER_COLUMN_ID).setFilterValue(DEFAULT_MODEL_FILTER_GROUPS)}>Reset</Button>}
     </div>
   );

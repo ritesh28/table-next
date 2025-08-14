@@ -1,5 +1,6 @@
 import { Combobox } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
 import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
 import { STATUS_ICON, Task } from '@/model/task';
@@ -17,7 +18,7 @@ export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStat
   const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Skeleton className='h-full basis-[60px] rounded-sm' />;
   }
   if (error) {
     // hide component
