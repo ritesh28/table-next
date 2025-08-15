@@ -1,4 +1,4 @@
-import { SerializableTask } from '@/model/task';
+import { SerializableTask, Task, TaskSchema } from '@/model/task';
 import { parse } from 'csv-parse';
 import { createReadStream } from 'node:fs';
 import path from 'node:path';
@@ -19,4 +19,9 @@ export async function getCsvRecords() {
   // todo: when session is implemented, update this function
 
   return serializableTasks;
+}
+
+export function transformSerializableTasks(serializableTasks: SerializableTask[]): Task[] {
+  const tasks = serializableTasks.map((st) => TaskSchema.parse(st));
+  return tasks;
 }

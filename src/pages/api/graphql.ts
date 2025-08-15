@@ -1,4 +1,4 @@
-import { getCsvRecords } from '@/lib/get-csv-records';
+import { getCsvRecords, transformSerializableTasks } from '@/lib/get-csv-records';
 import { Resolvers } from '@/model/gql-server-resolvers-types';
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
@@ -8,7 +8,8 @@ import path from 'node:path';
 const resolvers: Resolvers = {
   Query: {
     statuses: async () => {
-      const data = await getCsvRecords();
+      const records = await getCsvRecords();
+      const data = transformSerializableTasks(records);
       const resultObject: Record<string, number> = {};
       for (const { status } of data) {
         if (status in resultObject) resultObject[status] += 1;
@@ -18,7 +19,8 @@ const resolvers: Resolvers = {
       return resultArr;
     },
     priorities: async () => {
-      const data = await getCsvRecords();
+      const records = await getCsvRecords();
+      const data = transformSerializableTasks(records);
       const resultObject: Record<string, number> = {};
       for (const { priority } of data) {
         if (priority in resultObject) resultObject[priority] += 1;
@@ -28,7 +30,8 @@ const resolvers: Resolvers = {
       return resultArr;
     },
     estimatedHour: async () => {
-      const data = await getCsvRecords();
+      const records = await getCsvRecords();
+      const data = transformSerializableTasks(records);
       const estHrList = data.map((d) => d.estimated_hours);
       return {
         min: Math.min(...estHrList),
