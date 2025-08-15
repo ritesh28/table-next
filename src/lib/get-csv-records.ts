@@ -1,9 +1,7 @@
-import { Task } from '@/model/task';
+import { SerializableTask } from '@/model/task';
 import { parse } from 'csv-parse';
 import { createReadStream } from 'node:fs';
 import path from 'node:path';
-
-export type SerializableTask = Omit<Task, 'created_at'> & { created_at: string };
 
 export async function getCsvRecords() {
   const serializableTasks: SerializableTask[] = [];

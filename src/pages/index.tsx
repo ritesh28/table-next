@@ -1,7 +1,7 @@
 import { columns } from '@/components/task-table/columns';
 import { DataTable } from '@/components/task-table/table';
-import { getCsvRecords, type SerializableTask } from '@/lib/get-csv-records';
-import moment from 'moment';
+import { getCsvRecords } from '@/lib/get-csv-records';
+import { SerializableTask, TaskSchema } from '@/model/task';
 import type { GetStaticProps, InferGetStaticPropsType } from 'next';
 
 export const getStaticProps = (async () => {
@@ -16,10 +16,7 @@ export const getStaticProps = (async () => {
 }>;
 
 export default function HomePage({ serializableTasks }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const tasks = serializableTasks.map((st) => ({
-    ...st,
-    created_at: moment(st.created_at, 'DD/MM/YYYY'),
-  }));
+  const tasks = serializableTasks.map((st) => TaskSchema.parse(st));
   return (
     <div className='container mx-auto py-10'>
       <DataTable columns={columns} data={tasks} />
