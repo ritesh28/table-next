@@ -1,9 +1,8 @@
 import { getCsvRecords, transformSerializableTasks } from '@/lib/get-csv-records';
 import { Resolvers } from '@/model/gql-server-resolvers-types';
+import typeDefs from '@/model/schema.graphql';
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 
 const resolvers: Resolvers = {
   Query: {
@@ -40,8 +39,6 @@ const resolvers: Resolvers = {
     },
   },
 };
-
-const typeDefs = readFileSync(path.resolve(process.cwd(), 'src', 'model', 'schema.graphql'), 'utf8');
 
 const server = new ApolloServer({
   resolvers,

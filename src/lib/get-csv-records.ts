@@ -1,18 +1,10 @@
 import { SerializableTask, Task, TaskSchema } from '@/model/task';
-import { parse } from 'csv-parse';
-import { createReadStream } from 'node:fs';
-import path from 'node:path';
+import csvData from '@/model/task-list.csv';
 
 export async function getCsvRecords() {
   const serializableTasks: SerializableTask[] = [];
-  const parser = createReadStream(path.resolve(process.cwd(), 'src', 'model', 'task-list.csv')).pipe(
-    parse({
-      columns: true,
-      skipEmptyLines: true,
-    }),
-  );
 
-  for await (const record of parser) {
+  for await (const record of csvData) {
     serializableTasks.push(record);
   }
 
