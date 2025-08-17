@@ -25,13 +25,7 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
         <Button variant='outline' aria-expanded={open} className='justify-between'>
           {range.length ? (
             <div className='flex items-center gap-1'>
-              <div
-                className='hover:opacity-60'
-                onClick={(e) => {
-                  e.preventDefault();
-                  setRange([]);
-                }}
-              >
+              <div className='hover:opacity-60' onClick={() => setRange([])}>
                 <CircleX />
               </div>
               <span>Est. Hours</span>

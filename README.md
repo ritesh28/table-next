@@ -5,16 +5,19 @@ zod
 - Support class (but not interface) as a type to property. Do not use it. Instead use `z.transform()` to convert the input
 - For un-serialized object - first create serialized schema, then transform
 - in zod, optional and undefined are different
-  shadCN
-  graphql
-  immer
-  moment
+
+shadCN
+graphql
+immer
+moment
+webpack loader: csv & graphql
 
 ## TODO
 
 Sort
 title column re-size
 Advanced search
+In-memory DB
 ===crud operation===
 auth rbac - web-simplified
 

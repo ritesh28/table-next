@@ -9,8 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { Dispatch, ReactNode, SetStateAction, useCallback, useState } from 'react';
 
-interface ComboboxItem<T extends string> {
-  name: T;
+export interface ComboboxItem<T extends string> {
+  id: T;
   content: ReactNode;
   totalCount?: number;
 }
@@ -20,7 +20,9 @@ interface ComboboxProps<T extends string> {
   selectedItems: T[];
   setSelectedItems: Dispatch<SetStateAction<T[]>>;
   isMultiSelect: boolean;
+  buttonClassName?: string;
   buttonChildren: ReactNode;
+  popoverContentClassName?: string;
   searchPlaceholder?: string;
   emptySearchString?: string;
   includeClearButton?: boolean;
@@ -30,7 +32,9 @@ export function Combobox<T extends string>({
   selectedItems,
   setSelectedItems,
   isMultiSelect,
+  buttonClassName,
   buttonChildren,
+  popoverContentClassName,
   searchPlaceholder,
   emptySearchString,
   includeClearButton,
@@ -66,26 +70,26 @@ export function Combobox<T extends string>({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant='outline' role='combobox' aria-expanded={open} className='justify-between'>
+        <Button variant='outline' role='combobox' aria-expanded={open} className={cn('justify-between', buttonClassName)}>
           {buttonChildren}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className='w-[200px] p-0'>
+      <PopoverContent align='start' className={cn('w-[200px] p-0', popoverContentClassName)}>
         <Command>
           <CommandInput placeholder={searchPlaceholder ? searchPlaceholder : 'Search...'} className='h-9' />
           <CommandList>
             <CommandEmpty>{emptySearchString ? emptySearchString : 'No results found.'}</CommandEmpty>
             <CommandGroup>
               {items.map((item) => (
-                <CommandItem key={item.name} value={item.name} onSelect={(currentValue) => handleItemSelect(currentValue as T)}>
-                  {isMultiSelect && <Checkbox checked={selectedItems.includes(item.name)} />}
+                <CommandItem key={item.id} value={item.id} onSelect={(currentValue) => handleItemSelect(currentValue as T)}>
+                  {isMultiSelect && <Checkbox checked={selectedItems.includes(item.id)} />}
                   {!isMultiSelect && item.totalCount !== undefined && (
-                    <Check className={cn('mr-1', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />
+                    <Check className={cn('mr-1', selectedItems.includes(item.id) ? 'opacity-100' : 'opacity-0')} />
                   )}
                   {item.content}
                   {item.totalCount !== undefined && <p className='ml-auto'>{item.totalCount}</p>}
                   {item.totalCount === undefined && !isMultiSelect && (
-                    <Check className={cn('ml-auto', selectedItems.includes(item.name) ? 'opacity-100' : 'opacity-0')} />
+                    <Check className={cn('ml-auto', selectedItems.includes(item.id) ? 'opacity-100' : 'opacity-0')} />
                   )}
                 </CommandItem>
               ))}

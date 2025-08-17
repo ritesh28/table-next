@@ -3,6 +3,7 @@
 import {
   Column,
   ColumnDef,
+  ColumnSort,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -19,13 +20,15 @@ import { DataTableFilterSimple } from '@/components/task-table/table-filter-simp
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Task } from '@/model/task';
-import { CSSProperties } from 'react';
+import { CSSProperties, useState } from 'react';
+import { SortPopover } from '../sort-popover';
 interface DataTableProps {
   columns: ColumnDef<Task>[];
   data: Task[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
+  const [sortList, setSortList] = useState<ColumnSort[]>([]);
   const table = useReactTable({
     data,
     columns,
@@ -33,6 +36,10 @@ export function DataTable({ columns, data }: DataTableProps) {
     getPaginationRowModel: getPaginationRowModel(), // pagination
     getSortedRowModel: getSortedRowModel(), // sorting
     getFilteredRowModel: getFilteredRowModel(), // filtering
+    state: {
+      sorting: sortList,
+    },
+    onSortingChange: setSortList,
   });
 
   return (
@@ -43,7 +50,7 @@ export function DataTable({ columns, data }: DataTableProps) {
           <Button>Advanced Search</Button>
         </div>
         <div className='flex gap-2'>
-          <Button>Sort</Button>
+          <SortPopover sortList={sortList} setSortList={setSortList} />
           <DataTableToggleColumn table={table} />
         </div>
       </div>

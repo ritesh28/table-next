@@ -163,7 +163,7 @@ export const columns: ColumnDef<Task>[] = [
   },
 ];
 
-export const FILTER_COLUMN_ID = 'task_id';
+export const FILTER_COLUMN_ID = 'task_id'; // this value is random. To be used when calling `tableWholesomeFilter()`
 
 function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: ModelFilterGroups) {
   // this is the only filter function. This filter for all parameters

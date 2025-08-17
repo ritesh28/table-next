@@ -26,15 +26,15 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
   }
   return (
     <Combobox
-      items={data.priorities.map(({ name, count: totalCount }) => {
-        const Icon = PRIORITY_ICON[name];
+      items={data.priorities.map(({ name: id, count: totalCount }) => {
+        const Icon = PRIORITY_ICON[id];
         return {
-          name,
+          id,
           totalCount,
           content: (
             <div className='flex items-center gap-1'>
               <Icon />
-              <span>{name}</span>
+              <span>{id}</span>
             </div>
           ),
         };
@@ -45,13 +45,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
       buttonChildren={
         selectedItems.length ? (
           <div className='flex items-center gap-1'>
-            <div
-              className='hover:opacity-60'
-              onClick={(e) => {
-                e.preventDefault();
-                setSelectedItems([]);
-              }}
-            >
+            <div className='hover:opacity-60' onClick={() => setSelectedItems([])}>
               <CircleX />
             </div>
             <span>Priority</span>

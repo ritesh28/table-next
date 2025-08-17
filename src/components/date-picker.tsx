@@ -17,13 +17,7 @@ export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
         <Button variant='outline' className='justify-between'>
           {dateRange.length === 2 ? (
             <div className='flex items-center gap-1'>
-              <div
-                className='hover:opacity-60'
-                onClick={(e) => {
-                  e.preventDefault();
-                  setDateRange([]);
-                }}
-              >
+              <div className='hover:opacity-60' onClick={() => setDateRange([])}>
                 <CircleX />
               </div>
               <span>Created At</span>
