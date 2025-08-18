@@ -88,7 +88,7 @@ export function useSetSimpleFilterValue<TState extends string | unknown[]>(table
     if (filterCount === 0) {
       setSelection(defaultState<TState>(columnId));
     }
-  }, [filterCount]);
+  }, [filterCount, columnId]);
 
   return [selection, setSelection] as const;
 }

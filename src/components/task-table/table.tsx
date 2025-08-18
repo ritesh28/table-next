@@ -36,6 +36,11 @@ export function DataTable({ columns, data }: DataTableProps) {
     getPaginationRowModel: getPaginationRowModel(), // pagination
     getSortedRowModel: getSortedRowModel(), // sorting
     getFilteredRowModel: getFilteredRowModel(), // filtering
+    isMultiSortEvent(e) {
+      console.log(e);
+      return true;
+    },
+    debugTable: true,
     state: {
       sorting: sortList,
     },

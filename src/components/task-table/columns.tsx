@@ -67,6 +67,7 @@ export const columns: ColumnDef<Task>[] = [
         </p>
       );
     },
+    enableMultiSort: true,
     size: 800,
     minSize: 500,
     maxSize: 1000,
@@ -84,6 +85,7 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
+    enableMultiSort: true,
     sortingFn: (rowA, rowB, _) => {
       const statusA = rowA.original.status;
       const statusB = rowB.original.status;
@@ -106,6 +108,7 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
+    enableMultiSort: true,
     sortingFn: (rowA, rowB, _) => {
       const priorityA = rowA.original.priority;
       const priorityB = rowB.original.priority;
@@ -122,6 +125,7 @@ export const columns: ColumnDef<Task>[] = [
       const { estimated_hours } = row.original;
       return <p className='text-right pr-6'>{estimated_hours}</p>;
     },
+    enableMultiSort: true,
     size: 120,
   },
   {
@@ -131,6 +135,7 @@ export const columns: ColumnDef<Task>[] = [
       const { created_at } = row.original;
       return <div className='px-3'>{created_at.format('ll')}</div>;
     },
+    enableMultiSort: true,
     size: 120,
   },
   {
