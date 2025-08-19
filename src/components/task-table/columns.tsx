@@ -31,7 +31,9 @@ export const columns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: 'task_id',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Task ID' pinningPosition='left' />,
+    header: ({ table, header, column }) => (
+      <DataTableColumnHeader table={table} header={header} column={column} title='Task ID' pinningPosition='left' />
+    ),
     cell: ({ row }) => {
       const { task_id } = row.original;
       const startPart = task_id.slice(0, -5);
@@ -51,11 +53,12 @@ export const columns: ColumnDef<Task>[] = [
     filterFn: tableWholesomeFilter,
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 90,
   },
   {
     accessorKey: 'title',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Title' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Title' />,
     cell: ({ row }) => {
       const { title, label } = row.original;
       return (
@@ -67,14 +70,14 @@ export const columns: ColumnDef<Task>[] = [
         </p>
       );
     },
-    enableMultiSort: true,
     size: 800,
     minSize: 500,
     maxSize: 1000,
+    enableResizing: true,
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Status' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Status' />,
     cell: ({ row }) => {
       const { status } = row.original;
       const Icon = STATUS_ICON[status];
@@ -85,7 +88,6 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
-    enableMultiSort: true,
     sortingFn: (rowA, rowB, _) => {
       const statusA = rowA.original.status;
       const statusB = rowB.original.status;
@@ -94,10 +96,11 @@ export const columns: ColumnDef<Task>[] = [
       if (STATUS_ORDER[statusA] > STATUS_ORDER[statusB]) return 1;
     },
     size: 125,
+    enableResizing: false,
   },
   {
     accessorKey: 'priority',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Priority' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Priority' />,
     cell: ({ row }) => {
       const { priority } = row.original;
       const Icon = PRIORITY_ICON[priority];
@@ -108,7 +111,6 @@ export const columns: ColumnDef<Task>[] = [
         </Badge>
       );
     },
-    enableMultiSort: true,
     sortingFn: (rowA, rowB, _) => {
       const priorityA = rowA.original.priority;
       const priorityB = rowB.original.priority;
@@ -117,30 +119,31 @@ export const columns: ColumnDef<Task>[] = [
       if (PRIORITY_ORDER[priorityA] > PRIORITY_ORDER[priorityB]) return 1;
     },
     size: 100,
+    enableResizing: false,
   },
   {
     accessorKey: 'estimated_hours',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Est. Hours' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Est. Hours' />,
     cell: ({ row }) => {
       const { estimated_hours } = row.original;
       return <p className='text-right pr-6'>{estimated_hours}</p>;
     },
-    enableMultiSort: true,
     size: 120,
+    enableResizing: false,
   },
   {
     accessorKey: 'created_at',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Created At' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Created At' />,
     cell: ({ row }) => {
       const { created_at } = row.original;
       return <div className='px-3'>{created_at.format('ll')}</div>;
     },
-    enableMultiSort: true,
     size: 120,
+    enableResizing: false,
   },
   {
     id: 'actions',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='' pinningPosition='right' />,
+    header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='' pinningPosition='right' />,
     cell: ({ row }) => {
       const task = row.original;
 
@@ -164,6 +167,7 @@ export const columns: ColumnDef<Task>[] = [
     },
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 40,
   },
 ];

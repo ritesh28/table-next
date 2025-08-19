@@ -8,72 +8,71 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { sortableColumns, sortableOrders } from '@/model/task';
-import { ColumnSort } from '@tanstack/react-table';
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import { sortableColumns, sortableOrders, Task } from '@/model/task';
+import { Table } from '@tanstack/react-table';
+import { useCallback, useEffect, useState } from 'react';
 
 interface SortPopoverProps {
-  sortList: ColumnSort[];
-  setSortList: Dispatch<SetStateAction<ColumnSort[]>>;
+  table: Table<Task>;
 }
-export function SortPopover({ sortList, setSortList }: SortPopoverProps) {
+export function SortPopover({ table }: SortPopoverProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [selectOpen, setSelectOpen] = useState(-1); // -1 means all select components are closed. 0 means first select is open and so on
-  const [dropdownItems, setDropdownItems] = useState(sortableColumns);
+  const [selectOpen, setSelectOpen] = useState<string | null>(null); // value can be column id or null. Null means all select components are in close state
+  const [dropdownColumnIds, setDropdownColumnIds] = useState([...sortableColumns]);
+
+  const sortState = table.getState().sorting;
 
   useEffect(() => {
-    setDropdownItems(sortableColumns.filter((sc) => !sortList.map((s) => s.id).includes(sc.id)));
-  }, [sortList]);
+    const columnWithActiveSortingList = sortState.map((s) => s.id);
+    setDropdownColumnIds(sortableColumns.filter((sc) => !columnWithActiveSortingList.includes(sc.id)));
+  }, [sortState]);
 
   const handleAddSort = useCallback(() => {
-    if (dropdownItems.length > 0) {
+    if (dropdownColumnIds.length > 0) {
       // add the first element in dropdownItems
-      setSortList((oldSortList) => [...oldSortList, { id: dropdownItems[0].id, desc: true }]);
-      setDropdownItems((oldDropdownItems) => oldDropdownItems.filter((_, index) => index !== 0));
+      const columnId = dropdownColumnIds[0].id;
+      table.getColumn(columnId).toggleSorting(true, true);
     }
-  }, [dropdownItems, setSortList, setDropdownItems]);
+  }, [dropdownColumnIds, table]);
 
   const handleRemoveSort = useCallback(
-    (id: string) => {
-      setSortList((oldSortList) => oldSortList.filter((sort) => sort.id !== id));
-      setDropdownItems((oldDropdownItems) => [...oldDropdownItems, sortableColumns.find((sc) => sc.id === id)].sort((a, b) => a.order - b.order));
+    (columnId: string) => {
+      table.getColumn(columnId).clearSorting();
     },
-    [setSortList, setDropdownItems],
+    [table],
   );
 
   const handleUpdateSort = useCallback(
-    (oldId: string, newId: string) => {
-      setSortList((oldSortList) => [...oldSortList.filter((sort) => sort.id !== oldId), { id: newId, desc: true }]);
-      setDropdownItems((oldDropdownItems) =>
-        [...oldDropdownItems.filter((i) => i.id !== newId), sortableColumns.find((sc) => sc.id === oldId)].sort((a, b) => a.order - b.order),
-      );
+    (oldColumnId: string, newColumnId: string) => {
+      table.getColumn(oldColumnId).clearSorting();
+      table.getColumn(newColumnId).toggleSorting(true, true);
     },
-    [setSortList, setDropdownItems],
+    [table],
   );
 
   const handleChangeSortOrder = useCallback(
-    (id: string, val: (typeof sortableOrders)[number]['id']) => {
-      setSortList((oldSortList) => oldSortList.map((s) => (s.id === id ? { id, desc: val === 'desc' } : s)));
+    (columnId: string, val: keyof typeof sortableOrders) => {
+      const idDesc = val === 'desc';
+      table.getColumn(columnId).toggleSorting(idDesc, true);
     },
-    [setSortList],
+    [table],
   );
 
   const handleResetSort = useCallback(() => {
-    setSortList([]);
-    setDropdownItems(sortableColumns);
-  }, [setSortList, setDropdownItems]);
+    table.resetSorting();
+  }, [table]);
 
   return (
-    <Popover open={popoverOpen} onOpenChange={(v) => selectOpen === -1 && setPopoverOpen(v)}>
+    <Popover open={popoverOpen} onOpenChange={(v) => selectOpen === null && setPopoverOpen(v)}>
       <PopoverTrigger asChild>
         <Button variant='outline' className='justify-between'>
           <ArrowUpDown />
           Sort
-          {sortList.length > 0 && <Badge>{sortList.length}</Badge>}
+          {sortState.length > 0 && <Badge>{sortState.length}</Badge>}
         </Button>
       </PopoverTrigger>
       <PopoverContent align='end' className='w-[350px] p-2'>
-        {sortList.length === 0 ? (
+        {sortState.length === 0 ? (
           <div>
             <div className='font-medium'>No sorting applied</div>
             <div className='text-muted-foreground text-sm'>Add sorting to organize your rows.</div>
@@ -82,52 +81,50 @@ export function SortPopover({ sortList, setSortList }: SortPopoverProps) {
           <div className='font-medium'>Sort by</div>
         )}
         <ul className='flex flex-col max-h-[300px] gap-2 overflow-y-auto p-1'>
-          {sortList.map((sort, index) => (
-            <li key={sort.id} className='flex items-center justify-between'>
+          {sortState.map((columnSort) => (
+            <li key={columnSort.id} className='flex items-center justify-between'>
               <Combobox
                 buttonClassName='w-[175px]'
                 popoverContentClassName='w-[175px]'
-                items={dropdownItems}
-                selectedItems={[sortList[index].id]}
-                setSelectedItems={(newIds) => handleUpdateSort(sort.id, newIds[0])}
+                items={dropdownColumnIds}
+                selectedItems={[columnSort.id]}
+                setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
                 isMultiSelect={false}
                 buttonChildren={
                   <div className='w-full flex items-center justify-between'>
-                    <span>{sortableColumns.find((sc) => sc.id === sortList[index].id).content}</span>
+                    <span>{sortableColumns.find((sc) => sc.id === columnSort.id).content}</span>
                     <ChevronsUpDown />
                   </div>
                 }
               />
               <Select
-                open={selectOpen === index}
-                onOpenChange={(isOpen) => setSelectOpen(isOpen ? index : -1)}
-                defaultValue={sortableOrders.find((so) => so.id === 'desc').id}
-                onValueChange={(val) => handleChangeSortOrder(sort.id, val as (typeof sortableOrders)[number]['id'])}
+                open={selectOpen === columnSort.id}
+                onOpenChange={(isOpen) => setSelectOpen(isOpen ? columnSort.id : null)}
+                value={(columnSort.desc ? 'desc' : 'asc') as keyof typeof sortableOrders}
+                onValueChange={(val) => handleChangeSortOrder(columnSort.id, val as keyof typeof sortableOrders)}
               >
                 <SelectTrigger className='w-[75px]'>
-                  <SelectValue
-                    placeholder={sort.desc ? sortableOrders.find((so) => so.id === 'desc').name : sortableOrders.find((so) => so.id === 'asc').name}
-                  />
+                  <SelectValue placeholder={columnSort.desc ? sortableOrders['desc'] : sortableOrders['asc']} />
                 </SelectTrigger>
                 <SelectContent className='!w-[75px]'>
-                  {sortableOrders.map((sortableOrder) => (
-                    <SelectItem key={sortableOrder.id} value={sortableOrder.id}>
-                      {sortableOrder.name}
+                  {Object.entries(sortableOrders).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button size='icon' onClick={() => handleRemoveSort(sortList[index].id)}>
+              <Button size='icon' onClick={() => handleRemoveSort(columnSort.id)}>
                 <Trash2 />
               </Button>
             </li>
           ))}
         </ul>
         <div className='flex w-full items-center gap-4'>
-          <Button disabled={sortList.length === sortableColumns.length} onClick={handleAddSort}>
+          <Button disabled={sortState.length === sortableColumns.length} onClick={handleAddSort}>
             Add sort
           </Button>
-          {sortList.length > 0 && (
+          {sortState.length > 0 && (
             <Button variant='secondary' onClick={handleResetSort}>
               Reset sorting
             </Button>

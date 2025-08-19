@@ -14,7 +14,6 @@ webpack loader: csv & graphql
 
 ## TODO
 
-Sort
 title column re-size
 Advanced search
 In-memory DB

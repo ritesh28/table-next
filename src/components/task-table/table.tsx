@@ -3,7 +3,6 @@
 import {
   Column,
   ColumnDef,
-  ColumnSort,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,7 +19,7 @@ import { DataTableFilterSimple } from '@/components/task-table/table-filter-simp
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Task } from '@/model/task';
-import { CSSProperties, useState } from 'react';
+import { CSSProperties } from 'react';
 import { SortPopover } from '../sort-popover';
 interface DataTableProps {
   columns: ColumnDef<Task>[];
@@ -28,23 +27,14 @@ interface DataTableProps {
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
-  const [sortList, setSortList] = useState<ColumnSort[]>([]);
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(), // pagination
     getSortedRowModel: getSortedRowModel(), // sorting
     getFilteredRowModel: getFilteredRowModel(), // filtering
-    isMultiSortEvent(e) {
-      console.log(e);
-      return true;
-    },
-    debugTable: true,
-    state: {
-      sorting: sortList,
-    },
-    onSortingChange: setSortList,
   });
 
   return (
@@ -55,49 +45,67 @@ export function DataTable({ columns, data }: DataTableProps) {
           <Button>Advanced Search</Button>
         </div>
         <div className='flex gap-2'>
-          <SortPopover sortList={sortList} setSortList={setSortList} />
+          <SortPopover table={table} />
           <DataTableToggleColumn table={table} />
         </div>
       </div>
       <div>
         <DataTableFilterAdvanced table={table} />
       </div>
-      <div className='overflow-hidden rounded-md border'>
-        <Table className='table-fixed'>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} className='bg-background' style={{ ...getCommonPinningStyles(header.column) }}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+      <Table className='table-fixed' containerClassName='overflow-auto rounded-md border max-h-[650px]'>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead
+                    key={header.id}
+                    className='bg-background'
+                    style={{ ...getCommonPinningStyles(header.column), ...getHeaderPinningStyles() }}
+                  >
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {/* <div
+                      {...{
+                        onDoubleClick: () => header.column.resetSize(),
+                        onMouseDown: header.getResizeHandler(),
+                        onTouchStart: header.getResizeHandler(),
+                        className: `resizer ${table.options.columnResizeDirection} ${header.column.getIsResizing() ? 'isResizing' : ''}`,
+                        style: {
+                          transform:
+                            false && header.column.getIsResizing()
+                              ? `translateX(${
+                                  (table.options.columnResizeDirection === 'rtl' ? -1 : 1) * (table.getState().columnSizingInfo.deltaOffset ?? 0)
+                                }px)`
+                              : '',
+                        },
+                      }}
+                    /> */}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className='bg-background' style={{ ...getCommonPinningStyles(cell.column) }}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className='bg-background' style={{ ...getCommonPinningStyles(cell.column) }}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className='h-24 text-center'>
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
       <div className='my-4'>
         <DataTablePagination table={table} />
       </div>
@@ -119,5 +127,13 @@ function getCommonPinningStyles(column: Column<Task>): CSSProperties {
     width: column.getSize(),
     marginInline: '5px',
     zIndex: isPinned ? 1 : 0,
+  };
+}
+
+function getHeaderPinningStyles(): CSSProperties {
+  return {
+    position: 'sticky',
+    top: 0,
+    zIndex: 2,
   };
 }

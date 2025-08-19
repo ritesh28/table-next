@@ -1,6 +1,5 @@
 import { AlarmClockCheck, ArrowDown, ArrowRight, ArrowUp, CircleCheck, CircleX, LoaderCircle, LucideIcon } from 'lucide-react';
 import moment from 'moment';
-import { ReactNode } from 'react';
 import * as z from 'zod';
 
 export const TaskSchema = z.object({
@@ -32,28 +31,28 @@ export const STATUS_ORDER: Record<Task['status'], number> = {
   'in-progress': 2,
   done: 1,
   canceled: 0,
-};
+} as const;
 
 export const PRIORITY_ORDER: Record<Task['priority'], number> = {
   low: 0,
   medium: 1,
   high: 2,
-};
+} as const;
 
 export const STATUS_ICON: Record<Task['status'], LucideIcon> = {
   todo: AlarmClockCheck,
   'in-progress': LoaderCircle,
   done: CircleCheck,
   canceled: CircleX,
-};
+} as const;
 
 export const PRIORITY_ICON: Record<Task['priority'], LucideIcon> = {
   low: ArrowDown,
   medium: ArrowRight,
   high: ArrowUp,
-};
+} as const;
 
-export const sortableColumns: { id: keyof Task; content: ReactNode; order: number }[] = [
+export const sortableColumns = [
   {
     id: 'title',
     content: 'Title',
@@ -81,13 +80,7 @@ export const sortableColumns: { id: keyof Task; content: ReactNode; order: numbe
   },
 ] as const;
 
-export const sortableOrders = [
-  {
-    id: 'asc',
-    name: 'Asc',
-  },
-  {
-    id: 'desc',
-    name: 'Desc',
-  },
-] as const;
+export const sortableOrders = {
+  asc: 'Asc',
+  desc: 'Desc',
+} as const;
