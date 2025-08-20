@@ -1,20 +1,41 @@
-'use client';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import useResizeObserver from '@react-hook/resize-observer';
-import { RefObject, useLayoutEffect, useState } from 'react';
+const useSize = <T extends React.RefObject<HTMLDivElement | null>>(target: T) => {
+  const [size, setSize] = useState<DOMRect>();
 
-export const useSize = (target: RefObject<HTMLElement>) => {
-  const [size, setSize] = useState<DOMRect | null>(null);
-
-  useLayoutEffect(() => {
+  const updateSize = useCallback(() => {
     if (target.current) {
-      setSize(target.current.getBoundingClientRect());
+      const size = target.current.getBoundingClientRect();
+
+      setSize(size);
     }
   }, [target]);
 
-  if (typeof window !== 'undefined') {
-    // Where the magic happens
-    useResizeObserver(target, (entry) => setSize(entry.contentRect));
-  }
+  useEffect(() => {
+    const { current } = target;
+
+    updateSize();
+
+    const observer = new ResizeObserver((entries) => {
+      if (entries.length > 0) {
+        updateSize();
+      }
+    });
+
+    if (current) {
+      observer.observe(current);
+    }
+
+    return () => {
+      if (current) {
+        observer.unobserve(current);
+      }
+
+      observer.disconnect();
+    };
+  }, [target, updateSize]);
+
   return size;
 };
+
+export { useSize };
