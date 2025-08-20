@@ -18,15 +18,34 @@ import { DataTableFilterAdvanced } from '@/components/task-table/table-filter-ad
 import { DataTableFilterSimple } from '@/components/task-table/table-filter-simple';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSize } from '@/hooks/useSize';
 import { Task } from '@/model/task';
-import { CSSProperties } from 'react';
-import { SortPopover } from '../sort-popover';
+import { CSSProperties, useEffect, useRef } from 'react';
+import { DataTableSort } from './table-sort-popover';
 interface DataTableProps {
   columns: ColumnDef<Task>[];
   data: Task[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const tableContainerInitialWidth = useRef<number>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+  const tableSize = useSize(tableRef);
+
+  useEffect(() => {
+    if (tableSize) {
+      const tableWidth = tableSize.width;
+      const containerWidth = tableContainerRef.current.getBoundingClientRect().width;
+      if (!tableContainerInitialWidth.current) {
+        tableContainerInitialWidth.current = containerWidth;
+      }
+      if (tableWidth < containerWidth || containerWidth < tableContainerInitialWidth.current) {
+        tableContainerRef.current.style.width = tableWidth + 'px';
+      }
+    }
+  }, [tableSize]);
+
   const table = useReactTable({
     data,
     columns,
@@ -38,21 +57,27 @@ export function DataTable({ columns, data }: DataTableProps) {
   });
 
   return (
-    <div>
+    <div className='grid'>
       <div className='flex items-center justify-between gap-2 py-4'>
         <div className='flex gap-2'>
           <DataTableFilterSimple table={table} />
           <Button>Advanced Search</Button>
         </div>
         <div className='flex gap-2'>
-          <SortPopover table={table} />
+          <DataTableSort table={table} />
           <DataTableToggleColumn table={table} />
         </div>
       </div>
       <div>
         <DataTableFilterAdvanced table={table} />
       </div>
-      <Table className='table-fixed' containerClassName='overflow-auto rounded-md border max-h-[650px]'>
+      <Table
+        tableRef={tableRef}
+        containerRef={tableContainerRef}
+        className='table-fixed'
+        containerClassName='overflow-auto rounded-md border max-h-[650px]'
+        style={{ width: table.getCenterTotalSize() }}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -64,22 +89,6 @@ export function DataTable({ columns, data }: DataTableProps) {
                     style={{ ...getCommonPinningStyles(header.column), ...getHeaderPinningStyles() }}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    {/* <div
-                      {...{
-                        onDoubleClick: () => header.column.resetSize(),
-                        onMouseDown: header.getResizeHandler(),
-                        onTouchStart: header.getResizeHandler(),
-                        className: `resizer ${table.options.columnResizeDirection} ${header.column.getIsResizing() ? 'isResizing' : ''}`,
-                        style: {
-                          transform:
-                            false && header.column.getIsResizing()
-                              ? `translateX(${
-                                  (table.options.columnResizeDirection === 'rtl' ? -1 : 1) * (table.getState().columnSizingInfo.deltaOffset ?? 0)
-                                }px)`
-                              : '',
-                        },
-                      }}
-                    /> */}
                   </TableHead>
                 );
               })}

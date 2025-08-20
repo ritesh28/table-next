@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { cn } from '@/lib/utils';
 import { Task } from '@/model/task';
 import { useEffect } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface DataTableColumnHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   table: Table<Task>;
@@ -60,21 +61,22 @@ export function DataTableColumnHeader({ table, header, column, title, className,
         </DropdownMenuContent>
       </DropdownMenu>
       {column.getCanResize() && (
-        <div
-          className={cn(
-            'ml-auto -mr-2 hidden  group-hover:block',
-            'absolute top-0 translate-y-1/3 right-0 select-none touch-none hover:cursor-ew-resize',
-            column.getIsResizing() && 'bg-chart-2',
-          )}
-          onDoubleClick={() => column.resetSize()}
-          onMouseDown={() => header.getResizeHandler()} // for desktop
-          onTouchStart={() => header.getResizeHandler()} // for mobile
-          style={{
-            transform: header.column.getIsResizing() ? `translateX(${table.getState().columnSizingInfo.deltaOffset * -1}px)` : '',
-          }}
-        >
-          <Tally1 strokeWidth={4} />
-        </div>
+        <Tooltip delayDuration={200}>
+          <TooltipTrigger asChild>
+            <div
+              className={cn(
+                'absolute right-0 select-none touch-none hover:cursor-col-resize',
+                column.getIsResizing() ? 'text-chart-2' : 'text-muted-foreground group-hover:text-foreground',
+              )}
+              onDoubleClick={() => column.resetSize()}
+              onMouseDown={header.getResizeHandler()}
+              onTouchStart={header.getResizeHandler()}
+            >
+              <Tally1 strokeWidth={2} viewBox='0 0 7 24' className='h-11' />
+            </div>
+          </TooltipTrigger>
+          {table.getState().columnSizing[column.id] && !column.getIsResizing() && <TooltipContent>Double-click to reset size</TooltipContent>}
+        </Tooltip>
       )}
     </div>
   );

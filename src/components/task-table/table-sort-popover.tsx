@@ -12,10 +12,10 @@ import { sortableColumns, sortableOrders, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
 
-interface SortPopoverProps {
+interface DataTableSortProps {
   table: Table<Task>;
 }
-export function SortPopover({ table }: SortPopoverProps) {
+export function DataTableSort({ table }: DataTableSortProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectOpen, setSelectOpen] = useState<string | null>(null); // value can be column id or null. Null means all select components are in close state
   const [dropdownColumnIds, setDropdownColumnIds] = useState([...sortableColumns]);

@@ -14,7 +14,6 @@ webpack loader: csv & graphql
 
 ## TODO
 
-title column re-size
 Advanced search
 In-memory DB
 ===crud operation===

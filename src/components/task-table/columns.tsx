@@ -27,6 +27,7 @@ export const columns: ColumnDef<Task>[] = [
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label='Select row' />,
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 30,
   },
   {
@@ -71,7 +72,7 @@ export const columns: ColumnDef<Task>[] = [
       );
     },
     size: 800,
-    minSize: 500,
+    minSize: 300,
     maxSize: 1000,
     enableResizing: true,
   },
