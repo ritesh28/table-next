@@ -3,12 +3,11 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { RefObject } from "react"
 
-function Table({ containerClassName, className, tableRef, containerRef, ...props }: React.ComponentProps<"table"> & {containerClassName: string, tableRef: RefObject<HTMLTableElement>, containerRef: RefObject<HTMLDivElement>}) {
+function Table({ containerClassName, className, tableRef, ...props }: React.ComponentProps<"table"> & {containerClassName: string, tableRef: RefObject<HTMLTableElement>}) {
   return (
     <div
       data-slot="table-container"
-      className={cn("relative w-full overflow-x-auto", containerClassName)}
-      ref={containerRef}
+      className={cn("relative w-full overflow-x-auto", containerClassName)}  
     >
       <table
         data-slot="table"

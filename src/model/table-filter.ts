@@ -9,6 +9,9 @@ abstract class Filter<TOperator> {
   get columnId() {
     return this._columnId;
   }
+  get operator() {
+    return this._operator;
+  }
 }
 
 type FilterEmptyOperator = 'is empty' | 'is not empty';
@@ -30,7 +33,7 @@ export class FilterString<TColumnValue extends string = string> extends Filter<F
   constructor(
     columnId: string,
     operator: FilterStringOperator,
-    private value: TColumnValue,
+    public value: TColumnValue,
   ) {
     super(columnId, operator);
   }
@@ -50,7 +53,7 @@ export class FilterList extends Filter<FilterListOperator> {
   constructor(
     columnId: string,
     operator: FilterListOperator,
-    private values: unknown[],
+    public values: unknown[],
   ) {
     super(columnId, operator);
   }
@@ -68,7 +71,7 @@ export class FilterNumber<TColumnValue extends number = number> extends Filter<F
   constructor(
     columnId: string,
     operator: FilterNumberOperator,
-    private value: TColumnValue,
+    public value: TColumnValue,
   ) {
     super(columnId, operator);
   }
@@ -108,7 +111,7 @@ export class FilterDate<TColumnValue extends Moment = Moment> extends Filter<Fil
   constructor(
     columnId: string,
     operator: FilterDateOperator,
-    private value: TColumnValue,
+    public value: TColumnValue,
   ) {
     super(columnId, operator);
   }

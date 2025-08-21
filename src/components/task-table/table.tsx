@@ -27,20 +27,20 @@ interface DataTableProps {
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
-  const tableContainerRef = useRef<HTMLDivElement>(null);
-  const tableContainerInitialWidth = useRef<number>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerInitialWidth = useRef<number>(null);
   const tableRef = useRef<HTMLTableElement>(null);
   const tableSize = useSize(tableRef);
 
   useEffect(() => {
     if (tableSize) {
       const tableWidth = tableSize.width;
-      const containerWidth = tableContainerRef.current.getBoundingClientRect().width;
-      if (!tableContainerInitialWidth.current) {
-        tableContainerInitialWidth.current = containerWidth;
+      const containerWidth = containerRef.current.getBoundingClientRect().width;
+      if (!containerInitialWidth.current) {
+        containerInitialWidth.current = containerWidth;
       }
-      if (tableWidth < containerWidth || containerWidth < tableContainerInitialWidth.current) {
-        tableContainerRef.current.style.width = tableWidth + 'px';
+      if (tableWidth < containerWidth || containerWidth < containerInitialWidth.current) {
+        containerRef.current.style.width = tableWidth + 'px';
       }
     }
   }, [tableSize]);
@@ -56,7 +56,7 @@ export function DataTable({ columns, data }: DataTableProps) {
   });
 
   return (
-    <div className='grid'>
+    <div ref={containerRef}>
       <div className='flex items-center justify-between gap-2 py-4'>
         <div className='flex gap-2'>
           <DataTableFilterSimple table={table} />
@@ -72,7 +72,6 @@ export function DataTable({ columns, data }: DataTableProps) {
       </div>
       <Table
         tableRef={tableRef}
-        containerRef={tableContainerRef}
         className='table-fixed'
         containerClassName='overflow-auto rounded-md border max-h-[650px]'
         style={{ width: table.getCenterTotalSize() }}
