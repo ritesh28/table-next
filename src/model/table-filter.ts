@@ -1,11 +1,13 @@
+import { immerable, produce } from 'immer';
 import moment, { Moment } from 'moment';
+import { Task } from './task';
 
-abstract class Filter<TOperator> {
+export abstract class Filter<TOperator extends string = string> {
   constructor(
-    protected _columnId: string,
+    protected _columnId: keyof Task,
     protected _operator: TOperator,
   ) {}
-  abstract filterRow(row: unknown, columnId: string): boolean;
+  abstract filterRow(row: unknown): boolean;
   get columnId() {
     return this._columnId;
   }
@@ -16,7 +18,7 @@ abstract class Filter<TOperator> {
 
 type FilterEmptyOperator = 'is empty' | 'is not empty';
 export class FilterEmpty extends Filter<FilterEmptyOperator> {
-  constructor(columnId: string, operator: FilterEmptyOperator) {
+  constructor(columnId: keyof Task, operator: FilterEmptyOperator) {
     super(columnId, operator);
   }
 
@@ -31,7 +33,7 @@ export class FilterEmpty extends Filter<FilterEmptyOperator> {
 type FilterStringOperator = 'contains' | 'does not contain' | 'is' | 'is not';
 export class FilterString<TColumnValue extends string = string> extends Filter<FilterStringOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterStringOperator,
     public value: TColumnValue,
   ) {
@@ -51,7 +53,7 @@ export class FilterString<TColumnValue extends string = string> extends Filter<F
 type FilterListOperator = 'has any of' | 'has none of';
 export class FilterList extends Filter<FilterListOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterListOperator,
     public values: unknown[],
   ) {
@@ -69,7 +71,7 @@ export class FilterList extends Filter<FilterListOperator> {
 type FilterNumberOperator = 'is' | 'is not' | 'is less than' | 'is less than or equal to' | 'is greater than' | 'is greater than or equal to';
 export class FilterNumber<TColumnValue extends number = number> extends Filter<FilterNumberOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterNumberOperator,
     public value: TColumnValue,
   ) {
@@ -91,10 +93,10 @@ export class FilterNumber<TColumnValue extends number = number> extends Filter<F
 type FilterNumberRangeOperator = 'is between';
 export class FilterNumberRange<TColumnValue extends number = number> extends Filter<FilterNumberRangeOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterNumberRangeOperator,
-    private minValue: TColumnValue,
-    private maxValue: TColumnValue,
+    public minValue: TColumnValue,
+    public maxValue: TColumnValue,
   ) {
     super(columnId, operator);
   }
@@ -109,7 +111,7 @@ export class FilterNumberRange<TColumnValue extends number = number> extends Fil
 type FilterDateOperator = 'is' | 'is not' | 'is before' | 'is on or before' | 'is after' | 'is on or after';
 export class FilterDate<TColumnValue extends Moment = Moment> extends Filter<FilterDateOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterDateOperator,
     public value: TColumnValue,
   ) {
@@ -131,10 +133,10 @@ export class FilterDate<TColumnValue extends Moment = Moment> extends Filter<Fil
 type FilterDateRangeOperator = 'is between';
 export class FilterDateRange<TColumnValue extends Moment = Moment> extends Filter<FilterDateRangeOperator> {
   constructor(
-    columnId: string,
+    columnId: keyof Task,
     operator: FilterDateRangeOperator,
-    private minValue: TColumnValue,
-    private maxValue: TColumnValue,
+    public minValue: TColumnValue,
+    public maxValue: TColumnValue,
   ) {
     super(columnId, operator);
   }
@@ -148,12 +150,7 @@ export class FilterDateRange<TColumnValue extends Moment = Moment> extends Filte
 
 type FilterDateRelativeOperator = 'a week ago' | 'a month ago' | '3 months ago' | '6 months ago' | '1 year ago';
 export class FilterDateRelative<TColumnValue extends Moment = Moment> extends Filter<FilterDateRelativeOperator> {
-  constructor(
-    columnId: string,
-    operator: FilterDateRelativeOperator,
-    private minValue: TColumnValue,
-    private maxValue: TColumnValue,
-  ) {
+  constructor(columnId: keyof Task, operator: FilterDateRelativeOperator) {
     super(columnId, operator);
   }
 
@@ -169,42 +166,115 @@ export class FilterDateRelative<TColumnValue extends Moment = Moment> extends Fi
   }
 }
 
-type AndOr = false | 'And' | 'Or';
-interface UIFilterGroup {
-  name: string;
-  canCancel: boolean;
-  isEditable: boolean;
-  /**
-   * this 'andOr' is a predicate among the filter list
-   */
-  filterListAndOr: AndOr;
-  filters: (FilterEmpty | FilterString | FilterList | FilterNumber | FilterNumberRange | FilterDate | FilterDateRange | FilterDateRelative)[];
+type AndOr = 'And' | 'Or';
+type FilterGroupType = 'simple' | 'advanced';
+
+export class FilterGroup {
+  [immerable] = true;
+  constructor(
+    private _type: FilterGroupType = 'advanced',
+    private _filters: Filter[] = [],
+    private _filterListAndOr: AndOr = 'Or',
+  ) {}
+
+  get type() {
+    return this._type;
+  }
+  get filters() {
+    return Object.freeze(this._filters);
+  }
+  get filterListAndOr() {
+    return this._filterListAndOr;
+  }
+
+  firstFilterIndex(columnId: string) {
+    // useful in case of simple filter group since for a column theres only one filter
+    return this._filters.findIndex((f) => f.columnId === columnId);
+  }
+
+  addNewFilter(filter: Filter) {
+    return produce(this, (draft: this) => {
+      // 'this' type is a workaround to modifying private fields with immer.js
+      draft._filters.push(filter);
+    });
+  }
+
+  addDefaultFilter() {
+    return produce(this, (draft: this) => {
+      draft._filters.push(new FilterString('title', 'contains', ''));
+    });
+  }
+
+  replaceFilter(newFilter: Filter, index: number) {
+    return produce(this, (draft: this) => {
+      draft._filters.splice(index, 1, newFilter);
+    });
+  }
+
+  deleteFilter(index: number) {
+    return produce(this, (draft: this) => {
+      draft._filters.splice(index, 1);
+    });
+  }
+
+  deleteFilterByCol(columnId: string) {
+    // this is for simple filter group where for a column id there is one filter
+    return produce(this, (draft: this) => {
+      const index = draft.firstFilterIndex(columnId);
+      if (index !== -1) {
+        draft.deleteFilter(index);
+      }
+    });
+  }
 }
 
-export interface UIFilterGroups {
-  /**
-   * this 'andOr' is a predicate among the filter-group list
-   */
-  filterGroupListAndOr: AndOr;
-  filterGroups: UIFilterGroup[];
+export class FilterGroupCollection {
+  [immerable] = true;
+  constructor(
+    private _filterGroups: FilterGroup[] = [],
+    private _filterGroupListAndOr: AndOr = 'And',
+  ) {}
+
+  get filterGroups() {
+    return Object.freeze(this._filterGroups);
+  }
+  get filterGroupListAndOr() {
+    return this._filterGroupListAndOr;
+  }
+  get simpleFilterGroup() {
+    return this._filterGroups.find((fg) => fg.type === 'simple');
+  }
+
+  addNewFilterGroup(filterGroup: FilterGroup) {
+    return produce(this, (draft: this) => {
+      if (filterGroup.type === 'simple') {
+        // simple filter group are stored at the start of the list
+        draft._filterGroups.splice(0, 0, filterGroup);
+      } else {
+        draft._filterGroups.push(filterGroup);
+      }
+    });
+  }
+  replaceFilterGroup(newFilterGroup: FilterGroup, index: number) {
+    return produce(this, (draft: this) => {
+      draft._filterGroups.splice(index, 1, newFilterGroup);
+    });
+  }
+  replaceSimpleFilterGroup(newSimpleFilterGroup: FilterGroup) {
+    return produce(this, (draft: this) => {
+      draft.replaceFilterGroup(newSimpleFilterGroup, 0);
+    });
+  }
+  deleteFilterGroup(index: number) {
+    return produce(this, (draft: this) => {
+      draft._filterGroups.splice(index, 1);
+    });
+  }
+  deleteSimpleFilterGroup() {
+    return produce(this, (draft: this) => {
+      if (draft.simpleFilterGroup) {
+        draft.deleteFilterGroup(0);
+      }
+    });
+  }
 }
-
-export interface ModelFilterGroups {
-  /**
-   * this 'andOr' is a predicate among the filter-group list
-   */
-  filterGroupListAndOr: AndOr;
-  filterGroups: Pick<UIFilterGroup, 'filterListAndOr' | 'filters'>[];
-}
-
-export const DEFAULT_MODEL_FILTER_GROUPS: ModelFilterGroups = {
-  filterGroupListAndOr: false,
-  filterGroups: [
-    {
-      filterListAndOr: false,
-      filters: [],
-    },
-  ],
-};
-
-export const DEFAULT_FILTER_LIST_AND_OR: AndOr = 'And';

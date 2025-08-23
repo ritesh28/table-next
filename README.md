@@ -15,6 +15,7 @@ webpack loader: csv & graphql
 ## TODO
 
 Advanced search
+sort order
 In-memory DB
 ===crud operation===
 auth rbac - web-simplified

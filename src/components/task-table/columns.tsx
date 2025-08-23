@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ModelFilterGroups } from '@/model/table-filter';
+import { FilterGroupCollection } from '@/model/table-filter';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -175,49 +175,50 @@ export const columns: ColumnDef<Task>[] = [
 
 export const FILTER_COLUMN_ID = 'task_id'; // this value is random. To be used when calling `tableWholesomeFilter()`
 
-function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroups: ModelFilterGroups) {
+function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroupCollection: FilterGroupCollection) {
   // this is the only filter function. This filter for all parameters
   // caters all possible scenarios
   // NOT using the global filter since that function is called for every column
-  const { task_id, title, label, status, priority, estimated_hours, created_at } = row.original;
 
-  let showRow = true;
-  for (let filterGroup of filterGroups.filterGroups) {
-    let filterGroupResult = true;
+  let showRow: boolean | null = null;
+  for (let filterGroup of filterGroupCollection.filterGroups) {
+    let overallFilterResult: boolean | null = null;
     for (let filter of filterGroup.filters) {
-      const filterResult = filter.filterRow(row.original);
+      const currentFilterResult = filter.filterRow(row.original);
+      if (overallFilterResult === null) {
+        overallFilterResult = currentFilterResult;
+        continue;
+      }
       switch (filterGroup.filterListAndOr) {
-        case false:
-          filterGroupResult = filterResult;
-          break;
         case 'And':
-          filterGroupResult = filterGroupResult && filterResult;
+          overallFilterResult = overallFilterResult && currentFilterResult;
           break;
         case 'Or':
-          filterGroupResult = filterGroupResult || filterResult;
+          overallFilterResult = overallFilterResult || currentFilterResult;
           break;
         default:
-          throw new Error('filterGroup.andOr is not resolved');
+          throw new Error('filterGroup.filterListAndOr is not resolved');
       }
-      if (!filterGroupResult && filterGroup.filterListAndOr === 'And') {
+      if (!overallFilterResult && filterGroup.filterListAndOr === 'And') {
         // no meaning to continue since it will always return false
         break;
       }
     }
-    switch (filterGroups.filterGroupListAndOr) {
-      case false:
-        showRow = filterGroupResult;
-        break;
+    if (showRow === null) {
+      showRow = overallFilterResult;
+      continue;
+    }
+    switch (filterGroupCollection.filterGroupListAndOr) {
       case 'And':
-        showRow = showRow && filterGroupResult;
+        showRow = showRow && overallFilterResult;
         break;
       case 'Or':
-        showRow = showRow || filterGroupResult;
+        showRow = showRow || overallFilterResult;
         break;
       default:
-        throw new Error('filterGroups.andOr is not resolved');
+        throw new Error('filterGroupCollection.filterGroupListAndOr is not resolved');
     }
-    if (!showRow && filterGroups.filterGroupListAndOr === 'And') {
+    if (!showRow && filterGroupCollection.filterGroupListAndOr === 'And') {
       // no meaning to continue since it will always return false
       break;
     }

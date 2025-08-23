@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 interface DataTableSortProps {
   table: Table<Task>;
 }
+// todo: maintain the order of the sort
 export function DataTableSort({ table }: DataTableSortProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectOpen, setSelectOpen] = useState<string | null>(null); // value can be column id or null. Null means all select components are in close state

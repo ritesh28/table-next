@@ -7,7 +7,6 @@ import { DataTableFilterSimplePriority } from '@/components/task-table/table-fil
 import { DataTableFilterSimpleStatus } from '@/components/task-table/table-filter-simple-status';
 import { DataTableFilterTextInput } from '@/components/task-table/table-filter-text-input';
 import { useGetFilterCount } from '@/hooks/useGetFilterCount';
-import { DEFAULT_MODEL_FILTER_GROUPS } from '@/model/table-filter';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
@@ -37,7 +36,7 @@ export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
       <DataTableFilterSimplePriority table={table} />
       <DataTableFilterSimpleEstimatedHour table={table} />
       <DataTableFilterSimpleCreatedAt table={table} />
-      {showReset && <Button onClick={() => table.getColumn(FILTER_COLUMN_ID).setFilterValue(DEFAULT_MODEL_FILTER_GROUPS)}>Reset</Button>}
+      {showReset && <Button onClick={() => table.getColumn(FILTER_COLUMN_ID).setFilterValue(undefined)}>Reset</Button>}
     </div>
   );
 }

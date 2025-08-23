@@ -1,17 +1,8 @@
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { useGetFilterCount } from '@/hooks/useGetFilterCount';
-import {
-  DEFAULT_FILTER_LIST_AND_OR,
-  DEFAULT_MODEL_FILTER_GROUPS,
-  FilterDateRange,
-  FilterList,
-  FilterNumberRange,
-  FilterString,
-  ModelFilterGroups,
-} from '@/model/table-filter';
+import { Filter, FilterDateRange, FilterGroup, FilterGroupCollection, FilterList, FilterNumberRange, FilterString } from '@/model/table-filter';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
-import { produce } from 'immer';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
@@ -36,51 +27,60 @@ export function useSetSimpleFilterValue<TState extends string | unknown[]>(table
   const [selection, setSelection] = useState(() => defaultState<TState>(columnId));
 
   useEffect(() => {
-    const filterGroups = (table.getColumn(FILTER_COLUMN_ID).getFilterValue() ?? DEFAULT_MODEL_FILTER_GROUPS) as ModelFilterGroups;
-    const nextFilterGroups = produce(filterGroups, (draftFilterGroups) => {
-      // simple filter are present in first filter-group
-      const filterGroup = draftFilterGroups.filterGroups[0];
-      // remove filter
-      filterGroup.filters = filterGroup.filters.filter((filter) => filter.columnId !== columnId);
-      // if user has removed the filter
-      if ((isString(selection) && selection === '') || (isArray(selection) && selection.length === 0)) {
-        if (filterGroup.filters.length < 2) filterGroup.filterListAndOr = false;
-      } else {
-        // add filter
-        switch (columnId) {
-          case 'status':
-          case 'priority':
-            if (isArray(selection)) {
-              filterGroup.filters.push(new FilterList(columnId, 'has any of', selection));
-            }
-            break;
-          case 'estimated_hours':
-            if (isArray(selection) && selection.length === 2) {
-              const minValue = isInteger(selection[0]) && selection[0];
-              const maxValue = isInteger(selection[1]) && selection[1];
-              filterGroup.filters.push(new FilterNumberRange(columnId, 'is between', minValue, maxValue));
-            }
-            break;
-          case 'title':
-            if (isString(selection)) {
-              filterGroup.filters.push(new FilterString(columnId, 'contains', selection));
-            }
-            break;
-          case 'created_at':
-            if (isArray(selection) && selection.length === 2) {
-              const startDate = moment.isMoment(selection[0]) && selection[0];
-              const endDate = moment.isMoment(selection[1]) && selection[1];
-              filterGroup.filters.push(new FilterDateRange(columnId, 'is between', startDate, endDate));
-            }
-            break;
-          default:
-            throw Error('columnId not implemented');
-        }
-        // check if filter count is greater than 1 and filter.AndOr is set
-        if (filterGroup.filters.length > 1 && !filterGroup.filterListAndOr) filterGroup.filterListAndOr = DEFAULT_FILTER_LIST_AND_OR;
+    let filterGroupCollection = (table.getColumn(FILTER_COLUMN_ID).getFilterValue() ?? new FilterGroupCollection()) as FilterGroupCollection;
+
+    let simpleFilterGroup = filterGroupCollection.simpleFilterGroup;
+
+    if ((isString(selection) && selection === '') || (isArray(selection) && selection.length === 0)) {
+      // user has removed the filter
+      if (!simpleFilterGroup) return;
+      simpleFilterGroup = simpleFilterGroup.deleteFilterByCol(columnId);
+    } else {
+      // add or update filter
+      let filter: Filter;
+      switch (columnId) {
+        case 'status':
+        case 'priority':
+          if (isArray(selection)) {
+            filter = new FilterList(columnId, 'has any of', selection);
+          }
+          break;
+        case 'estimated_hours':
+          if (isArray(selection) && selection.length === 2) {
+            const minValue = isInteger(selection[0]) && selection[0];
+            const maxValue = isInteger(selection[1]) && selection[1];
+            filter = new FilterNumberRange(columnId, 'is between', minValue, maxValue);
+          }
+          break;
+        case 'title':
+          if (isString(selection)) {
+            filter = new FilterString(columnId, 'contains', selection);
+          }
+          break;
+        case 'created_at':
+          if (isArray(selection) && selection.length === 2) {
+            const startDate = moment.isMoment(selection[0]) && selection[0];
+            const endDate = moment.isMoment(selection[1]) && selection[1];
+            filter = new FilterDateRange(columnId, 'is between', startDate, endDate);
+          }
+          break;
+        default:
+          throw Error('columnId not implemented');
       }
-    });
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue(nextFilterGroups);
+      if (!simpleFilterGroup) {
+        const filterGroup = new FilterGroup('simple');
+        simpleFilterGroup = filterGroupCollection.addNewFilterGroup(filterGroup).simpleFilterGroup;
+      }
+      const filterIndex = simpleFilterGroup.firstFilterIndex(columnId);
+      simpleFilterGroup = filterIndex === -1 ? simpleFilterGroup.addNewFilter(filter) : simpleFilterGroup.replaceFilter(filter, filterIndex);
+    }
+    console.log(simpleFilterGroup);
+
+    filterGroupCollection =
+      simpleFilterGroup.filters.length === 0
+        ? filterGroupCollection.deleteSimpleFilterGroup()
+        : filterGroupCollection.replaceSimpleFilterGroup(simpleFilterGroup);
+    table.getColumn(FILTER_COLUMN_ID).setFilterValue(filterGroupCollection);
   }, [selection, columnId, table]);
 
   const filterCount = useGetFilterCount(table);
