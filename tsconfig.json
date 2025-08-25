@@ -6,7 +6,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": false, // todo: make true
     "noEmit": true,
     "incremental": true,
     "module": "esnext",

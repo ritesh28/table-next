@@ -1,7 +1,8 @@
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { FilterGroup, FilterGroupCollection } from '@/model/table-filter';
+import { FilterGroup } from '@/model/table-filter-group';
+import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';

@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FilterGroupCollection } from '@/model/table-filter';
+import { FilterGroupCollection } from '@/model/table-filters';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [

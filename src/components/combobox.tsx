@@ -9,16 +9,16 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { Dispatch, ReactNode, SetStateAction, useCallback, useState } from 'react';
 
-export interface ComboboxItem<T extends string> {
-  id: T;
+export interface ComboboxItem {
+  id: string;
   content: ReactNode;
   totalCount?: number;
 }
 
-interface ComboboxProps<T extends string> {
-  items: ComboboxItem<T>[];
-  selectedItems: T[];
-  setSelectedItems: Dispatch<SetStateAction<T[]>>;
+interface ComboboxProps {
+  items: ComboboxItem[];
+  selectedItems: string[] | null;
+  setSelectedItems: Dispatch<SetStateAction<string[] | null>>;
   isMultiSelect: boolean;
   buttonClassName?: string;
   buttonChildren: ReactNode;
@@ -27,7 +27,7 @@ interface ComboboxProps<T extends string> {
   emptySearchString?: string;
   includeClearButton?: boolean;
 }
-export function Combobox<T extends string>({
+export function Combobox({
   items,
   selectedItems,
   setSelectedItems,
@@ -38,23 +38,23 @@ export function Combobox<T extends string>({
   searchPlaceholder,
   emptySearchString,
   includeClearButton,
-}: ComboboxProps<T>) {
+}: ComboboxProps) {
   const [open, setOpen] = useState(false);
 
   const handleItemSelect = useCallback(
-    (itemName: T) => {
+    (itemId: string) => {
       if (isMultiSelect) {
         // check if the item is already selected. If so, unselect it
-        if (selectedItems.includes(itemName)) {
-          setSelectedItems((oldVals) => oldVals.filter((val) => val !== itemName));
+        if (selectedItems && selectedItems.includes(itemId)) {
+          setSelectedItems((oldVals) => oldVals.filter((val) => val !== itemId));
         } else {
-          setSelectedItems((oldVals) => [...oldVals, itemName]);
+          setSelectedItems((oldVals) => (oldVals ? [...oldVals, itemId] : [itemId]));
         }
       } else {
-        if (selectedItems.includes(itemName)) {
-          setSelectedItems([]);
+        if (selectedItems || selectedItems.includes(itemId)) {
+          setSelectedItems(null);
         } else {
-          setSelectedItems([itemName]);
+          setSelectedItems([itemId]);
         }
         setOpen(false);
       }
@@ -63,7 +63,7 @@ export function Combobox<T extends string>({
   );
 
   const handleClearSelection = useCallback(() => {
-    setSelectedItems([]);
+    setSelectedItems(null);
     setOpen(false);
   }, [setSelectedItems]);
 
@@ -81,8 +81,8 @@ export function Combobox<T extends string>({
             <CommandEmpty>{emptySearchString ? emptySearchString : 'No results found.'}</CommandEmpty>
             <CommandGroup>
               {items.map((item) => (
-                <CommandItem key={item.id} value={item.id} onSelect={(currentValue) => handleItemSelect(currentValue as T)}>
-                  {isMultiSelect && <Checkbox checked={selectedItems.includes(item.id)} />}
+                <CommandItem key={item.id} value={item.id} onSelect={(id) => handleItemSelect(id)}>
+                  {isMultiSelect && <Checkbox checked={selectedItems && selectedItems.includes(item.id)} />}
                   {!isMultiSelect && item.totalCount !== undefined && (
                     <Check className={cn('mr-1', selectedItems.includes(item.id) ? 'opacity-100' : 'opacity-0')} />
                   )}
@@ -93,7 +93,7 @@ export function Combobox<T extends string>({
                   )}
                 </CommandItem>
               ))}
-              {includeClearButton && selectedItems.length > 0 && (
+              {includeClearButton && selectedItems && selectedItems.length > 0 && (
                 <>
                   <CommandSeparator />
                   <CommandItem onSelect={handleClearSelection}>

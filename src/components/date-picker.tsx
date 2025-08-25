@@ -1,3 +1,4 @@
+import { isTupleOfTwoMomentItem } from '@/lib/check-type';
 import { CalendarIcon, CircleX } from 'lucide-react';
 import moment, { Moment } from 'moment';
 import { Dispatch, SetStateAction } from 'react';
@@ -7,33 +8,31 @@ import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface DatePickerProps {
-  dateRange: Moment[];
-  setDateRange: Dispatch<SetStateAction<Moment[]>>;
+  dateRange: Moment | [Moment, Moment] | null;
+  setDateRange: Dispatch<SetStateAction<Moment | [Moment, Moment] | null>>;
 }
 export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant='outline' className='justify-between'>
-          {dateRange.length === 2 ? (
+          {dateRange === null ? (
+            <>
+              <CalendarIcon /> Created At
+            </>
+          ) : (
             <div className='flex items-center gap-1'>
-              <div className='hover:opacity-60' onClick={() => setDateRange([])}>
+              <div className='hover:opacity-60' onClick={() => setDateRange(null)}>
                 <CircleX />
               </div>
               <span>Created At</span>
-
-              {dateRange[0].isSame(dateRange[1], 'day') ? (
-                <Badge>{dateRange[0].format('ll')}</Badge>
-              ) : (
+              {moment.isMoment(dateRange) && <Badge>{dateRange.format('ll')}</Badge>}
+              {isTupleOfTwoMomentItem(dateRange) && (
                 <Badge>
                   {dateRange[0].format('ll')} - {dateRange[1].format('ll')}
                 </Badge>
               )}
             </div>
-          ) : (
-            <>
-              <CalendarIcon /> Created At
-            </>
           )}
         </Button>
       </PopoverTrigger>
@@ -42,11 +41,17 @@ export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
           mode='range'
           required
           disabled={{ after: new Date() }}
-          selected={{ from: dateRange[0]?.toDate() ?? undefined, to: dateRange[1]?.toDate() ?? undefined }}
+          selected={
+            dateRange === null
+              ? { from: undefined, to: undefined }
+              : moment.isMoment(dateRange)
+                ? { from: dateRange.toDate(), to: dateRange.toDate() }
+                : { from: dateRange[0].toDate(), to: dateRange[1].toDate() }
+          }
           onSelect={(selected) => {
-            // make sure moment[0] is past to moment[1]
-            if (selected.from.getTime() <= selected.to.getTime()) return setDateRange([moment(selected.from), moment(selected.to)]);
-            return setDateRange([moment(selected.to), moment(selected.from)]);
+            if (!selected) return setDateRange(null);
+            if (selected.from.toDateString() === selected.to.toDateString()) return setDateRange(moment(selected.to));
+            return setDateRange([moment(selected.from), moment(selected.to)]);
           }}
         />
       </PopoverContent>

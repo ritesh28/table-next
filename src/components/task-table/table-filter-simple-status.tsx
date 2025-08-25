@@ -1,19 +1,36 @@
 import { Combobox } from '@/components/combobox';
+import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSetSimpleFilterValue } from '@/hooks/useSetSimpleFilterValue';
 import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
+import { FilterGroupCollection } from '@/model/table-filter-group-collection';
+import { FilterList } from '@/model/table-filters';
 import { STATUS_ICON, Task } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
 import { CirclePlus, CircleX } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface DataTableFilterSimpleStatusProps {
   table: Table<Task>;
 }
 
 export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStatusProps) {
-  const [selectedItems, setSelectedItems] = useSetSimpleFilterValue<string[]>(table, 'status');
+  const [selection, setSelection] = useState<string[] | null>(null);
+  const COLUMN_ID = 'status';
+
+  useEffect(() => {
+    table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
+      if (selection === null) {
+        const newFilterGroupCollection = FilterGroupCollection.removeColumnFilterFromSimpleFilterGroup(filterGroupCollection, COLUMN_ID);
+        return newFilterGroupCollection;
+      }
+      // add or replace filter
+      const filter = new FilterList(COLUMN_ID, 'has any of', selection);
+      const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
+      return newFilterGroupCollection;
+    });
+  }, [selection]);
 
   const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
 
@@ -39,17 +56,17 @@ export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStat
           ),
         };
       })}
-      selectedItems={selectedItems}
-      setSelectedItems={setSelectedItems}
+      selectedItems={selection}
+      setSelectedItems={setSelection}
       isMultiSelect
       buttonChildren={
-        selectedItems.length ? (
+        selection ? (
           <div className='flex items-center gap-1'>
-            <div className='hover:opacity-60' onClick={() => setSelectedItems([])}>
+            <div className='hover:opacity-60' onClick={() => setSelection(null)}>
               <CircleX />
             </div>
             <span>Status</span>
-            {selectedItems.map((item) => (
+            {selection.map((item) => (
               <Badge key={item}>{item}</Badge>
             ))}
           </div>
