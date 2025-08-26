@@ -19,6 +19,9 @@ export class FilterGroupCollection {
   get simpleFilterGroup() {
     return this._filterGroups.find((fg) => fg.type === 'simple');
   }
+  get advancedFilterGroupCount() {
+    return this._filterGroups.filter((fg) => fg.type === 'advanced').length;
+  }
 
   static removeColumnFilterFromSimpleFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, columnId: string) {
     if (!filterGroupCollection) return filterGroupCollection;

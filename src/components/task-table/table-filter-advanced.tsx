@@ -11,14 +11,20 @@ import { Fragment, useCallback } from 'react';
 interface DataTableFilterAdvanceProps {
   table: Table<Task>;
 }
-function getFilterGroupGridRowSpanStyle(filterGroupCollection: FilterGroupCollection, filterGroupIndex: number) {
+function getFilterGroupGridRow(filterGroupCollection: FilterGroupCollection, filterGroupIndex: number) {
+  function getRowCount(filterGroupIndex: number) {
+    let count = filterGroupCollection.filterGroups[filterGroupIndex].filters.length;
+    count += 1; // for top label - field, operator , etc
+    count += 1; // for bottom <hr/>
+    return count;
+  }
+
   let totalPreviousFilters = 0;
   for (let index = 0; index < filterGroupIndex; index++) {
-    totalPreviousFilters += filterGroupCollection.filterGroups[index].filters.length;
-    totalPreviousFilters += 1; // for <hr/>
+    totalPreviousFilters += getRowCount(index);
   }
   const gridRowStart = totalPreviousFilters + 1;
-  const gridRowEnd = gridRowStart + filterGroupCollection.filterGroups[filterGroupIndex].filters.length;
+  const gridRowEnd = gridRowStart + getRowCount(filterGroupIndex);
   return { gridRowStart, gridRowEnd };
 }
 
@@ -27,59 +33,93 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const addFilterGroup = useCallback(() => {
     const filterGroup = new FilterGroup('advanced').addDefaultFilter();
-    const newFilterGroupCollection = filterGroupCollection.addNewFilterGroup(filterGroup);
+    const newFilterGroupCollection = (filterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
     table.getColumn(FILTER_COLUMN_ID).setFilterValue(newFilterGroupCollection);
   }, [table, filterGroupCollection]);
-
-  if (!filterGroupCollection) {
-    return null;
-  }
 
   return (
     <div>
       <Card>
         <CardContent>
           <div className='grid grid-cols-9 gap-1'>
-            {filterGroupCollection.filterGroups.map((filterGroup, filterGroupIndex) => (
+            {filterGroupCollection?.filterGroups.map((filterGroup, filterGroupIndex) => (
               <Fragment key={filterGroupIndex}>
-                <div className='col-start-1 self-center' style={{ ...getFilterGroupGridRowSpanStyle(filterGroupCollection, filterGroupIndex) }}>
+                <div
+                  className='col-start-1'
+                  style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + 1 }}
+                >
                   <p>Filter Group {filterGroupIndex + 1}</p>
+                </div>
+                <div
+                  className='col-start-2'
+                  style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + 1 }}
+                >
+                  <p>FG AndOr</p>
+                </div>
+                <div
+                  className='col-start-9'
+                  style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + 1 }}
+                >
+                  <p>FG X</p>
+                </div>
+                <div className='col-start-3' style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart }}>
+                  <p>Field label</p>
+                </div>
+                <div className='col-start-4' style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart }}>
+                  <p>Operator label</p>
+                </div>
+                <div className='col-start-5' style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart }}>
+                  <p>Value label</p>
+                </div>
+                <div className='col-start-6' style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart }}>
+                  <p>AndOr label</p>
                 </div>
                 {filterGroup.filters.map((filter, FilterIndex) => (
                   <Fragment key={FilterIndex}>
-                    <div className='col-start-2' style={{ ...getFilterGroupGridRowSpanStyle(filterGroupCollection, filterGroupIndex) }}>
-                      {filterGroupIndex > 0 && filterGroup.filterListAndOr && (
-                        <>
-                          <p>And/Or</p>
-                          <Button>{filterGroupCollection.filterGroupListAndOr}</Button>
-                        </>
-                      )}
+                    <div
+                      className='col-start-3'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>{filter.columnId}</p>
                     </div>
-                    <div className='col-start-3'>
-                      {FilterIndex == 0 && <p>Field</p>}
-                      <Button>{filter.columnId}</Button>
+                    <div
+                      className='col-start-4'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>{filter.operator}</p>
                     </div>
-                    <div>
-                      {FilterIndex == 0 && <p>Operator</p>}
-                      <Button>{filter.operator}</Button>
+                    <div
+                      className='col-start-5'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>{String(filter.value)}</p>
                     </div>
-                    <div>
-                      {FilterIndex == 0 && <p>Value</p>}
-                      <Button>{'value' in filter ? String(filter.value) : ''}</Button>
+                    <div
+                      className='col-start-6'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>
+                        {FilterIndex > 0 && 'disabled'} {filterGroup.filterListAndOr}
+                      </p>
                     </div>
-                    <div>
-                      {FilterIndex == 0 && <p>And/Or</p>}
-                      <Button>{filterGroup.filterListAndOr}</Button>
+                    <div
+                      className='col-start-7'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>+</p>
                     </div>
-                    <Button onClick={() => filterGroup.addDefaultFilter()}>+</Button>
-                    <Button>-</Button>
+                    <div
+                      className='col-start-8'
+                      style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + FilterIndex + 1 }}
+                    >
+                      <p>-</p>
+                    </div>
                   </Fragment>
                 ))}
-                <div className='col-start-9' style={{ ...getFilterGroupGridRowSpanStyle(filterGroupCollection, filterGroupIndex) }}>
-                  <Button>x</Button>
-                </div>
-
-                <div className='col-span-full'>
+                <div
+                  className='col-span-full my-2'
+                  style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowEnd - 1 }}
+                >
                   <hr />
                 </div>
               </Fragment>

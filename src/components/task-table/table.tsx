@@ -13,20 +13,26 @@ import {
 import { DataTablePagination } from '@/components/task-table/table-pagination';
 import { DataTableToggleColumn } from '@/components/task-table/table-toggle-column';
 
+import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { DataTableFilterAdvanced } from '@/components/task-table/table-filter-advanced';
 import { DataTableFilterSimple } from '@/components/task-table/table-filter-simple';
+import { DataTableSort } from '@/components/task-table/table-sort-popover';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useSize } from '@/hooks/useSize';
+import { cn } from '@/lib/utils';
+import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { Task } from '@/model/task';
-import { CSSProperties, useEffect, useRef } from 'react';
-import { DataTableSort } from './table-sort-popover';
+import { ChevronDown } from 'lucide-react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { Badge } from '../ui/badge';
 interface DataTableProps {
   columns: ColumnDef<Task>[];
   data: Task[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const containerInitialWidth = useRef<number>(null);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -54,13 +60,26 @@ export function DataTable({ columns, data }: DataTableProps) {
     getSortedRowModel: getSortedRowModel(), // sorting
     getFilteredRowModel: getFilteredRowModel(), // filtering
   });
+  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
 
   return (
     <div ref={containerRef}>
       <div className='flex items-center justify-between gap-2 py-4'>
         <div className='flex gap-2'>
           <DataTableFilterSimple table={table} />
-          <Button>Advanced Search</Button>
+          <Button variant='secondary' onClick={() => setShowAdvancedFilter((val) => !val)}>
+            Advanced Search
+            {filterGroupCollection?.advancedFilterGroupCount > 0 && (
+              <Badge>
+                {filterGroupCollection.simpleFilterGroup && '+'}
+                {filterGroupCollection.advancedFilterGroupCount}
+              </Badge>
+            )}
+            <ChevronDown className={cn('transform transition-transform duration-500', showAdvancedFilter && 'rotate-180')} />
+          </Button>
+          {filterGroupCollection?.filterGroups.length > 0 && (
+            <Button onClick={() => table.getColumn(FILTER_COLUMN_ID).setFilterValue(undefined)}>Reset</Button>
+          )}
         </div>
         <div className='flex gap-2'>
           <DataTableSort table={table} />
@@ -68,7 +87,11 @@ export function DataTable({ columns, data }: DataTableProps) {
         </div>
       </div>
       <div>
-        <DataTableFilterAdvanced table={table} />
+        {showAdvancedFilter && (
+          <div className='my-4'>
+            <DataTableFilterAdvanced table={table} />
+          </div>
+        )}
       </div>
       <Table
         tableRef={tableRef}
