@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FilterGroupCollection } from '@/model/table-filters';
+import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
@@ -175,10 +175,12 @@ export const columns: ColumnDef<Task>[] = [
 
 export const FILTER_COLUMN_ID = 'task_id'; // this value is random. To be used when calling `tableWholesomeFilter()`
 
-function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroupCollection: FilterGroupCollection) {
+function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroupCollection: FilterGroupCollection | undefined) {
   // this is the only filter function. This filter for all parameters
   // caters all possible scenarios
   // NOT using the global filter since that function is called for every column
+
+  if (!filterGroupCollection) return true;
 
   let showRow: boolean | null = null;
   for (let filterGroup of filterGroupCollection.filterGroups) {

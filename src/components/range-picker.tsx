@@ -8,35 +8,43 @@ import { InputWithIcon } from '@/components/ui/input-with-icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
+import { isTupleOfTwoNumber } from '@/lib/check-type';
 import { Dispatch, SetStateAction, useState } from 'react';
 
 interface RangePickerProps {
-  range: number[];
-  setRange: Dispatch<SetStateAction<number[]>>;
+  range: number | [number, number] | null;
+  setRange: Dispatch<SetStateAction<number | [number, number] | null>>;
   min: number;
   max: number;
 }
 export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
   const [open, setOpen] = useState(false);
 
+  const variableMin = range === null ? min : isTupleOfTwoNumber(range) ? range[0] : range;
+  const variableMax = range === null ? max : isTupleOfTwoNumber(range) ? range[1] : range;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant='outline' aria-expanded={open} className='justify-between'>
-          {range.length ? (
+          {range === null ? (
+            <>
+              <CirclePlus /> Est. Hours
+            </>
+          ) : (
             <div className='flex items-center gap-1'>
-              <div className='hover:opacity-60' onClick={() => setRange([])}>
+              <div className='hover:opacity-60' onClick={() => setRange(null)}>
                 <CircleX />
               </div>
               <span>Est. Hours</span>
-              <Badge>
-                {range[0]} - {range[1]} hr
-              </Badge>
-            </div>
-          ) : (
-            <div className='flex items-center gap-1'>
-              <CirclePlus />
-              <span>Est. Hours</span>
+              {typeof range === 'number' && <Badge>{range} hr</Badge>}
+              {isTupleOfTwoNumber(range) && (
+                <Badge>
+                  <Badge>
+                    {range[0]} - {range[1]} hr
+                  </Badge>
+                </Badge>
+              )}
             </div>
           )}
         </Button>
@@ -48,40 +56,51 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
             type='number'
             endIcon={Timer}
             min={min}
-            max={range[1] ?? max}
-            value={range[0] ?? min}
+            max={variableMax}
+            value={variableMin}
             onChange={(e) =>
-              setRange(([oldVal1, oldVal2]) => {
-                const newVal2 = oldVal2 ?? max;
-                const newVal1 = parseInt(e.target.value, 10);
-                if (Number.isNaN(newVal1) || newVal1 > newVal2 || newVal1 < min) return [oldVal1, newVal2];
-                return [newVal1, newVal2];
+              setRange((oldRange) => {
+                const value = parseInt(e.target.value, 10);
+                const newVal2 = oldRange === null ? max : isTupleOfTwoNumber(oldRange) ? oldRange[1] : oldRange;
+                const newVal1 = Number.isNaN(value) || value > newVal2 || value < min ? variableMin : value;
+                return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
               })
             }
           />
           <InputWithIcon
             type='number'
             endIcon={Timer}
-            min={range[0] ?? min}
+            min={variableMin}
             max={max}
-            value={range[1] ?? max}
+            value={variableMax}
             onChange={(e) =>
-              setRange(([oldVal1, oldVal2]) => {
-                const newVal1 = oldVal1 ?? min;
-                let newVal2 = parseInt(e.target.value, 10);
-                if (Number.isNaN(newVal2) || newVal2 < newVal1 || newVal2 > max) return [newVal1, oldVal2];
-                return [newVal1, newVal2];
+              setRange((oldRange) => {
+                const newVal1 = oldRange === null ? min : isTupleOfTwoNumber(oldRange) ? oldRange[0] : oldRange;
+                const value = parseInt(e.target.value, 10);
+                const newVal2 = Number.isNaN(value) || value < newVal1 || value > max ? variableMax : value;
+                return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
               })
             }
           />
         </div>
         <div className='my-4'>
-          <Slider value={[range[0] ?? min, range[1] ?? max]} min={min} max={max} step={1} onValueChange={setRange} />
+          <Slider
+            value={[variableMin, variableMax]}
+            min={min}
+            max={max}
+            step={1}
+            onValueChange={(range) => {
+              const val1 = range[0];
+              const val2 = range[1];
+              if (val1 === val2) return setRange(val1);
+              return setRange([val1, val2]);
+            }}
+          />
         </div>
-        {range.length > 0 && (
+        {isTupleOfTwoNumber(range) && (
           <>
             <Separator />
-            <Button variant='ghost' className='w-full' onClick={() => setRange([])}>
+            <Button variant='ghost' className='w-full' onClick={() => setRange(null)}>
               Reset
             </Button>
           </>

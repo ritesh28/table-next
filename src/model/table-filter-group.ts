@@ -6,6 +6,7 @@ type FilterGroupType = 'simple' | 'advanced';
 
 export class FilterGroup {
   [immerable] = true;
+
   constructor(
     private _type: FilterGroupType = 'advanced',
     private _filters: Filter<string, unknown>[] = [],

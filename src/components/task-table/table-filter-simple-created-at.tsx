@@ -1,6 +1,6 @@
 import { DatePicker } from '@/components/date-picker';
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
-import { isTupleOfTwoMomentItem } from '@/lib/check-type';
+import { isTupleOfTwoMoment } from '@/lib/check-type';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FilterDate, FilterDateRange } from '@/model/table-filters';
 import { Task } from '@/model/task';
@@ -23,13 +23,13 @@ export function DataTableFilterSimpleCreatedAt({ table }: DataTableFilterSimpleC
         return newFilterGroupCollection;
       }
       // add or replace filter
-      const filter = isTupleOfTwoMomentItem(selection)
+      const filter = isTupleOfTwoMoment(selection)
         ? new FilterDateRange(COLUMN_ID, 'is between', selection)
         : new FilterDate(COLUMN_ID, 'is', selection);
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });
-  }, [selection]);
+  }, [selection, table]);
 
   return <DatePicker dateRange={selection} setDateRange={setSelection} />;
 }

@@ -30,7 +30,7 @@ export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStat
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });
-  }, [selection]);
+  }, [selection, table]);
 
   const { loading, error, data } = useQuery(GET_STATUSES_QUERY);
 

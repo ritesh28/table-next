@@ -1,4 +1,4 @@
-import { isTupleOfTwoMomentItem } from '@/lib/check-type';
+import { isTupleOfTwoMoment } from '@/lib/check-type';
 import { CalendarIcon, CircleX } from 'lucide-react';
 import moment, { Moment } from 'moment';
 import { Dispatch, SetStateAction } from 'react';
@@ -27,7 +27,7 @@ export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
               </div>
               <span>Created At</span>
               {moment.isMoment(dateRange) && <Badge>{dateRange.format('ll')}</Badge>}
-              {isTupleOfTwoMomentItem(dateRange) && (
+              {isTupleOfTwoMoment(dateRange) && (
                 <Badge>
                   {dateRange[0].format('ll')} - {dateRange[1].format('ll')}
                 </Badge>

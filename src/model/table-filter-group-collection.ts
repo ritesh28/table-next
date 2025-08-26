@@ -4,6 +4,7 @@ import { immerable, produce } from 'immer';
 
 export class FilterGroupCollection {
   [immerable] = true;
+
   constructor(
     private _filterGroups: FilterGroup[] = [],
     private _filterGroupListAndOr: AndOr = 'And',

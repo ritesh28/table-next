@@ -30,7 +30,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });
-  }, [selection]);
+  }, [selection, table]);
 
   const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
 
