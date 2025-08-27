@@ -10,7 +10,7 @@ export class FilterGroup {
   constructor(
     private _type: FilterGroupType = 'advanced',
     private _filters: Filter<string, unknown>[] = [],
-    private _filterListAndOr: AndOr = 'Or',
+    private _filterListAndOr: AndOr = 'And',
   ) {}
 
   get type() {
@@ -23,9 +23,19 @@ export class FilterGroup {
     return this._filterListAndOr;
   }
 
+  setFilterListAndOr(value: AndOr) {
+    return produce(this, (draft: this) => {
+      draft._filterListAndOr = value;
+    });
+  }
+
   firstFilterIndex(columnId: string) {
     // useful in case of simple filter group since for a column theres only one filter
     return this._filters.findIndex((f) => f.columnId === columnId);
+  }
+  firstFilter(columnId: string) {
+    // useful in case of simple filter group since for a column theres only one filter
+    return this._filters.find((f) => f.columnId === columnId);
   }
 
   addNewFilter(filter: Filter<string, unknown>) {

@@ -36,6 +36,16 @@ export class FilterGroupCollection {
     return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
   }
 
+  static removeColumnFilterFromFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, filterGroupIndex: number, filterIndex: number) {
+    const filterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
+    const newFilterGroup = filterGroup.deleteFilter(filterIndex);
+    const newFilterGroupCollection =
+      newFilterGroup.filters.length === 0
+        ? filterGroupCollection.deleteFilterGroup(filterGroupIndex)
+        : filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
+    return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
+  }
+
   static addOrReplaceColumnFilterFromSimpleFilterGroup(
     filterGroupCollection: FilterGroupCollection | undefined,
     filter: Filter<string, unknown>,
@@ -58,6 +68,19 @@ export class FilterGroupCollection {
         : filterGroupCollection.simpleFilterGroup.replaceOrAddFilterByCol(filter, columnId);
     const newFilterGroupCollection = filterGroupCollection.replaceSimpleFilterGroup(newSimpleFilterGroup);
     return newFilterGroupCollection;
+  }
+
+  static setFilterListAndOr(filterGroupCollection: FilterGroupCollection | undefined, filterGroupIndex: number, value: AndOr) {
+    const filterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
+    const newFilterGroup = filterGroup.setFilterListAndOr(value);
+    const newFilterGroupCollection = filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
+    return newFilterGroupCollection;
+  }
+
+  setFilterGroupListAndOr(value: AndOr) {
+    return produce(this, (draft: this) => {
+      draft._filterGroupListAndOr = value;
+    });
   }
 
   addNewFilterGroup(filterGroup: FilterGroup) {

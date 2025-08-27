@@ -2,6 +2,7 @@ import { Combobox } from '@/components/combobox';
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FilterList } from '@/model/table-filters';
@@ -18,6 +19,8 @@ interface DataTableFilterSimpleStatusProps {
 export function DataTableFilterSimpleStatus({ table }: DataTableFilterSimpleStatusProps) {
   const [selection, setSelection] = useState<string[] | null>(null);
   const COLUMN_ID = 'status';
+
+  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {

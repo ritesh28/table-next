@@ -7,6 +7,7 @@ import { Table } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
+import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { isTupleOfTwoNumber } from '@/lib/check-type';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FilterNumber, FilterNumberRange } from '@/model/table-filters';
@@ -18,6 +19,8 @@ interface DataTableFilterSimpleEstimatedHourProps {
 export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSimpleEstimatedHourProps) {
   const [selection, setSelection] = useState<number | [number, number] | null>(null);
   const COLUMN_ID = 'estimated_hours';
+
+  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {

@@ -52,7 +52,7 @@ export const PRIORITY_ICON: Record<Task['priority'], LucideIcon> = {
   high: ArrowUp,
 } as const;
 
-export const sortableColumns = [
+export const SORTABLE_COLUMNS = [
   {
     id: 'title',
     content: 'Title',
@@ -80,7 +80,7 @@ export const sortableColumns = [
   },
 ] as const;
 
-export const sortableOrders = {
+export const SORTABLE_ORDERS = {
   asc: 'Asc',
   desc: 'Desc',
 } as const;

@@ -1,5 +1,6 @@
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Input } from '@/components/ui/input';
+import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FilterString } from '@/model/table-filters';
 import { Task } from '@/model/task';
@@ -12,6 +13,8 @@ interface DataTableFilterTextInputProps {
 export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProps) {
   const [selection, setSelection] = useState<string | null>(null);
   const COLUMN_ID = 'title';
+
+  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {

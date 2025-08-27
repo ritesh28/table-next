@@ -1,5 +1,6 @@
 import { DatePicker } from '@/components/date-picker';
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
+import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { isTupleOfTwoMoment } from '@/lib/check-type';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FilterDate, FilterDateRange } from '@/model/table-filters';
@@ -15,6 +16,8 @@ interface DataTableFilterSimpleCreatedAtProps {
 export function DataTableFilterSimpleCreatedAt({ table }: DataTableFilterSimpleCreatedAtProps) {
   const [selection, setSelection] = useState<Moment | [Moment, Moment] | null>(null);
   const COLUMN_ID = 'created_at';
+
+  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { sortableColumns, sortableOrders, Task } from '@/model/task';
+import { SORTABLE_COLUMNS, SORTABLE_ORDERS, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -19,13 +19,13 @@ interface DataTableSortProps {
 export function DataTableSort({ table }: DataTableSortProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectOpen, setSelectOpen] = useState<string | null>(null); // value can be column id or null. Null means all select components are in close state
-  const [dropdownColumnIds, setDropdownColumnIds] = useState([...sortableColumns]);
+  const [dropdownColumnIds, setDropdownColumnIds] = useState([...SORTABLE_COLUMNS]);
 
   const sortState = table.getState().sorting;
 
   useEffect(() => {
     const columnWithActiveSortingList = sortState.map((s) => s.id);
-    setDropdownColumnIds(sortableColumns.filter((sc) => !columnWithActiveSortingList.includes(sc.id)));
+    setDropdownColumnIds(SORTABLE_COLUMNS.filter((sc) => !columnWithActiveSortingList.includes(sc.id)));
   }, [sortState]);
 
   const handleAddSort = useCallback(() => {
@@ -52,7 +52,7 @@ export function DataTableSort({ table }: DataTableSortProps) {
   );
 
   const handleChangeSortOrder = useCallback(
-    (columnId: string, val: keyof typeof sortableOrders) => {
+    (columnId: string, val: keyof typeof SORTABLE_ORDERS) => {
       const idDesc = val === 'desc';
       table.getColumn(columnId).toggleSorting(idDesc, true);
     },
@@ -93,7 +93,7 @@ export function DataTableSort({ table }: DataTableSortProps) {
                 isMultiSelect={false}
                 buttonChildren={
                   <div className='w-full flex items-center justify-between'>
-                    <span>{sortableColumns.find((sc) => sc.id === columnSort.id).content}</span>
+                    <span>{SORTABLE_COLUMNS.find((sc) => sc.id === columnSort.id).content}</span>
                     <ChevronsUpDown />
                   </div>
                 }
@@ -101,14 +101,14 @@ export function DataTableSort({ table }: DataTableSortProps) {
               <Select
                 open={selectOpen === columnSort.id}
                 onOpenChange={(isOpen) => setSelectOpen(isOpen ? columnSort.id : null)}
-                value={(columnSort.desc ? 'desc' : 'asc') as keyof typeof sortableOrders}
-                onValueChange={(val) => handleChangeSortOrder(columnSort.id, val as keyof typeof sortableOrders)}
+                value={(columnSort.desc ? 'desc' : 'asc') as keyof typeof SORTABLE_ORDERS}
+                onValueChange={(val) => handleChangeSortOrder(columnSort.id, val as keyof typeof SORTABLE_ORDERS)}
               >
                 <SelectTrigger className='w-[75px]'>
-                  <SelectValue placeholder={columnSort.desc ? sortableOrders['desc'] : sortableOrders['asc']} />
+                  <SelectValue placeholder={columnSort.desc ? SORTABLE_ORDERS['desc'] : SORTABLE_ORDERS['asc']} />
                 </SelectTrigger>
                 <SelectContent className='!w-[75px]'>
-                  {Object.entries(sortableOrders).map(([key, value]) => (
+                  {Object.entries(SORTABLE_ORDERS).map(([key, value]) => (
                     <SelectItem key={key} value={key}>
                       {value}
                     </SelectItem>
@@ -122,7 +122,7 @@ export function DataTableSort({ table }: DataTableSortProps) {
           ))}
         </ul>
         <div className='flex w-full items-center gap-4'>
-          <Button disabled={sortState.length === sortableColumns.length} onClick={handleAddSort}>
+          <Button disabled={sortState.length === SORTABLE_COLUMNS.length} onClick={handleAddSort}>
             Add sort
           </Button>
           {sortState.length > 0 && (
