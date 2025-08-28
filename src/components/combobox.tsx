@@ -7,12 +7,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Dispatch, ReactNode, SetStateAction, useCallback, useState } from 'react';
+import { Dispatch, Fragment, ReactNode, SetStateAction, useCallback, useState } from 'react';
 
 export interface ComboboxItem {
   id: string;
   content: ReactNode;
   totalCount?: number;
+  groupHeading?: ReactNode;
 }
 
 interface ComboboxProps {
@@ -26,6 +27,7 @@ interface ComboboxProps {
   searchPlaceholder?: string;
   emptySearchString?: string;
   includeClearButton?: boolean;
+  disabled?: boolean;
 }
 export function Combobox({
   items,
@@ -38,6 +40,7 @@ export function Combobox({
   searchPlaceholder,
   emptySearchString,
   includeClearButton,
+  disabled,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
 
@@ -67,9 +70,17 @@ export function Combobox({
     setOpen(false);
   }, [setSelectedItems]);
 
+  const groupHeadingMap = {};
+  const groupedItems = Object.groupBy(items, ({ groupHeading }) => {
+    const groupKey = groupHeading?.toString() ?? '';
+    groupHeadingMap[groupKey] = groupHeading ?? '';
+    return groupKey;
+  });
+  const groupedItemCount = Object.keys(groupedItems).length;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild disabled={disabled}>
         <Button variant='outline' role='combobox' aria-expanded={open} className={cn('justify-between', buttonClassName)}>
           {buttonChildren}
         </Button>
@@ -79,29 +90,36 @@ export function Combobox({
           <CommandInput placeholder={searchPlaceholder ? searchPlaceholder : 'Search...'} className='h-9' />
           <CommandList>
             <CommandEmpty>{emptySearchString ? emptySearchString : 'No results found.'}</CommandEmpty>
-            <CommandGroup>
-              {items.map((item) => (
-                <CommandItem key={item.id} value={item.id} onSelect={(id) => handleItemSelect(id)}>
-                  {isMultiSelect && <Checkbox checked={selectedItems && selectedItems.includes(item.id)} />}
-                  {!isMultiSelect && item.totalCount !== undefined && (
-                    <Check className={cn('mr-1', selectedItems.includes(item.id) ? 'opacity-100' : 'opacity-0')} />
-                  )}
-                  {item.content}
-                  {item.totalCount !== undefined && <p className='ml-auto'>{item.totalCount}</p>}
-                  {item.totalCount === undefined && !isMultiSelect && (
-                    <Check className={cn('ml-auto', selectedItems.includes(item.id) ? 'opacity-100' : 'opacity-0')} />
-                  )}
-                </CommandItem>
-              ))}
-              {includeClearButton && selectedItems && selectedItems.length > 0 && (
-                <>
-                  <CommandSeparator />
+            {Object.entries(groupedItems).map(([key, values], groupItemIndex) => (
+              <Fragment key={key}>
+                <CommandGroup heading={groupHeadingMap[key]}>
+                  {values.map((value) => (
+                    <CommandItem key={value.id} value={value.id} onSelect={(id) => handleItemSelect(id)}>
+                      {isMultiSelect && <Checkbox checked={selectedItems && selectedItems.includes(value.id)} />}
+                      {!isMultiSelect && value.totalCount !== undefined && (
+                        <Check className={cn('mr-1', selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
+                      )}
+                      {value.content}
+                      {value.totalCount !== undefined && <p className='ml-auto'>{value.totalCount}</p>}
+                      {value.totalCount === undefined && !isMultiSelect && (
+                        <Check className={cn('ml-auto', selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
+                      )}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                {groupItemIndex < groupedItemCount - 1 && <CommandSeparator />}
+              </Fragment>
+            ))}
+            {includeClearButton && selectedItems && selectedItems.length > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup>
                   <CommandItem onSelect={handleClearSelection}>
                     <p className='w-full py-1 text-center'>Clear Selection</p>
                   </CommandItem>
-                </>
-              )}
-            </CommandGroup>
+                </CommandGroup>
+              </>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

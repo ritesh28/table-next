@@ -1,4 +1,4 @@
-import { Filter, FilterString } from '@/model/table-filters';
+import { Filter } from '@/model/table-filters';
 import { immerable, produce } from 'immer';
 
 export type AndOr = 'And' | 'Or';
@@ -22,6 +22,9 @@ export class FilterGroup {
   get filterListAndOr() {
     return this._filterListAndOr;
   }
+  get isSimpleFilterGroup() {
+    return this._type === 'simple';
+  }
 
   setFilterListAndOr(value: AndOr) {
     return produce(this, (draft: this) => {
@@ -42,12 +45,6 @@ export class FilterGroup {
     return produce(this, (draft: this) => {
       // 'this' type is a workaround to modifying private fields with immer.js
       draft._filters.push(filter);
-    });
-  }
-
-  addDefaultFilter() {
-    return produce(this, (draft: this) => {
-      draft._filters.push(new FilterString('title', 'contains', ''));
     });
   }
 

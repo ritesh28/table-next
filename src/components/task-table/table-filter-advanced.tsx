@@ -1,11 +1,12 @@
-import { Combobox } from '@/components/combobox';
+import { Combobox, ComboboxItem } from '@/components/combobox';
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AndOr, FilterGroup } from '@/model/table-filter-group';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { SORTABLE_COLUMNS, Task } from '@/model/task';
+import { FilterPlaceholder } from '@/model/table-filters';
+import { ADVANCED_FILTER_COLUMNS, ALL_FILTER_GROUPS, COLUMN_FILTER_OPERATOR_MAP, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { ChevronsUpDown, Minus, Plus, X } from 'lucide-react';
 import { Fragment, useCallback } from 'react';
@@ -30,15 +31,37 @@ function getFilterGroupGridRow(filterGroupCollection: FilterGroupCollection, fil
   return { gridRowStart, gridRowEnd };
 }
 
+// type OperatorGroup = keyof typeof ALL_FILTER_GROUPS;
+// interface UnresolvedFilter {
+//   columnId: string;
+//   operatorGroup?: OperatorGroup;
+//   operator?: (typeof ALL_FILTER_GROUPS)[OperatorGroup]['operator'][number];
+//   value1?: string | number | Moment;
+//   value2?: string | number | Moment;
+//   filterGroupIndex: number;
+//   filterIndex: number;
+// }
+
+// interface UnresolvedFilterAction {
+//   type: 'update_columnId';
+// }
+
+// function reducer(state: UnresolvedFilter[], action: UnresolvedFilterAction) {
+//   return state;
+// }
+
 export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) {
+  // const [state, dispatch] = useReducer(reducer, []);
   const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
 
   const addFilterGroup = useCallback(() => {
-    const filterGroup = new FilterGroup('advanced').addDefaultFilter();
+    const filter = new FilterPlaceholder();
+    const filterGroup = new FilterGroup('advanced', [filter]);
     const newFilterGroupCollection = (filterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
     table.getColumn(FILTER_COLUMN_ID).setFilterValue(newFilterGroupCollection);
   }, [table, filterGroupCollection]);
 
+  //todo: disable simple filter group
   return (
     <div>
       <Card>
@@ -50,7 +73,10 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                   className='col-start-1'
                   style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + 1 }}
                 >
-                  <p>Filter Group {filterGroupIndex + 1}</p>
+                  <p>
+                    Filter Group {filterGroupIndex + 1}{' '}
+                    {filterGroup.isSimpleFilterGroup && <span className='text-sm text-muted-foreground'>[Simple]</span>}
+                  </p>
                 </div>
                 <div
                   className='col-start-2'
@@ -115,18 +141,19 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-3'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
-                      <p>{}</p>
                       <Combobox
+                        disabled={filterGroup.isSimpleFilterGroup}
                         buttonClassName='w-[175px]'
                         popoverContentClassName='w-[175px]'
-                        items={[...SORTABLE_COLUMNS]}
+                        items={[...ADVANCED_FILTER_COLUMNS]}
                         selectedItems={[filter.columnId]}
+                        // todo
                         // setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
                         setSelectedItems={() => {}}
                         isMultiSelect={false}
                         buttonChildren={
                           <div className='w-full flex items-center justify-between'>
-                            <span>{SORTABLE_COLUMNS.find((sc) => sc.id === filter.columnId).content}</span>
+                            <span>{ADVANCED_FILTER_COLUMNS.find((afc) => afc.id === filter.columnId).content}</span>
                             <ChevronsUpDown />
                           </div>
                         }
@@ -136,7 +163,32 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-4'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
-                      <p>{filter.operator}</p>
+                      <Combobox
+                        disabled={filterGroup.isSimpleFilterGroup}
+                        buttonClassName='w-[175px]'
+                        popoverContentClassName='w-[175px]'
+                        items={COLUMN_FILTER_OPERATOR_MAP[filter.columnId].reduce((accumulator, currentValue) => {
+                          return [
+                            ...accumulator,
+                            ...ALL_FILTER_GROUPS[currentValue].operator.map((op: string) => ({
+                              id: op,
+                              content: op[0].toUpperCase() + op.substring(1),
+                              groupHeading: currentValue,
+                            })),
+                          ];
+                        }, [] as ComboboxItem[])}
+                        selectedItems={[filter.operator]}
+                        // todo
+                        // setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
+                        setSelectedItems={() => {}}
+                        isMultiSelect={false}
+                        buttonChildren={
+                          <div className='w-full flex items-center justify-between'>
+                            <span>{filter.operator && 'Select Operator...'}</span>
+                            <ChevronsUpDown />
+                          </div>
+                        }
+                      />
                     </div>
                     <div
                       className='col-start-5'
@@ -159,7 +211,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                             )
                         }
                       >
-                        <SelectTrigger className='w-[75px]'>
+                        <SelectTrigger className='w-[75px]' disabled={filterGroup.isSimpleFilterGroup}>
                           <SelectValue placeholder={(filterGroup.filterListAndOr === 'And' ? 'And' : 'Or') as AndOr} />
                         </SelectTrigger>
                         <SelectContent className='!w-[75px]'>
@@ -182,6 +234,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
                       <Button
+                        disabled={filterGroup.isSimpleFilterGroup}
                         variant='outline'
                         size='icon'
                         onClick={() =>

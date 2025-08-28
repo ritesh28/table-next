@@ -19,7 +19,41 @@ export abstract class Filter<TOperator extends string, TValue> {
   }
 }
 
-const FilterEmptyOperator = ['is empty', 'is not empty'] as const;
+/**
+ * This Filter class is used as a placeholder when user is filling out values for a filter
+ */
+export class FilterPlaceholder extends Filter<string, unknown> {
+  constructor() {
+    super('title', '', null);
+  }
+
+  // DO NOT REMOVE getter (I know its already present in the parent class)
+  // TS does not throw error - https://github.com/microsoft/TypeScript/issues/47581
+  get columnId() {
+    return this._columnId;
+  }
+  get operator() {
+    return this._operator;
+  }
+  get value() {
+    return this._value;
+  }
+  set columnId(v: keyof Task) {
+    this._columnId = v;
+  }
+  set operator(v: string) {
+    this._operator = v;
+  }
+  set value(v: unknown) {
+    this._value = v;
+  }
+
+  filterRow(_row: unknown) {
+    return true;
+  }
+}
+
+export const FilterEmptyOperator = ['is empty', 'is not empty'] as const;
 type FilterEmptyOperatorType = (typeof FilterEmptyOperator)[number];
 export class FilterEmpty extends Filter<FilterEmptyOperatorType, null> {
   constructor(columnId: keyof Task, operator: FilterEmptyOperatorType) {
@@ -34,7 +68,7 @@ export class FilterEmpty extends Filter<FilterEmptyOperatorType, null> {
   }
 }
 
-const FilterStringOperator = ['contains', 'does not contain', 'is', 'is not'] as const;
+export const FilterStringOperator = ['contains', 'does not contain', 'is', 'is not'] as const;
 type FilterStringOperatorType = (typeof FilterStringOperator)[number];
 export class FilterString extends Filter<FilterStringOperatorType, string> {
   constructor(columnId: keyof Task, operator: FilterStringOperatorType, value: string) {
@@ -51,7 +85,7 @@ export class FilterString extends Filter<FilterStringOperatorType, string> {
   }
 }
 
-const FilterListOperator = ['has any of', 'has none of'] as const;
+export const FilterListOperator = ['has any of', 'has none of'] as const;
 type FilterListOperatorType = (typeof FilterListOperator)[number];
 export class FilterList extends Filter<FilterListOperatorType, unknown[]> {
   constructor(columnId: keyof Task, operator: FilterListOperatorType, value: unknown[]) {
@@ -66,7 +100,14 @@ export class FilterList extends Filter<FilterListOperatorType, unknown[]> {
   }
 }
 
-const FilterNumberOperator = ['is', 'is not', 'is less than', 'is less than or equal to', 'is greater than', 'is greater than or equal to'] as const;
+export const FilterNumberOperator = [
+  'is',
+  'is not',
+  'is less than',
+  'is less than or equal to',
+  'is greater than',
+  'is greater than or equal to',
+] as const;
 type FilterNumberOperatorType = (typeof FilterNumberOperator)[number];
 export class FilterNumber extends Filter<FilterNumberOperatorType, number> {
   constructor(columnId: keyof Task, operator: FilterNumberOperatorType, value: number) {
@@ -85,7 +126,7 @@ export class FilterNumber extends Filter<FilterNumberOperatorType, number> {
   }
 }
 
-const FilterNumberRangeOperator = ['is between'] as const;
+export const FilterNumberRangeOperator = ['is between'] as const;
 type FilterNumberRangeOperatorType = (typeof FilterNumberRangeOperator)[number];
 export class FilterNumberRange extends Filter<FilterNumberRangeOperatorType, [number, number]> {
   constructor(columnId: keyof Task, operator: FilterNumberRangeOperatorType, value: [number, number]) {
@@ -100,7 +141,7 @@ export class FilterNumberRange extends Filter<FilterNumberRangeOperatorType, [nu
   }
 }
 
-const FilterDateOperator = ['is', 'is not', 'is before', 'is on or before', 'is after', 'is on or after'] as const;
+export const FilterDateOperator = ['is', 'is not', 'is before', 'is on or before', 'is after', 'is on or after'] as const;
 type FilterDateOperatorType = (typeof FilterDateOperator)[number];
 export class FilterDate extends Filter<FilterDateOperatorType, Moment> {
   constructor(columnId: keyof Task, operator: FilterDateOperatorType, value: Moment) {
@@ -119,7 +160,7 @@ export class FilterDate extends Filter<FilterDateOperatorType, Moment> {
   }
 }
 
-const FilterDateRangeOperator = ['is between'] as const;
+export const FilterDateRangeOperator = ['is between'] as const;
 type FilterDateRangeOperatorType = (typeof FilterDateRangeOperator)[number];
 export class FilterDateRange extends Filter<FilterDateRangeOperatorType, [Moment, Moment]> {
   constructor(columnId: keyof Task, operator: FilterDateRangeOperatorType, value: [Moment, Moment]) {
@@ -134,7 +175,7 @@ export class FilterDateRange extends Filter<FilterDateRangeOperatorType, [Moment
   }
 }
 
-const FilterDateRelativeOperator = ['a week ago', 'a month ago', '3 months ago', '6 months ago', '1 year ago'] as const;
+export const FilterDateRelativeOperator = ['a week ago', 'a month ago', '3 months ago', '6 months ago', '1 year ago'] as const;
 type FilterDateRelativeOperatorType = (typeof FilterDateRelativeOperator)[number];
 export class FilterDateRelative extends Filter<FilterDateRelativeOperatorType, null> {
   constructor(columnId: keyof Task, operator: FilterDateRelativeOperatorType) {
