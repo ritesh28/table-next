@@ -32,12 +32,18 @@ export class FilterGroup {
     });
   }
 
-  firstFilterIndex(columnId: string) {
-    // useful in case of simple filter group since for a column theres only one filter
+  /**
+   * @description useful in case of *simple filter group* since for a column theres only one filter
+   * @returns first matched filter index number
+   */
+  getFilterIndexByColumnId(columnId: string) {
     return this._filters.findIndex((f) => f.columnId === columnId);
   }
-  firstFilter(columnId: string) {
-    // useful in case of simple filter group since for a column theres only one filter
+  /**
+   * @description useful in case of *simple filter group* since for a column theres only one filter
+   * @returns first matched filter
+   */
+  getFilterByColumnId(columnId: string) {
     return this._filters.find((f) => f.columnId === columnId);
   }
 
@@ -53,10 +59,13 @@ export class FilterGroup {
       draft._filters.splice(index, 1, newFilter);
     });
   }
+
+  /**
+   * @description this is for simple filter group where for a column id there is one filter
+   */
   replaceOrAddFilterByCol(newFilter: Filter<string, unknown>, columnId: string) {
-    // this is for simple filter group where for a column id there is one filter
     return produce(this, (draft: this) => {
-      const index = draft.firstFilterIndex(columnId);
+      const index = draft.getFilterIndexByColumnId(columnId);
       if (index === -1) {
         draft.addNewFilter(newFilter);
       } else {
@@ -71,10 +80,12 @@ export class FilterGroup {
     });
   }
 
+  /**
+   * @description this is for simple filter group where for a column id there is one filter
+   */
   deleteFilterByCol(columnId: string) {
-    // this is for simple filter group where for a column id there is one filter
     return produce(this, (draft: this) => {
-      const index = draft.firstFilterIndex(columnId);
+      const index = draft.getFilterIndexByColumnId(columnId);
       if (index !== -1) {
         draft._filters.splice(index, 1);
       }

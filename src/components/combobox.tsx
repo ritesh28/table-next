@@ -48,17 +48,13 @@ export function Combobox({
     (itemId: string) => {
       if (isMultiSelect) {
         // check if the item is already selected. If so, unselect it
-        if (selectedItems && selectedItems.includes(itemId)) {
+        if (selectedItems?.includes(itemId)) {
           setSelectedItems((oldVals) => oldVals.filter((val) => val !== itemId));
         } else {
           setSelectedItems((oldVals) => (oldVals ? [...oldVals, itemId] : [itemId]));
         }
       } else {
-        if (selectedItems || selectedItems.includes(itemId)) {
-          setSelectedItems(null);
-        } else {
-          setSelectedItems([itemId]);
-        }
+        setSelectedItems([itemId]);
         setOpen(false);
       }
     },

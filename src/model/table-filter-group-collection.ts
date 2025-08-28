@@ -26,23 +26,13 @@ export class FilterGroupCollection {
   static removeColumnFilterFromSimpleFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, columnId: string) {
     if (!filterGroupCollection) return filterGroupCollection;
     if (!filterGroupCollection.simpleFilterGroup) return filterGroupCollection;
-    const filterIndex = filterGroupCollection.simpleFilterGroup.firstFilterIndex(columnId);
+    const filterIndex = filterGroupCollection.simpleFilterGroup.getFilterIndexByColumnId(columnId);
     if (filterIndex === -1) return filterGroupCollection;
     const newSimpleFilterGroup = filterGroupCollection.simpleFilterGroup.deleteFilterByCol(columnId);
     const newFilterGroupCollection =
       newSimpleFilterGroup.filters.length === 0
         ? filterGroupCollection.deleteSimpleFilterGroup()
         : filterGroupCollection.replaceSimpleFilterGroup(newSimpleFilterGroup);
-    return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
-  }
-
-  static removeColumnFilterFromFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, filterGroupIndex: number, filterIndex: number) {
-    const filterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
-    const newFilterGroup = filterGroup.deleteFilter(filterIndex);
-    const newFilterGroupCollection =
-      newFilterGroup.filters.length === 0
-        ? filterGroupCollection.deleteFilterGroup(filterGroupIndex)
-        : filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
     return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
   }
 
@@ -61,7 +51,7 @@ export class FilterGroupCollection {
       const newFilterGroupCollection = filterGroupCollection.addNewFilterGroup(simpleFilterGroup);
       return newFilterGroupCollection;
     }
-    const filterIndex = filterGroupCollection.simpleFilterGroup.firstFilterIndex(columnId);
+    const filterIndex = filterGroupCollection.simpleFilterGroup.getFilterIndexByColumnId(columnId);
     const newSimpleFilterGroup =
       filterIndex === -1
         ? filterGroupCollection.simpleFilterGroup.addNewFilter(filter)
@@ -70,7 +60,32 @@ export class FilterGroupCollection {
     return newFilterGroupCollection;
   }
 
+  static removeFilterFromFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, filterGroupIndex: number, filterIndex: number) {
+    if (!filterGroupCollection) return undefined;
+    const filterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
+    const newFilterGroup = filterGroup.deleteFilter(filterIndex);
+    const newFilterGroupCollection =
+      newFilterGroup.filters.length === 0
+        ? filterGroupCollection.deleteFilterGroup(filterGroupIndex)
+        : filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
+    return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
+  }
+
+  static replaceFilterInFilterGroup(
+    filterGroupCollection: FilterGroupCollection | undefined,
+    newFilter: Filter<string, unknown>,
+    filterGroupIndex: number,
+    filterIndex: number,
+  ) {
+    if (!filterGroupCollection) return undefined;
+    const oldFilterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
+    const newFilterGroup = oldFilterGroup.replaceFilter(newFilter, filterIndex);
+    const newFilterGroupCollection = filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
+    return newFilterGroupCollection;
+  }
+
   static setFilterListAndOr(filterGroupCollection: FilterGroupCollection | undefined, filterGroupIndex: number, value: AndOr) {
+    if (!filterGroupCollection) return undefined;
     const filterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
     const newFilterGroup = filterGroup.setFilterListAndOr(value);
     const newFilterGroupCollection = filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);

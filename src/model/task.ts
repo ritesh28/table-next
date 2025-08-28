@@ -136,6 +136,7 @@ export const ALL_FILTER_GROUPS = {
   'Numeric Range': {
     operator: FilterNumberRangeOperator,
     filterClass: FilterNumberRange,
+    // todo: add property to class for UI
   },
   Date: {
     operator: FilterDateOperator,

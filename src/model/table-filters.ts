@@ -23,8 +23,8 @@ export abstract class Filter<TOperator extends string, TValue> {
  * This Filter class is used as a placeholder when user is filling out values for a filter
  */
 export class FilterPlaceholder extends Filter<string, unknown> {
-  constructor() {
-    super('title', '', null);
+  constructor(columnId: keyof Task = 'title', operator: string = '', value: unknown = null) {
+    super(columnId, operator, value);
   }
 
   // DO NOT REMOVE getter (I know its already present in the parent class)

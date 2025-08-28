@@ -31,35 +31,37 @@ function getFilterGroupGridRow(filterGroupCollection: FilterGroupCollection, fil
   return { gridRowStart, gridRowEnd };
 }
 
-// type OperatorGroup = keyof typeof ALL_FILTER_GROUPS;
-// interface UnresolvedFilter {
-//   columnId: string;
-//   operatorGroup?: OperatorGroup;
-//   operator?: (typeof ALL_FILTER_GROUPS)[OperatorGroup]['operator'][number];
-//   value1?: string | number | Moment;
-//   value2?: string | number | Moment;
-//   filterGroupIndex: number;
-//   filterIndex: number;
-// }
-
-// interface UnresolvedFilterAction {
-//   type: 'update_columnId';
-// }
-
-// function reducer(state: UnresolvedFilter[], action: UnresolvedFilterAction) {
-//   return state;
-// }
-
 export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) {
-  // const [state, dispatch] = useReducer(reducer, []);
   const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
 
-  const addFilterGroup = useCallback(() => {
-    const filter = new FilterPlaceholder();
-    const filterGroup = new FilterGroup('advanced', [filter]);
-    const newFilterGroupCollection = (filterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue(newFilterGroupCollection);
-  }, [table, filterGroupCollection]);
+  const addNewFilterGroup = useCallback(() => {
+    table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
+      const filterGroup = new FilterGroup('advanced', [new FilterPlaceholder()]);
+      const newFilterGroupCollection = (oldFilterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
+      return newFilterGroupCollection;
+    });
+  }, [table]);
+
+  const updateFilterColumn = useCallback(
+    (columnId: keyof Task, filterGroupIndex: number, filterIndex: number) => {
+      table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+        const filter = new FilterPlaceholder(columnId);
+        return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, filter, filterGroupIndex, filterIndex);
+      });
+    },
+    [table],
+  );
+
+  const updateFilterOperator = useCallback(
+    (operator: string, filterGroupIndex: number, filterIndex: number) => {
+      table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+        const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
+        const newFilter = new FilterPlaceholder(oldFilter.columnId, operator);
+        return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
+      });
+    },
+    [table],
+  );
 
   //todo: disable simple filter group
   return (
@@ -147,9 +149,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         popoverContentClassName='w-[175px]'
                         items={[...ADVANCED_FILTER_COLUMNS]}
                         selectedItems={[filter.columnId]}
-                        // todo
-                        // setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
-                        setSelectedItems={() => {}}
+                        setSelectedItems={(newIds) => updateFilterColumn(newIds[0], filterGroupIndex, filterIndex)}
                         isMultiSelect={false}
                         buttonChildren={
                           <div className='w-full flex items-center justify-between'>
@@ -178,13 +178,11 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                           ];
                         }, [] as ComboboxItem[])}
                         selectedItems={[filter.operator]}
-                        // todo
-                        // setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
-                        setSelectedItems={() => {}}
+                        setSelectedItems={(newIds) => updateFilterOperator(newIds[0], filterGroupIndex, filterIndex)}
                         isMultiSelect={false}
                         buttonChildren={
                           <div className='w-full flex items-center justify-between'>
-                            <span>{filter.operator && 'Select Operator...'}</span>
+                            <span>{filter.operator || 'Select Operator...'}</span>
                             <ChevronsUpDown />
                           </div>
                         }
@@ -241,7 +239,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                           table
                             .getColumn(FILTER_COLUMN_ID)
                             .setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
-                              FilterGroupCollection.removeColumnFilterFromFilterGroup(oldFilterGroupCollection, filterGroupIndex, filterIndex),
+                              FilterGroupCollection.removeFilterFromFilterGroup(oldFilterGroupCollection, filterGroupIndex, filterIndex),
                             )
                         }
                       >
@@ -260,7 +258,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
             ))}
           </div>
           {/* todo */}
-          <Button onClick={addFilterGroup}>
+          <Button onClick={addNewFilterGroup}>
             <Plus /> <span>Add Filter Group</span>
           </Button>
         </CardContent>
