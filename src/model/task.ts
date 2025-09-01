@@ -1,22 +1,4 @@
-import {
-  Filter,
-  FilterDate,
-  FilterDateOperator,
-  FilterDateRange,
-  FilterDateRangeOperator,
-  FilterDateRelative,
-  FilterDateRelativeOperator,
-  FilterEmpty,
-  FilterEmptyOperator,
-  FilterList,
-  FilterListOperator,
-  FilterNumber,
-  FilterNumberOperator,
-  FilterNumberRange,
-  FilterNumberRangeOperator,
-  FilterString,
-  FilterStringOperator,
-} from '@/model/table-filters';
+import { FILTER_OPERATOR_TYPES } from '@/model/table-filters';
 import { AlarmClockCheck, ArrowDown, ArrowRight, ArrowUp, CircleCheck, CircleX, LoaderCircle, LucideIcon } from 'lucide-react';
 import moment from 'moment';
 import { ReactNode } from 'react';
@@ -116,42 +98,6 @@ export const ADVANCED_FILTER_COLUMNS = [
   { id: 'created_at', content: 'Created At' },
 ] as const satisfies Readonly<{ id: keyof Task; content: string }[]>;
 
-export const ALL_FILTER_GROUPS = {
-  Emptiness: {
-    operator: FilterEmptyOperator,
-    filterClass: FilterEmpty,
-  },
-  Text: {
-    operator: FilterStringOperator,
-    filterClass: FilterString,
-  },
-  Choice: {
-    operator: FilterListOperator,
-    filterClass: FilterList,
-  },
-  Numeric: {
-    operator: FilterNumberOperator,
-    filterClass: FilterNumber,
-  },
-  'Numeric Range': {
-    operator: FilterNumberRangeOperator,
-    filterClass: FilterNumberRange,
-    // todo: add property to class for UI
-  },
-  Date: {
-    operator: FilterDateOperator,
-    filterClass: FilterDate,
-  },
-  'Date Range': {
-    operator: FilterDateRangeOperator,
-    filterClass: FilterDateRange,
-  },
-  'Date Relative': {
-    operator: FilterDateRelativeOperator,
-    filterClass: FilterDateRelative,
-  },
-} as const satisfies Readonly<Record<string, { operator: Readonly<string[]>; filterClass: typeof Filter<string, unknown> }>>;
-
 export const COLUMN_FILTER_OPERATOR_MAP = {
   task_id: ['Text'],
   title: ['Text'],
@@ -160,4 +106,4 @@ export const COLUMN_FILTER_OPERATOR_MAP = {
   label: ['Choice', 'Emptiness'],
   estimated_hours: ['Numeric', 'Numeric Range', 'Emptiness'],
   created_at: ['Date', 'Date Range', 'Date Relative'],
-} as const satisfies Readonly<Record<keyof Task, (keyof typeof ALL_FILTER_GROUPS)[]>>;
+} as const satisfies Readonly<Record<keyof Task, (keyof typeof FILTER_OPERATOR_TYPES)[]>>;
