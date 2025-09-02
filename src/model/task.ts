@@ -1,4 +1,14 @@
-import { FILTER_OPERATOR_TYPES } from '@/model/table-filters';
+import {
+  Filter,
+  FilterDate,
+  FilterDateRange,
+  FilterDateRelative,
+  FilterEmpty,
+  FilterList,
+  FilterNumber,
+  FilterNumberRange,
+  FilterString,
+} from '@/model/table-filters';
 import { AlarmClockCheck, ArrowDown, ArrowRight, ArrowUp, CircleCheck, CircleX, LoaderCircle, LucideIcon } from 'lucide-react';
 import moment from 'moment';
 import { ReactNode } from 'react';
@@ -55,6 +65,7 @@ export const PRIORITY_ICON: Record<Task['priority'], LucideIcon> = {
   high: ArrowUp,
 } as const;
 
+// todo: merge SORTABLE_COLUMNS & ADVANCED_FILTER_COLUMNS & COLUMN_FILTER_OPERATOR_MAP
 export const SORTABLE_COLUMNS = [
   {
     id: 'title',
@@ -99,11 +110,11 @@ export const ADVANCED_FILTER_COLUMNS = [
 ] as const satisfies Readonly<{ id: keyof Task; content: string }[]>;
 
 export const COLUMN_FILTER_OPERATOR_MAP = {
-  task_id: ['Text'],
-  title: ['Text'],
-  status: ['Choice', 'Emptiness'],
-  priority: ['Choice', 'Emptiness'],
-  label: ['Choice', 'Emptiness'],
-  estimated_hours: ['Numeric', 'Numeric Range', 'Emptiness'],
-  created_at: ['Date', 'Date Range', 'Date Relative'],
-} as const satisfies Readonly<Record<keyof Task, (keyof typeof FILTER_OPERATOR_TYPES)[]>>;
+  task_id: [FilterString],
+  title: [FilterString],
+  status: [FilterList, FilterEmpty],
+  priority: [FilterList, FilterEmpty],
+  label: [FilterList, FilterEmpty],
+  estimated_hours: [FilterNumber, FilterNumberRange, FilterEmpty],
+  created_at: [FilterDate, FilterDateRange, FilterDateRelative],
+} as const satisfies Readonly<Record<keyof Task, (typeof Filter<unknown>)[]>>;

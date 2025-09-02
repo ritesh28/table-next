@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AndOr, FilterGroup } from '@/model/table-filter-group';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FILTER_OPERATOR_TYPES, FilterPlaceholder } from '@/model/table-filters';
 import { ADVANCED_FILTER_COLUMNS, COLUMN_FILTER_OPERATOR_MAP, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { ChevronsUpDown, Minus, Plus, X } from 'lucide-react';
@@ -38,6 +37,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const addNewFilterGroup = useCallback(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
+      const filter = 
       const filterGroup = new FilterGroup('advanced', [new FilterPlaceholder()]);
       const newFilterGroupCollection = (oldFilterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
       return newFilterGroupCollection;
@@ -200,6 +200,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-5'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
+                      {filter instanceof FilterPlaceholder}
                       <p>{String(filter.value)}</p>
                     </div>
                     <div
