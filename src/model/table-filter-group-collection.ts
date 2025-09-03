@@ -71,6 +71,14 @@ export class FilterGroupCollection {
     return newFilterGroupCollection.filterGroups.length === 0 ? undefined : newFilterGroupCollection;
   }
 
+  static addFilterInFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, newFilter: Filter<unknown>, filterGroupIndex: number) {
+    if (!filterGroupCollection) return undefined;
+    const oldFilterGroup = filterGroupCollection.filterGroups[filterGroupIndex];
+    const newFilterGroup = oldFilterGroup.addNewFilter(newFilter);
+    const newFilterGroupCollection = filterGroupCollection.replaceFilterGroup(newFilterGroup, filterGroupIndex);
+    return newFilterGroupCollection;
+  }
+
   static replaceFilterInFilterGroup(
     filterGroupCollection: FilterGroupCollection | undefined,
     newFilter: Filter<unknown>,

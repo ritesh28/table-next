@@ -1,11 +1,12 @@
 import { Combobox, ComboboxItem } from '@/components/combobox';
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
+import { DataTableFilterAdvancedValue } from '@/components/task-table/table-filter-advanced-value';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AndOr, FilterGroup } from '@/model/table-filter-group';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FILTER_TYPES } from '@/model/table-filters';
+import { Filter, FILTER_TYPES } from '@/model/table-filters';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { ChevronsUpDown, Minus, Plus, X } from 'lucide-react';
@@ -44,7 +45,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const addNewFilterGroup = useCallback(() => {
     table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
-      const filter = new FILTER_TYPES[COLUMN_FILTER_TYPE_MAP.title[0]]('title');
+      const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP.title[0]];
+      const filter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
       const filterGroup = new FilterGroup('advanced', [filter]);
       const newFilterGroupCollection = (oldFilterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
       return newFilterGroupCollection;
@@ -54,8 +56,9 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
   const updateFilterColumn = useCallback(
     (columnId: keyof Task, filterGroupIndex: number, filterIndex: number) => {
       table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
-        const filter = new FILTER_TYPES[COLUMN_FILTER_TYPE_MAP[columnId][0]](columnId);
-        return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, filter, filterGroupIndex, filterIndex);
+        const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP[columnId][0]];
+        const newFilter = new filterClass(columnId, filterClass.OPERATOR_LIST[0]);
+        return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
       });
     },
     [table],
@@ -204,7 +207,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-5'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
-                      <p>{String(filter.value)}</p>
+                      <DataTableFilterAdvancedValue value={filter.value} ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE} />
                     </div>
                     <div
                       className='col-start-6'
@@ -237,7 +240,20 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-7'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
-                      <p>+</p>
+                      <Button
+                        disabled={filterGroup.isSimpleFilterGroup}
+                        variant='outline'
+                        size='icon'
+                        onClick={() =>
+                          table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+                            const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP['title'][0]];
+                            const newFilter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
+                            return FilterGroupCollection.addFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex);
+                          })
+                        }
+                      >
+                        <Plus />
+                      </Button>
                     </div>
                     <div
                       className='col-start-8'
