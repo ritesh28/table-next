@@ -10,7 +10,7 @@ import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { isTupleOfTwoNumber } from '@/lib/check-type';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FilterNumber, FilterNumberRange } from '@/model/table-filters';
+import { FILTER_TYPES } from '@/model/table-filters';
 
 interface DataTableFilterSimpleEstimatedHourProps {
   table: Table<Task>;
@@ -30,8 +30,8 @@ export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSim
       }
       // add or replace filter
       const filter = isTupleOfTwoNumber(selection)
-        ? new FilterNumberRange(COLUMN_ID, 'is between', selection)
-        : new FilterNumber(COLUMN_ID, 'is', selection);
+        ? new FILTER_TYPES.numberRange(COLUMN_ID, 'is between', selection)
+        : new FILTER_TYPES.number(COLUMN_ID, 'is', selection);
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });

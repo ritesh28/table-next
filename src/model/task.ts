@@ -1,14 +1,4 @@
-import {
-  Filter,
-  FilterDate,
-  FilterDateRange,
-  FilterDateRelative,
-  FilterEmpty,
-  FilterList,
-  FilterNumber,
-  FilterNumberRange,
-  FilterString,
-} from '@/model/table-filters';
+import { FILTER_TYPES } from '@/model/table-filters';
 import { AlarmClockCheck, ArrowDown, ArrowRight, ArrowUp, CircleCheck, CircleX, LoaderCircle, LucideIcon } from 'lucide-react';
 import moment from 'moment';
 import { ReactNode } from 'react';
@@ -65,56 +55,65 @@ export const PRIORITY_ICON: Record<Task['priority'], LucideIcon> = {
   high: ArrowUp,
 } as const;
 
-// todo: merge SORTABLE_COLUMNS & ADVANCED_FILTER_COLUMNS & COLUMN_FILTER_OPERATOR_MAP
-export const SORTABLE_COLUMNS = [
-  {
-    id: 'title',
+export const COLUMN_METADATA = {
+  task_id: {
+    columnId: 'task_id',
+    content: 'Task ID',
+    sortable: false,
+    advancedFilterable: true,
+    filterType: ['string'],
+  },
+  title: {
+    columnId: 'title',
     content: 'Title',
-    order: 0,
+    sortable: true,
+    advancedFilterable: true,
+    filterType: ['string'],
   },
-  {
-    id: 'status',
+  status: {
+    columnId: 'status',
     content: 'Status',
-    order: 1,
+    sortable: true,
+    advancedFilterable: true,
+    filterType: ['list', 'empty'],
   },
-  {
-    id: 'priority',
+  priority: {
+    columnId: 'priority',
     content: 'Priority',
-    order: 2,
+    sortable: true,
+    advancedFilterable: true,
+    filterType: ['list', 'empty'],
   },
-  {
-    id: 'estimated_hours',
+  label: {
+    columnId: 'label',
+    content: 'Label',
+    sortable: false,
+    advancedFilterable: true,
+    filterType: ['list', 'empty'],
+  },
+  estimated_hours: {
+    columnId: 'estimated_hours',
     content: 'Est. Hours',
-    order: 3,
+    sortable: true,
+    advancedFilterable: true,
+    filterType: ['number', 'numberRange', 'empty'],
   },
-  {
-    id: 'created_at',
+  created_at: {
+    columnId: 'created_at',
     content: 'Created At',
-    order: 4,
+    sortable: true,
+    advancedFilterable: true,
+    filterType: ['date', 'dateRange', 'dateRelative'],
   },
-] as const satisfies Readonly<{ id: keyof Task; content: ReactNode; order: number }[]>;
-
-export const SORTABLE_ORDERS = {
-  asc: 'Asc',
-  desc: 'Desc',
-} as const;
-
-export const ADVANCED_FILTER_COLUMNS = [
-  { id: 'task_id', content: 'Task ID' },
-  { id: 'title', content: 'Title' },
-  { id: 'status', content: 'status' },
-  { id: 'priority', content: 'Priority' },
-  { id: 'label', content: 'Label' },
-  { id: 'estimated_hours', content: 'Est. Hours' },
-  { id: 'created_at', content: 'Created At' },
-] as const satisfies Readonly<{ id: keyof Task; content: string }[]>;
-
-export const COLUMN_FILTER_OPERATOR_MAP = {
-  task_id: [FilterString],
-  title: [FilterString],
-  status: [FilterList, FilterEmpty],
-  priority: [FilterList, FilterEmpty],
-  label: [FilterList, FilterEmpty],
-  estimated_hours: [FilterNumber, FilterNumberRange, FilterEmpty],
-  created_at: [FilterDate, FilterDateRange, FilterDateRelative],
-} as const satisfies Readonly<Record<keyof Task, (typeof Filter<unknown>)[]>>;
+} as const satisfies Readonly<
+  Record<
+    keyof Task,
+    {
+      columnId: keyof Task;
+      content: ReactNode;
+      sortable: boolean;
+      advancedFilterable: boolean;
+      filterType: (keyof typeof FILTER_TYPES)[];
+    }
+  >
+>;

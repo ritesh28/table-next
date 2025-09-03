@@ -9,7 +9,7 @@ export function useSyncSimpleFilterGroupAndSelection<TValue>(table: Table<Task>,
   const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
   useEffect(() => {
     if (!filterGroupCollection || !filterGroupCollection.simpleFilterGroup) return setSelection(null);
-    const filter = filterGroupCollection.simpleFilterGroup.getFilterByColumnId(columnId) as undefined | Filter<string, TValue>;
+    const filter = filterGroupCollection.simpleFilterGroup.getFilterByColumnId(columnId) as undefined | Filter<TValue>;
     if (!filter) return setSelection(null);
     return setSelection(filter.value);
   }, [filterGroupCollection, columnId, setSelection]);

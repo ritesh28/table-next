@@ -8,9 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { SORTABLE_COLUMNS, SORTABLE_ORDERS, Task } from '@/model/task';
+import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
+
+const SORTABLE_COLUMNS = Object.values(COLUMN_METADATA)
+  .filter((col) => col.sortable)
+  .map((col) => ({ id: col.columnId, content: col.content }));
+
+const SORTABLE_ORDERS = {
+  asc: 'Asc',
+  desc: 'Desc',
+} as const;
 
 interface DataTableSortProps {
   table: Table<Task>;

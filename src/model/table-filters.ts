@@ -1,31 +1,9 @@
 import moment, { Moment } from 'moment';
 import { Task } from './task';
 
-const ALL_VALUE_TYPE_META = {
-  noUI: {
-    ui: 'noUI',
-  },
-  textBox: {
-    ui: 'textBox',
-  },
-  multiSelect: {
-    ui: 'multiSelect',
-  },
-  numericTextBox: {
-    ui: 'numericTextBox',
-  },
-  '2numericTextBox': {
-    ui: '2numericTextBox',
-  },
-  singleDate: {
-    ui: 'singleDate',
-  },
-  rangeDate: {
-    ui: 'rangeDate',
-  },
-} as const;
+export type UiForValue = 'textBox' | 'numericTextBox' | '2numericTextBox' | 'singleDate' | 'rangeDate' | 'multiSelect' | 'noUI';
 
-abstract class Filter<TValue> {
+export abstract class Filter<TValue> {
   constructor(
     protected _columnId: keyof Task,
     protected _operator?: string,
@@ -46,7 +24,7 @@ abstract class Filter<TValue> {
 class FilterEmpty extends Filter<null> {
   static readonly OPERATOR_GROUP_NAME = 'Emptiness';
   static readonly OPERATOR_LIST = ['is empty', 'is not empty'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META.noUI;
+  static readonly UI_FOR_VALUE: UiForValue = 'noUI';
 
   constructor(columnId: keyof Task, operator?: string) {
     if (operator && !(FilterEmpty.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -66,7 +44,7 @@ class FilterEmpty extends Filter<null> {
 class FilterString extends Filter<string> {
   static readonly OPERATOR_GROUP_NAME = 'Text';
   static readonly OPERATOR_LIST = ['contains', 'does not contain', 'is', 'is not'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META.textBox;
+  static readonly UI_FOR_VALUE: UiForValue = 'textBox';
 
   constructor(columnId: keyof Task, operator?: string, value?: string) {
     if (operator && !(FilterString.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -89,7 +67,7 @@ class FilterString extends Filter<string> {
 class FilterList extends Filter<unknown[]> {
   static readonly OPERATOR_GROUP_NAME = 'Choice';
   static readonly OPERATOR_LIST = ['has any of', 'has none of'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META.multiSelect;
+  static readonly UI_FOR_VALUE: UiForValue = 'multiSelect';
 
   constructor(columnId: keyof Task, operator?: string, value?: unknown[]) {
     if (operator && !(FilterList.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -117,7 +95,7 @@ class FilterNumber extends Filter<number> {
     'is greater than',
     'is greater than or equal to',
   ] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META.numericTextBox;
+  static readonly UI_FOR_VALUE: UiForValue = 'numericTextBox';
 
   constructor(columnId: keyof Task, operator?: string, value?: number) {
     if (operator && !(FilterNumber.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -142,7 +120,7 @@ class FilterNumber extends Filter<number> {
 class FilterNumberRange extends Filter<[number, number]> {
   static readonly OPERATOR_GROUP_NAME = 'Numeric Range';
   static readonly OPERATOR_LIST = ['is between'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META['2numericTextBox'];
+  static readonly UI_FOR_VALUE: UiForValue = '2numericTextBox';
 
   constructor(columnId: keyof Task, operator?: string, value?: [number, number]) {
     if (operator && !(FilterNumberRange.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -162,7 +140,7 @@ class FilterNumberRange extends Filter<[number, number]> {
 class FilterDate extends Filter<Moment> {
   static readonly OPERATOR_GROUP_NAME = 'Date';
   static readonly OPERATOR_LIST = ['is', 'is not', 'is before', 'is on or before', 'is after', 'is on or after'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META['singleDate'];
+  static readonly UI_FOR_VALUE: UiForValue = 'singleDate';
 
   constructor(columnId: keyof Task, operator?: string, value?: Moment) {
     if (operator && !(FilterDate.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -186,7 +164,7 @@ class FilterDate extends Filter<Moment> {
 class FilterDateRange extends Filter<[Moment, Moment]> {
   static readonly OPERATOR_GROUP_NAME = 'Date Range';
   static readonly OPERATOR_LIST = ['is between'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META['rangeDate'];
+  static readonly UI_FOR_VALUE: UiForValue = 'rangeDate';
 
   constructor(columnId: keyof Task, operator?: string, value?: [Moment, Moment]) {
     if (operator && !(FilterDateRange.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -206,7 +184,7 @@ class FilterDateRange extends Filter<[Moment, Moment]> {
 class FilterDateRelative extends Filter<null> {
   static readonly OPERATOR_GROUP_NAME = 'Date Relative';
   static readonly OPERATOR_LIST = ['a week ago', 'a month ago', '3 months ago', '6 months ago', '1 year ago'] as const;
-  static readonly VALUE_META = ALL_VALUE_TYPE_META['noUI'];
+  static readonly UI_FOR_VALUE: UiForValue = 'noUI';
 
   constructor(columnId: keyof Task, operator?: string) {
     if (operator && !(FilterDateRelative.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
@@ -226,15 +204,13 @@ class FilterDateRelative extends Filter<null> {
   }
 }
 
-export {
-  ALL_VALUE_TYPE_META,
-  Filter,
-  FilterDate,
-  FilterDateRange,
-  FilterDateRelative,
-  FilterEmpty,
-  FilterList,
-  FilterNumber,
-  FilterNumberRange,
-  FilterString,
-};
+export const FILTER_TYPES = {
+  date: FilterDate,
+  dateRange: FilterDateRange,
+  dateRelative: FilterDateRelative,
+  empty: FilterEmpty,
+  list: FilterList,
+  number: FilterNumber,
+  numberRange: FilterNumberRange,
+  string: FilterString,
+} as const;

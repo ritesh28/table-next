@@ -9,7 +9,7 @@ export class FilterGroup {
 
   constructor(
     private _type: FilterGroupType = 'advanced',
-    private _filters: Filter<string, unknown>[] = [],
+    private _filters: Filter<unknown>[] = [],
     private _filterListAndOr: AndOr = 'And',
   ) {}
 
@@ -47,14 +47,14 @@ export class FilterGroup {
     return this._filters.find((f) => f.columnId === columnId);
   }
 
-  addNewFilter(filter: Filter<string, unknown>) {
+  addNewFilter(filter: Filter<unknown>) {
     return produce(this, (draft: this) => {
       // 'this' type is a workaround to modifying private fields with immer.js
       draft._filters.push(filter);
     });
   }
 
-  replaceFilter(newFilter: Filter<string, unknown>, index: number) {
+  replaceFilter(newFilter: Filter<unknown>, index: number) {
     return produce(this, (draft: this) => {
       draft._filters.splice(index, 1, newFilter);
     });
@@ -63,7 +63,7 @@ export class FilterGroup {
   /**
    * @description this is for simple filter group where for a column id there is one filter
    */
-  replaceOrAddFilterByCol(newFilter: Filter<string, unknown>, columnId: string) {
+  replaceOrAddFilterByCol(newFilter: Filter<unknown>, columnId: string) {
     return produce(this, (draft: this) => {
       const index = draft.getFilterIndexByColumnId(columnId);
       if (index === -1) {

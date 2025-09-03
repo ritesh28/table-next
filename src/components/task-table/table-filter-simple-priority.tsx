@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FilterList } from '@/model/table-filters';
+import { FILTER_TYPES } from '@/model/table-filters';
 import { PRIORITY_ICON, Task } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
@@ -29,7 +29,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
         return newFilterGroupCollection;
       }
       // add or replace filter
-      const filter = new FilterList(COLUMN_ID, 'has any of', selection);
+      const filter = new FILTER_TYPES.list(COLUMN_ID, 'has any of', selection);
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });

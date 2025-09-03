@@ -38,7 +38,7 @@ export class FilterGroupCollection {
 
   static addOrReplaceColumnFilterFromSimpleFilterGroup(
     filterGroupCollection: FilterGroupCollection | undefined,
-    filter: Filter<string, unknown>,
+    filter: Filter<unknown>,
     columnId: string,
   ) {
     if (!filterGroupCollection) {
@@ -73,7 +73,7 @@ export class FilterGroupCollection {
 
   static replaceFilterInFilterGroup(
     filterGroupCollection: FilterGroupCollection | undefined,
-    newFilter: Filter<string, unknown>,
+    newFilter: Filter<unknown>,
     filterGroupIndex: number,
     filterIndex: number,
   ) {
