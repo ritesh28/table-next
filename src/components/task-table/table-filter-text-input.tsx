@@ -30,8 +30,8 @@ export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProp
   }, [selection, table]);
   return (
     <Input
-      id='filter-title'
-      placeholder='Filter titles...'
+      id='simple-filter-title'
+      placeholder='Search titles...'
       value={selection ?? ''}
       onChange={(event) => setSelection(event.target.value ? event.target.value : null)}
       className='max-w-sm'

@@ -11,7 +11,7 @@ export abstract class Filter<TValue> {
   constructor(
     protected _columnId: keyof Task,
     protected _operator: string,
-    protected _value?: TValue,
+    protected _value: TValue | null = null,
   ) {}
   abstract filterRow(row: unknown): boolean;
   get columnId() {
@@ -48,13 +48,13 @@ class FilterString extends Filter<string> {
   static readonly OPERATOR_LIST = ['contains', 'does not contain', 'is', 'is not'] as const;
   static readonly UI_FOR_VALUE: UiForValue = 'textBox';
 
-  constructor(columnId: keyof Task, operator: string, value?: string) {
+  constructor(columnId: keyof Task, operator: string, value: string | null = null) {
     if (!(FilterString.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as string;
     const filterValue = this.value as string;
@@ -71,13 +71,13 @@ class FilterList extends Filter<unknown[]> {
   static readonly OPERATOR_LIST = ['has any of', 'has none of'] as const;
   static readonly UI_FOR_VALUE: UiForValue = 'multiSelect';
 
-  constructor(columnId: keyof Task, operator: string, value?: unknown[]) {
+  constructor(columnId: keyof Task, operator: string, value: unknown[] | null = null) {
     if (!(FilterList.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as unknown;
     const filterValue = this.value;
@@ -99,13 +99,13 @@ class FilterNumber extends Filter<number> {
   ] as const;
   static readonly UI_FOR_VALUE: UiForValue = 'numericTextBox';
 
-  constructor(columnId: keyof Task, operator: string, value?: number) {
+  constructor(columnId: keyof Task, operator: string, value: number | null = null) {
     if (!(FilterNumber.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as number;
     const filterValue = this.value;
@@ -124,13 +124,13 @@ class FilterNumberRange extends Filter<[number, number]> {
   static readonly OPERATOR_LIST = ['is between'] as const;
   static readonly UI_FOR_VALUE: UiForValue = '2numericTextBox';
 
-  constructor(columnId: keyof Task, operator: string, value?: [number, number]) {
+  constructor(columnId: keyof Task, operator: string, value: [number, number] | null = null) {
     if (!(FilterNumberRange.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as number;
     const [minValue, maxValue] = this.value;
@@ -144,13 +144,13 @@ class FilterDate extends Filter<Moment> {
   static readonly OPERATOR_LIST = ['is', 'is not', 'is before', 'is on or before', 'is after', 'is on or after'] as const;
   static readonly UI_FOR_VALUE: UiForValue = 'singleDate';
 
-  constructor(columnId: keyof Task, operator: string, value?: Moment) {
+  constructor(columnId: keyof Task, operator: string, value: Moment | null = null) {
     if (!(FilterDate.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as Moment;
     if (this._operator === 'is') return moment(colValue).isSame(this.value);
@@ -168,13 +168,13 @@ class FilterDateRange extends Filter<[Moment, Moment]> {
   static readonly OPERATOR_LIST = ['is between'] as const;
   static readonly UI_FOR_VALUE: UiForValue = 'rangeDate';
 
-  constructor(columnId: keyof Task, operator: string, value?: [Moment, Moment]) {
+  constructor(columnId: keyof Task, operator: string, value: [Moment, Moment] | null = null) {
     if (!(FilterDateRange.OPERATOR_LIST as readonly string[]).includes(operator)) throw Error(`Invalid operator '${operator}'`);
     super(columnId, operator, value);
   }
 
   filterRow(row: unknown) {
-    if (typeof this.value === 'undefined') return true; // don't filter out
+    if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as Moment;
     const [minValue, maxValue] = this.value;

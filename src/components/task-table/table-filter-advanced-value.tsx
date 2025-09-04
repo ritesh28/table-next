@@ -1,45 +1,57 @@
+import { DatePickerInputCalendar } from '@/components/date-picker-input-calendar';
+import { RangePickerInputNumber } from '@/components/range-picker-input-number';
+import { Input } from '@/components/ui/input';
+import { isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/check-type';
 import { UiForValue } from '@/model/table-filters';
+import { isMoment } from 'moment';
 
 interface DataTableFilterAdvancedValueProps {
-  value: unknown;
   ui: UiForValue;
+  value: unknown | null;
+  setValue: (value: unknown | null) => void;
+  minValue?: number;
+  maxValue?: number;
 }
 
-export function DataTableFilterAdvancedValue({ value, ui }: DataTableFilterAdvancedValueProps) {
-  console.log(ui);
-
+export function DataTableFilterAdvancedValue({ ui, value, setValue, minValue, maxValue }: DataTableFilterAdvancedValueProps) {
   if (ui === 'noUI') {
     return null;
   }
   if (ui === 'textBox') {
-    // return <input type='text' value={String(value)} readOnly />;
-    return <div>textbox</div>;
+    return (
+      <Input
+        id='advanced-filter-text'
+        placeholder='Search titles...'
+        value={value ? String(value) : ''}
+        onChange={(event) => setValue(event.target.value ? event.target.value : null)}
+        className='max-w-sm'
+      />
+    );
   }
   if (ui === 'numericTextBox') {
-    // return <input type='number' value={Number(value)} readOnly />;
-    return <div>numeric textbox</div>;
+    return (
+      <Input
+        id='advanced-filter-number'
+        type='number'
+        placeholder='Enter a value...'
+        value={Number(value) || ''}
+        onChange={(event) => setValue(event.target.value ? Number(event.target.value) : null)}
+        className='max-w-sm'
+      />
+    );
   }
   if (ui === '2numericTextBox') {
-    // return (
-    //   <div className='grid grid-cols-2 gap-2'>
-    //     <input type='number' value={Number(value[0])} readOnly />
-    //     <input type='number' value={Number(value[1])} readOnly />
-    //   </div>
-    // );
-    return <div>2 numeric textbox</div>;
+    const variableMin = value === null ? minValue : isTupleOfTwoNumber(value) ? value[0] : Number(value);
+    const variableMax = value === null ? maxValue : isTupleOfTwoNumber(value) ? value[1] : Number(value);
+    return <RangePickerInputNumber min={minValue} max={maxValue} variableMin={variableMin} variableMax={variableMax} setRange={setValue} />;
   }
   if (ui === 'singleDate') {
-    // return <input type='date' value={String(value)} readOnly />;
-    return <div>single date</div>;
+    return <DatePickerInputCalendar dateRange={isMoment(value) ? value : null} setDateRange={setValue} calendarMode='single' />;
   }
   if (ui === 'rangeDate') {
-    // return (
-    //   <div className='grid grid-cols-2 gap-2'>
-    //     <input type='date' value={String(value[0])} readOnly />
-    //     <input type='date' value={String(value[1])} readOnly />
-    //   </div>
-    // );
-    return <div>range date</div>;
+    return (
+      <DatePickerInputCalendar dateRange={isTupleOfTwoMoment(value) || isMoment(value) ? value : null} setDateRange={setValue} calendarMode='range' />
+    );
   }
   if (ui === 'multiSelect') {
     // return (

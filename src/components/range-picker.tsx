@@ -1,10 +1,10 @@
 'use client';
 
-import { CirclePlus, CircleX, Timer } from 'lucide-react';
+import { CirclePlus, CircleX } from 'lucide-react';
 
+import { RangePickerInputNumber } from '@/components/range-picker-input-number';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { InputWithIcon } from '@/components/ui/input-with-icon';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
@@ -52,36 +52,7 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
       <PopoverContent align='start' className='w-[250px] p-1'>
         <div>Est. Hours</div>
         <div className='flex gap-4'>
-          <InputWithIcon
-            type='number'
-            endIcon={Timer}
-            min={min}
-            max={variableMax}
-            value={variableMin}
-            onChange={(e) =>
-              setRange((oldRange) => {
-                const value = parseInt(e.target.value, 10);
-                const newVal2 = oldRange === null ? max : isTupleOfTwoNumber(oldRange) ? oldRange[1] : oldRange;
-                const newVal1 = Number.isNaN(value) || value > newVal2 || value < min ? variableMin : value;
-                return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
-              })
-            }
-          />
-          <InputWithIcon
-            type='number'
-            endIcon={Timer}
-            min={variableMin}
-            max={max}
-            value={variableMax}
-            onChange={(e) =>
-              setRange((oldRange) => {
-                const newVal1 = oldRange === null ? min : isTupleOfTwoNumber(oldRange) ? oldRange[0] : oldRange;
-                const value = parseInt(e.target.value, 10);
-                const newVal2 = Number.isNaN(value) || value < newVal1 || value > max ? variableMax : value;
-                return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
-              })
-            }
-          />
+          <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setRange} isIcon />
         </div>
         <div className='my-4'>
           <Slider
