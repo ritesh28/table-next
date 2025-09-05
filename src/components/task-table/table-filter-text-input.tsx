@@ -17,7 +17,7 @@ export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProp
   useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
+    table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
       if (selection === null) {
         const newFilterGroupCollection = FilterGroupCollection.removeColumnFilterFromSimpleFilterGroup(filterGroupCollection, COLUMN_ID);
         return newFilterGroupCollection;

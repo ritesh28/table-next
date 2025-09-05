@@ -23,7 +23,7 @@ export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSim
   useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
+    table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
       if (selection === null) {
         const newFilterGroupCollection = FilterGroupCollection.removeColumnFilterFromSimpleFilterGroup(filterGroupCollection, COLUMN_ID);
         return newFilterGroupCollection;
@@ -39,7 +39,7 @@ export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSim
 
   const { loading, error, data } = useQuery(GET_ESTIMATED_HOUR_MIN_MAX);
 
-  if (loading) {
+  if (loading || data === undefined) {
     return <Skeleton className='h-full basis-[60px] rounded-sm' />;
   }
   if (error) {

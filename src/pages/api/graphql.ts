@@ -28,6 +28,17 @@ const resolvers: Resolvers = {
       const resultArr = Object.entries(resultObject).map(([name, count]) => ({ name, count }));
       return resultArr;
     },
+    labels: async () => {
+      const records = await getCsvRecords();
+      const data = transformSerializableTasks(records);
+      const resultObject: Record<string, number> = {};
+      for (const { label } of data) {
+        if (label in resultObject) resultObject[label] += 1;
+        else resultObject[label] = 1;
+      }
+      const resultArr = Object.entries(resultObject).map(([name, count]) => ({ name, count }));
+      return resultArr;
+    },
     estimatedHour: async () => {
       const records = await getCsvRecords();
       const data = transformSerializableTasks(records);

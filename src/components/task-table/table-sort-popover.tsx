@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { isArrayOfString } from '@/lib/check-type';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
@@ -41,21 +42,21 @@ export function DataTableSort({ table }: DataTableSortProps) {
     if (dropdownColumnIds.length > 0) {
       // add the first element in dropdownItems
       const columnId = dropdownColumnIds[0].id;
-      table.getColumn(columnId).toggleSorting(true, true);
+      table.getColumn(columnId)?.toggleSorting(true, true);
     }
   }, [dropdownColumnIds, table]);
 
   const handleRemoveSort = useCallback(
     (columnId: string) => {
-      table.getColumn(columnId).clearSorting();
+      table.getColumn(columnId)?.clearSorting();
     },
     [table],
   );
 
   const handleUpdateSort = useCallback(
     (oldColumnId: string, newColumnId: string) => {
-      table.getColumn(oldColumnId).clearSorting();
-      table.getColumn(newColumnId).toggleSorting(true, true);
+      table.getColumn(oldColumnId)?.clearSorting();
+      table.getColumn(newColumnId)?.toggleSorting(true, true);
     },
     [table],
   );
@@ -63,7 +64,7 @@ export function DataTableSort({ table }: DataTableSortProps) {
   const handleChangeSortOrder = useCallback(
     (columnId: string, val: keyof typeof SORTABLE_ORDERS) => {
       const idDesc = val === 'desc';
-      table.getColumn(columnId).toggleSorting(idDesc, true);
+      table.getColumn(columnId)?.toggleSorting(idDesc, true);
     },
     [table],
   );
@@ -98,11 +99,11 @@ export function DataTableSort({ table }: DataTableSortProps) {
                 popoverContentClassName='w-[175px]'
                 items={dropdownColumnIds}
                 selectedItems={[columnSort.id]}
-                setSelectedItems={(newIds) => handleUpdateSort(columnSort.id, newIds[0])}
+                setSelectedItems={(newIds) => isArrayOfString(newIds) && handleUpdateSort(columnSort.id, newIds[0])}
                 isMultiSelect={false}
                 buttonChildren={
                   <div className='w-full flex items-center justify-between'>
-                    <span>{SORTABLE_COLUMNS.find((sc) => sc.id === columnSort.id).content}</span>
+                    <span>{SORTABLE_COLUMNS.find((sc) => sc.id === columnSort.id)?.content}</span>
                     <ChevronsUpDown />
                   </div>
                 }

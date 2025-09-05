@@ -39,7 +39,7 @@ export function DataTable({ columns, data }: DataTableProps) {
   const tableSize = useSize(tableRef);
 
   useEffect(() => {
-    if (tableSize) {
+    if (tableSize && containerRef.current) {
       const tableWidth = tableSize.width;
       const containerWidth = containerRef.current.getBoundingClientRect().width;
       if (!containerInitialWidth.current) {
@@ -60,7 +60,7 @@ export function DataTable({ columns, data }: DataTableProps) {
     getSortedRowModel: getSortedRowModel(), // sorting
     getFilteredRowModel: getFilteredRowModel(), // filtering
   });
-  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
+  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID)?.getFilterValue() as FilterGroupCollection | undefined;
 
   return (
     <div ref={containerRef}>
@@ -69,16 +69,16 @@ export function DataTable({ columns, data }: DataTableProps) {
           <DataTableFilterSimple table={table} />
           <Button variant='secondary' onClick={() => setShowAdvancedFilter((val) => !val)}>
             Advanced Search
-            {filterGroupCollection?.advancedFilterGroupCount > 0 && (
+            {(filterGroupCollection?.advancedFilterGroupCount ?? 0) > 0 && (
               <Badge>
-                {filterGroupCollection.simpleFilterGroup && '+'}
-                {filterGroupCollection.advancedFilterGroupCount}
+                {filterGroupCollection?.simpleFilterGroup && '+'}
+                {filterGroupCollection?.advancedFilterGroupCount}
               </Badge>
             )}
             <ChevronDown className={cn('transform transition-transform duration-500', showAdvancedFilter && 'rotate-180')} />
           </Button>
-          {filterGroupCollection?.filterGroups.length > 0 && (
-            <Button onClick={() => table.getColumn(FILTER_COLUMN_ID).setFilterValue(undefined)}>Reset</Button>
+          {(filterGroupCollection?.filterGroups ?? []).length > 0 && (
+            <Button onClick={() => table.getColumn(FILTER_COLUMN_ID)?.setFilterValue(undefined)}>Reset</Button>
           )}
         </div>
         <div className='flex gap-2'>

@@ -6,7 +6,7 @@ import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilte
 import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FILTER_TYPES } from '@/model/table-filters';
-import { PRIORITY_ICON, Task } from '@/model/task';
+import { PRIORITY_ICONS, Task } from '@/model/task';
 import { useQuery } from '@apollo/client';
 import { Table } from '@tanstack/react-table';
 import { CirclePlus, CircleX } from 'lucide-react';
@@ -23,7 +23,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
   useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
 
   useEffect(() => {
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
+    table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
       if (selection === null) {
         const newFilterGroupCollection = FilterGroupCollection.removeColumnFilterFromSimpleFilterGroup(filterGroupCollection, COLUMN_ID);
         return newFilterGroupCollection;
@@ -37,7 +37,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
 
   const { loading, error, data } = useQuery(GET_PRIORITIES_QUERY);
 
-  if (loading) {
+  if (loading || data === undefined) {
     return <Skeleton className='h-full basis-[60px] rounded-sm' />;
   }
   if (error) {
@@ -47,7 +47,7 @@ export function DataTableFilterSimplePriority({ table }: DataTableFilterSimplePr
   return (
     <Combobox
       items={data.priorities.map(({ name: id, count: totalCount }) => {
-        const Icon = PRIORITY_ICON[id];
+        const Icon = PRIORITY_ICONS[id as Task['priority']];
         return {
           id,
           totalCount,

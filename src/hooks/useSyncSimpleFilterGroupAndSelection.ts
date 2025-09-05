@@ -5,8 +5,8 @@ import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useEffect } from 'react';
 
-export function useSyncSimpleFilterGroupAndSelection<TValue>(table: Table<Task>, columnId: string, setSelection: (val: TValue) => void) {
-  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
+export function useSyncSimpleFilterGroupAndSelection<TValue>(table: Table<Task>, columnId: string, setSelection: (val: TValue | null) => void) {
+  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID)?.getFilterValue() as FilterGroupCollection | undefined;
   useEffect(() => {
     if (!filterGroupCollection || !filterGroupCollection.simpleFilterGroup) return setSelection(null);
     const filter = filterGroupCollection.simpleFilterGroup.getFilterByColumnId(columnId) as undefined | Filter<TValue>;

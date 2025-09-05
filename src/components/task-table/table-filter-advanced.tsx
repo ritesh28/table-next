@@ -41,10 +41,10 @@ function getFilterGroupGridRow(filterGroupCollection: FilterGroupCollection, fil
 const OPERATOR_TYPE_LIMITER = '*****';
 
 export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) {
-  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID).getFilterValue() as FilterGroupCollection | undefined;
+  const filterGroupCollection = table.getColumn(FILTER_COLUMN_ID)?.getFilterValue() as FilterGroupCollection | undefined;
 
   const addNewFilterGroup = useCallback(() => {
-    table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
+    table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
       const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP.title[0]];
       const filter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
       const filterGroup = new FilterGroup('advanced', [filter]);
@@ -55,7 +55,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const updateFilterColumn = useCallback(
     (columnId: keyof Task, filterGroupIndex: number, filterIndex: number) => {
-      table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+      table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
         const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP[columnId][0]];
         const newFilter = new filterClass(columnId, filterClass.OPERATOR_LIST[0]);
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
@@ -66,7 +66,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const updateFilterOperator = useCallback(
     (filterGroupIndex: number, filterIndex: number, operator: string, filterType: keyof typeof FILTER_TYPES) => {
-      table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+      table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
         const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
         const newFilter = new FILTER_TYPES[filterType](oldFilter.columnId, operator);
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
@@ -103,7 +103,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       onValueChange={(val: AndOr) =>
                         table
                           .getColumn(FILTER_COLUMN_ID)
-                          .setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => oldFilterGroupCollection.setFilterGroupListAndOr(val))
+                          ?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => oldFilterGroupCollection.setFilterGroupListAndOr(val))
                       }
                     >
                       <SelectTrigger className='w-[75px]'>
@@ -129,7 +129,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                     onClick={() =>
                       table
                         .getColumn(FILTER_COLUMN_ID)
-                        .setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
+                        ?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
                           oldFilterGroupCollection.deleteFilterGroup(filterGroupIndex),
                         )
                     }
@@ -161,11 +161,13 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         popoverContentClassName='w-[175px]'
                         items={[...ADVANCED_FILTER_COLUMNS]}
                         selectedItems={[filter.columnId]}
-                        setSelectedItems={(newIds) => updateFilterColumn(newIds[0], filterGroupIndex, filterIndex)}
+                        setSelectedItems={(newIds) =>
+                          Array.isArray(newIds) && updateFilterColumn(newIds[0] as keyof Task, filterGroupIndex, filterIndex)
+                        }
                         isMultiSelect={false}
                         buttonChildren={
                           <div className='w-full flex items-center justify-between'>
-                            <span>{ADVANCED_FILTER_COLUMNS.find((afc) => afc.id === filter.columnId).content}</span>
+                            <span>{ADVANCED_FILTER_COLUMNS.find((afc) => afc.id === filter.columnId)?.content ?? 'Select Column'}</span>
                             <ChevronsUpDown />
                           </div>
                         }
@@ -191,7 +193,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         }, [] as ComboboxItem[])}
                         selectedItems={[filter.operator]}
                         setSelectedItems={(newIds) => {
-                          const [operator, filterType] = (newIds[0] as string).split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_TYPES];
+                          if (!Array.isArray(newIds) || newIds.length === 0) return;
+                          const [operator, filterType] = newIds[0].split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_TYPES];
                           updateFilterOperator(filterGroupIndex, filterIndex, operator, filterType);
                         }}
                         isMultiSelect={false}
@@ -207,7 +210,12 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       className='col-start-5'
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
-                      <DataTableFilterAdvancedValue value={filter.value} ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE} />
+                      <DataTableFilterAdvancedValue
+                        columnId={filter.columnId}
+                        ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE}
+                        value={filter.value}
+                        setValue={() => {}}
+                      />
                     </div>
                     <div
                       className='col-start-6'
@@ -219,7 +227,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         onValueChange={(val: AndOr) =>
                           table
                             .getColumn(FILTER_COLUMN_ID)
-                            .setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
+                            ?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
                               FilterGroupCollection.setFilterListAndOr(oldFilterGroupCollection, filterGroupIndex, val),
                             )
                         }
@@ -245,7 +253,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         variant='outline'
                         size='icon'
                         onClick={() =>
-                          table.getColumn(FILTER_COLUMN_ID).setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+                          table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
                             const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP['title'][0]];
                             const newFilter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
                             return FilterGroupCollection.addFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex);
@@ -266,7 +274,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         onClick={() =>
                           table
                             .getColumn(FILTER_COLUMN_ID)
-                            .setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
+                            ?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) =>
                               FilterGroupCollection.removeFilterFromFilterGroup(oldFilterGroupCollection, filterGroupIndex, filterIndex),
                             )
                         }
@@ -285,7 +293,6 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
               </Fragment>
             ))}
           </div>
-          {/* todo */}
           <Button onClick={addNewFilterGroup}>
             <Plus /> <span>Add Filter Group</span>
           </Button>

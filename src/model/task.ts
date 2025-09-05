@@ -1,5 +1,18 @@
 import { FILTER_TYPES } from '@/model/table-filters';
-import { AlarmClockCheck, ArrowDown, ArrowRight, ArrowUp, CircleCheck, CircleX, LoaderCircle, LucideIcon } from 'lucide-react';
+import {
+  AlarmClockCheck,
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Book,
+  Bug,
+  CircleCheck,
+  CircleX,
+  Lightbulb,
+  LoaderCircle,
+  LucideIcon,
+  Star,
+} from 'lucide-react';
 import moment from 'moment';
 import { ReactNode } from 'react';
 import * as z from 'zod';
@@ -42,18 +55,25 @@ export const PRIORITY_ORDER: Record<Task['priority'], number> = {
   high: 2,
 } as const;
 
-export const STATUS_ICON: Record<Task['status'], LucideIcon> = {
+export const STATUS_ICONS: Record<Task['status'], LucideIcon> = {
   todo: AlarmClockCheck,
   'in-progress': LoaderCircle,
   done: CircleCheck,
   canceled: CircleX,
 } as const;
 
-export const PRIORITY_ICON: Record<Task['priority'], LucideIcon> = {
+export const PRIORITY_ICONS = {
   low: ArrowDown,
   medium: ArrowRight,
   high: ArrowUp,
-} as const;
+} as const satisfies Record<Task['priority'], LucideIcon>;
+
+export const LABEL_ICONS = {
+  bug: Bug,
+  feature: Star,
+  documentation: Book,
+  enhancement: Lightbulb,
+} as const satisfies Record<Task['label'], LucideIcon>;
 
 export const COLUMN_METADATA = {
   task_id: {

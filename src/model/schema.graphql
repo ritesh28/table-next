@@ -1,6 +1,7 @@
 type Query {
   statuses: [Status!]!
   priorities: [Priority!]!
+  labels: [Label!]!
   estimatedHour: EstimatedHour!
 }
 type Status {
@@ -9,6 +10,11 @@ type Status {
 }
 
 type Priority {
+  name: ID!
+  count: Int!
+}
+
+type Label {
   name: ID!
   count: Int!
 }

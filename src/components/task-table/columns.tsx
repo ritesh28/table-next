@@ -1,6 +1,6 @@
 'use client';
 
-import { PRIORITY_ICON, PRIORITY_ORDER, STATUS_ICON, STATUS_ORDER, Task } from '@/model/task';
+import { PRIORITY_ICONS, PRIORITY_ORDER, STATUS_ICONS, STATUS_ORDER, Task } from '@/model/task';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 
@@ -81,7 +81,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Status' />,
     cell: ({ row }) => {
       const { status } = row.original;
-      const Icon = STATUS_ICON[status];
+      const Icon = STATUS_ICONS[status];
       return (
         <Badge>
           <Icon />
@@ -93,8 +93,8 @@ export const columns: ColumnDef<Task>[] = [
       const statusA = rowA.original.status;
       const statusB = rowB.original.status;
       if (STATUS_ORDER[statusA] < STATUS_ORDER[statusB]) return -1;
-      if (STATUS_ORDER[statusA] === STATUS_ORDER[statusB]) return 0;
       if (STATUS_ORDER[statusA] > STATUS_ORDER[statusB]) return 1;
+      return 0;
     },
     size: 125,
     enableResizing: false,
@@ -104,7 +104,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Priority' />,
     cell: ({ row }) => {
       const { priority } = row.original;
-      const Icon = PRIORITY_ICON[priority];
+      const Icon = PRIORITY_ICONS[priority];
       return (
         <Badge>
           <Icon />
@@ -116,8 +116,8 @@ export const columns: ColumnDef<Task>[] = [
       const priorityA = rowA.original.priority;
       const priorityB = rowB.original.priority;
       if (PRIORITY_ORDER[priorityA] < PRIORITY_ORDER[priorityB]) return -1;
-      if (PRIORITY_ORDER[priorityA] === PRIORITY_ORDER[priorityB]) return 0;
       if (PRIORITY_ORDER[priorityA] > PRIORITY_ORDER[priorityB]) return 1;
+      return 0;
     },
     size: 100,
     enableResizing: false,
@@ -137,7 +137,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='Created At' />,
     cell: ({ row }) => {
       const { created_at } = row.original;
-      return <div className='px-3'>{created_at.format('ll')}</div>;
+      return <div className='px-3'>{created_at?.format('ll')}</div>;
     },
     size: 120,
     enableResizing: false,
@@ -225,5 +225,5 @@ function tableWholesomeFilter(row: Row<Task>, _columnId: string, filterGroupColl
       break;
     }
   }
-  return showRow;
+  return showRow ?? true;
 }

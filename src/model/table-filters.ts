@@ -13,7 +13,7 @@ export abstract class Filter<TValue> {
     protected _operator: string,
     protected _value: TValue | null = null,
   ) {}
-  abstract filterRow(row: unknown): boolean;
+  abstract filterRow(row: any): boolean;
   get columnId() {
     return this._columnId;
   }
@@ -35,7 +35,7 @@ class FilterEmpty extends Filter<null> {
     super(columnId, operator, null);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     const colValue = row[this._columnId];
     if (this._operator === 'is empty') return colValue === null;
     if (this._operator === 'is not empty') return !(colValue === null);
@@ -53,7 +53,7 @@ class FilterString extends Filter<string> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as string;
@@ -76,7 +76,7 @@ class FilterList extends Filter<unknown[]> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as unknown;
@@ -104,7 +104,7 @@ class FilterNumber extends Filter<number> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as number;
@@ -129,7 +129,7 @@ class FilterNumberRange extends Filter<[number, number]> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as number;
@@ -149,7 +149,7 @@ class FilterDate extends Filter<Moment> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as Moment;
@@ -173,7 +173,7 @@ class FilterDateRange extends Filter<[Moment, Moment]> {
     super(columnId, operator, value);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     if (this.value === null) return true; // don't filter out
 
     const colValue = row[this._columnId] as Moment;
@@ -193,7 +193,7 @@ class FilterDateRelative extends Filter<null> {
     super(columnId, operator, null);
   }
 
-  filterRow(row: unknown) {
+  filterRow(row: any) {
     const colValue = row[this._columnId] as Moment;
     if (this._operator === 'a week ago') return moment(colValue).isBetween(moment().subtract(1, 'week'), moment());
     if (this._operator === 'a month ago') return moment(colValue).isBetween(moment().subtract(1, 'month'), moment());

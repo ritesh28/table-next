@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { RefObject } from "react"
 
-function Table({ containerClassName, className, tableRef, ...props }: React.ComponentProps<"table"> & {containerClassName: string, tableRef: RefObject<HTMLTableElement>}) {
+function Table({ containerClassName, className, tableRef, ...props }: React.ComponentProps<"table"> & {containerClassName: string, tableRef: RefObject<HTMLTableElement | null>}) {
   return (
     <div
       data-slot="table-container"

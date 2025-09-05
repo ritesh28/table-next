@@ -47,9 +47,9 @@ export function Combobox({
   const handleItemSelect = useCallback(
     (itemId: string) => {
       if (isMultiSelect) {
-        // check if the item is already selected. If so, unselect it
         if (selectedItems?.includes(itemId)) {
-          setSelectedItems((oldVals) => oldVals.filter((val) => val !== itemId));
+          // check if the item is already selected. If so, unselect it
+          setSelectedItems((oldVals) => (oldVals ? oldVals.filter((val) => val !== itemId) : null));
         } else {
           setSelectedItems((oldVals) => (oldVals ? [...oldVals, itemId] : [itemId]));
         }
@@ -66,7 +66,7 @@ export function Combobox({
     setOpen(false);
   }, [setSelectedItems]);
 
-  const groupHeadingMap = {};
+  const groupHeadingMap: Record<string, ReactNode> = {};
   const groupedItems = Object.groupBy(items, ({ groupHeading }) => {
     const groupKey = groupHeading?.toString() ?? '';
     groupHeadingMap[groupKey] = groupHeading ?? '';
@@ -89,16 +89,16 @@ export function Combobox({
             {Object.entries(groupedItems).map(([key, values], groupItemIndex) => (
               <Fragment key={key}>
                 <CommandGroup heading={groupHeadingMap[key]}>
-                  {values.map((value) => (
+                  {values?.map((value) => (
                     <CommandItem key={value.id} value={value.id} onSelect={(id) => handleItemSelect(id)}>
-                      {isMultiSelect && <Checkbox checked={selectedItems && selectedItems.includes(value.id)} />}
+                      {isMultiSelect && <Checkbox checked={(selectedItems && selectedItems.includes(value.id)) ?? false} />}
                       {!isMultiSelect && value.totalCount !== undefined && (
-                        <Check className={cn('mr-1', selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
+                        <Check className={cn('mr-1', selectedItems && selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
                       )}
                       {value.content}
                       {value.totalCount !== undefined && <p className='ml-auto'>{value.totalCount}</p>}
                       {value.totalCount === undefined && !isMultiSelect && (
-                        <Check className={cn('ml-auto', selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
+                        <Check className={cn('ml-auto', selectedItems && selectedItems.includes(value.id) ? 'opacity-100' : 'opacity-0')} />
                       )}
                     </CommandItem>
                   ))}

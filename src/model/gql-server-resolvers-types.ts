@@ -21,6 +21,12 @@ export type EstimatedHour = {
   min: Scalars['Int']['output'];
 };
 
+export type Label = {
+  __typename?: 'Label';
+  count: Scalars['Int']['output'];
+  name: Scalars['ID']['output'];
+};
+
 export type Priority = {
   __typename?: 'Priority';
   count: Scalars['Int']['output'];
@@ -30,6 +36,7 @@ export type Priority = {
 export type Query = {
   __typename?: 'Query';
   estimatedHour: EstimatedHour;
+  labels: Array<Label>;
   priorities: Array<Priority>;
   statuses: Array<Status>;
 };
@@ -116,6 +123,7 @@ export type ResolversTypes = ResolversObject<{
   EstimatedHour: ResolverTypeWrapper<EstimatedHour>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Label: ResolverTypeWrapper<Label>;
   Priority: ResolverTypeWrapper<Priority>;
   Query: ResolverTypeWrapper<{}>;
   Status: ResolverTypeWrapper<Status>;
@@ -128,6 +136,7 @@ export type ResolversParentTypes = ResolversObject<{
   EstimatedHour: EstimatedHour;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  Label: Label;
   Priority: Priority;
   Query: {};
   Status: Status;
@@ -140,6 +149,12 @@ export type EstimatedHourResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LabelResolvers<ContextType = any, ParentType extends ResolversParentTypes['Label'] = ResolversParentTypes['Label']> = ResolversObject<{
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PriorityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Priority'] = ResolversParentTypes['Priority']> = ResolversObject<{
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -148,6 +163,7 @@ export type PriorityResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   estimatedHour?: Resolver<ResolversTypes['EstimatedHour'], ParentType, ContextType>;
+  labels?: Resolver<Array<ResolversTypes['Label']>, ParentType, ContextType>;
   priorities?: Resolver<Array<ResolversTypes['Priority']>, ParentType, ContextType>;
   statuses?: Resolver<Array<ResolversTypes['Status']>, ParentType, ContextType>;
 }>;
@@ -160,6 +176,7 @@ export type StatusResolvers<ContextType = any, ParentType extends ResolversParen
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   EstimatedHour?: EstimatedHourResolvers<ContextType>;
+  Label?: LabelResolvers<ContextType>;
   Priority?: PriorityResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Status?: StatusResolvers<ContextType>;

@@ -1,19 +1,20 @@
 import { DatePickerInputCalendar } from '@/components/date-picker-input-calendar';
-import { RangePickerInputNumber } from '@/components/range-picker-input-number';
+import { DataTableFilterAdvancedValueRange } from '@/components/task-table/table-filter-advanced-value-range';
 import { Input } from '@/components/ui/input';
-import { isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/check-type';
+import { isArrayOfString, isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/check-type';
 import { UiForValue } from '@/model/table-filters';
+import { Task } from '@/model/task';
 import { isMoment } from 'moment';
+import { DataTableFilterAdvancedValueMulti } from './table-filter-advanced-value-multi';
 
 interface DataTableFilterAdvancedValueProps {
+  columnId: keyof Task;
   ui: UiForValue;
   value: unknown | null;
   setValue: (value: unknown | null) => void;
-  minValue?: number;
-  maxValue?: number;
 }
 
-export function DataTableFilterAdvancedValue({ ui, value, setValue, minValue, maxValue }: DataTableFilterAdvancedValueProps) {
+export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue }: DataTableFilterAdvancedValueProps) {
   if (ui === 'noUI') {
     return null;
   }
@@ -41,9 +42,9 @@ export function DataTableFilterAdvancedValue({ ui, value, setValue, minValue, ma
     );
   }
   if (ui === '2numericTextBox') {
-    const variableMin = value === null ? minValue : isTupleOfTwoNumber(value) ? value[0] : Number(value);
-    const variableMax = value === null ? maxValue : isTupleOfTwoNumber(value) ? value[1] : Number(value);
-    return <RangePickerInputNumber min={minValue} max={maxValue} variableMin={variableMin} variableMax={variableMax} setRange={setValue} />;
+    if (isTupleOfTwoNumber(value) || typeof value === 'number' || value === null)
+      return <DataTableFilterAdvancedValueRange value={value} setValue={setValue} />;
+    return null;
   }
   if (ui === 'singleDate') {
     return <DatePickerInputCalendar dateRange={isMoment(value) ? value : null} setDateRange={setValue} calendarMode='single' />;
@@ -54,12 +55,8 @@ export function DataTableFilterAdvancedValue({ ui, value, setValue, minValue, ma
     );
   }
   if (ui === 'multiSelect') {
-    // return (
-    //   <div className='grid grid-cols-2 gap-2'>
-    //     {Array.isArray(value) ? value.map((item) => <div key={item}>{String(item)}</div>) : <div>{String(value)}</div>}
-    //   </div>
-    // );
-    return <div>multi select</div>;
+    if (isArrayOfString(value) || value === null) return <DataTableFilterAdvancedValueMulti columnId={columnId} value={value} setValue={setValue} />;
+    return null;
   }
   return null;
 }

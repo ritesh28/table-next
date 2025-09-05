@@ -13,7 +13,7 @@ function createApolloClient() {
   });
 }
 
-export function initApollo(initialState = null) {
+export function initApollo(initialState: any = null) {
   const client = apolloClient || createApolloClient();
 
   if (initialState) {
@@ -32,6 +32,6 @@ export function initApollo(initialState = null) {
   return client;
 }
 
-export function useApollo(initialState: unknown) {
+export function useApollo(initialState: any) {
   return useMemo(() => initApollo(initialState), [initialState]);
 }

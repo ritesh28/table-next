@@ -17,7 +17,7 @@ export function RangePickerInputNumber({ min, max, variableMin, variableMax, set
     <>
       <InputWithIcon
         type='number'
-        endIcon={isIcon ? Timer : null}
+        endIcon={isIcon ? Timer : undefined}
         min={min}
         max={variableMax}
         value={variableMin}
@@ -32,7 +32,7 @@ export function RangePickerInputNumber({ min, max, variableMin, variableMax, set
       />
       <InputWithIcon
         type='number'
-        endIcon={isIcon ? Timer : null}
+        endIcon={isIcon ? Timer : undefined}
         min={variableMin}
         max={max}
         value={variableMax}

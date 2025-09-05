@@ -37,7 +37,7 @@ export function DatePickerInputCalendar({ dateRange, setDateRange, calendarMode 
         }
         onSelect={(selected) => {
           if (!selected) return setDateRange(null);
-          if (selected.from.toDateString() === selected.to.toDateString()) return setDateRange(moment(selected.to));
+          if (selected.from?.toDateString() === selected.to?.toDateString()) return setDateRange(moment(selected.to));
           return setDateRange([moment(selected.from), moment(selected.to)]);
         }}
       />
