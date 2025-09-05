@@ -25,5 +25,9 @@ export function DataTableFilterAdvancedValueRange({ value, setValue }: DataTable
   const variableMin = value === null ? min : isTupleOfTwoNumber(value) ? value[0] : value;
   const variableMax = value === null ? max : isTupleOfTwoNumber(value) ? value[1] : value;
 
-  return <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setValue} />;
+  return (
+    <div className='flex gap-6'>
+      <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setValue} />
+    </div>
+  );
 }

@@ -78,9 +78,9 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
   //todo: disable simple filter group
   return (
     <div>
-      <Card>
+      <Card className='shadow-xs overflow-x-auto'>
         <CardContent>
-          <div className='grid grid-cols-9 gap-1'>
+          <div className='grid grid-cols-[10rem_6rem_12rem_14rem_18rem_6rem_3rem_3rem_1fr] gap-3'>
             {filterGroupCollection?.filterGroups.map((filterGroup, filterGroupIndex) => (
               <Fragment key={filterGroupIndex}>
                 <div
@@ -120,7 +120,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                   )}
                 </div>
                 <div
-                  className='col-start-9'
+                  className='col-start-9 justify-self-end px-2'
                   style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + 1 }}
                 >
                   <Button
@@ -157,8 +157,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                     >
                       <Combobox
                         disabled={filterGroup.isSimpleFilterGroup}
-                        buttonClassName='w-[175px]'
-                        popoverContentClassName='w-[175px]'
+                        buttonClassName='w-full'
+                        popoverContentClassName='w-full'
                         items={[...ADVANCED_FILTER_COLUMNS]}
                         selectedItems={[filter.columnId]}
                         setSelectedItems={(newIds) =>
@@ -179,8 +179,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                     >
                       <Combobox
                         disabled={filterGroup.isSimpleFilterGroup}
-                        buttonClassName='w-[175px]'
-                        popoverContentClassName='w-[175px]'
+                        buttonClassName='w-full'
+                        popoverContentClassName='w-full'
                         items={COLUMN_FILTER_TYPE_MAP[filter.columnId].reduce((accumulator, filterType) => {
                           return [
                             ...accumulator,
@@ -199,7 +199,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         }}
                         isMultiSelect={false}
                         buttonChildren={
-                          <div className='w-full flex items-center justify-between'>
+                          <div className='w-full flex items-center justify-between text-ellipsis'>
                             <span>{filter.operator || 'Select Operator...'}</span>
                             <ChevronsUpDown />
                           </div>

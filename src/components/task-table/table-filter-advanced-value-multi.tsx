@@ -94,18 +94,20 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue }:
       isMultiSelect
       buttonChildren={
         value ? (
-          <div className='flex items-center gap-1'>
+          <div className='w-full flex items-center gap-1'>
             {value.map((item) => (
               <Badge key={item}>{item}</Badge>
             ))}
           </div>
         ) : (
-          <div className='flex items-center gap-1'>
+          <div className='w-full flex items-center justify-between gap-1'>
             <span>Select Options...</span>
             <ChevronsUpDown />
           </div>
         )
       }
+      buttonClassName='w-full text-ellipsis'
+      popoverContentClassName='w-[250px]'
     />
   );
 }

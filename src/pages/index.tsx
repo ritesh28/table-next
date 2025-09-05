@@ -18,7 +18,7 @@ export const getStaticProps = (async () => {
 export default function HomePage({ serializableTasks }: InferGetStaticPropsType<typeof getStaticProps>) {
   const tasks = transformSerializableTasks(serializableTasks);
   return (
-    <div className='container mx-auto py-10'>
+    <div className='container mx-auto py-10 px-5'>
       <DataTable columns={columns} data={tasks} />
     </div>
   );
