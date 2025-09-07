@@ -1,9 +1,12 @@
+import { immerable, produce } from 'immer';
 import moment, { Moment } from 'moment';
 import { Task } from './task';
 
 export type UiForValue = 'textBox' | 'numericTextBox' | '2numericTextBox' | 'singleDate' | 'rangeDate' | 'multiSelect' | 'noUI';
 
 export abstract class Filter<TValue> {
+  [immerable] = true;
+
   static readonly OPERATOR_GROUP_NAME: string;
   static readonly OPERATOR_LIST: readonly string[];
   static readonly UI_FOR_VALUE: UiForValue;
@@ -22,6 +25,11 @@ export abstract class Filter<TValue> {
   }
   get value() {
     return this._value;
+  }
+  setValueAndReturnNewFilter(newValue: TValue | null) {
+    return produce(this, (draft: this) => {
+      draft._value = newValue;
+    });
   }
 }
 

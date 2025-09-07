@@ -1,14 +1,12 @@
 'use client';
 
-import { ArrowUpDown, ChevronsUpDown, Trash2 } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-import { Combobox } from '@/components/combobox';
+import { DataTableSortItem } from '@/components/task-table/table-sort-popover-item';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { isArrayOfString } from '@/lib/check-type';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
@@ -37,6 +35,10 @@ export function DataTableSort({ table }: DataTableSortProps) {
     const columnWithActiveSortingList = sortState.map((s) => s.id);
     setDropdownColumnIds(SORTABLE_COLUMNS.filter((sc) => !columnWithActiveSortingList.includes(sc.id)));
   }, [sortState]);
+
+  const handleSelectOpenChange = useCallback((isOpen: boolean, columnId: string) => {
+    setSelectOpen(isOpen ? columnId : null);
+  }, []);
 
   const handleAddSort = useCallback(() => {
     if (dropdownColumnIds.length > 0) {
@@ -94,40 +96,15 @@ export function DataTableSort({ table }: DataTableSortProps) {
         <ul className='flex flex-col max-h-[300px] gap-2 overflow-y-auto p-1'>
           {sortState.map((columnSort) => (
             <li key={columnSort.id} className='flex items-center justify-between'>
-              <Combobox
-                buttonClassName='w-[175px]'
-                popoverContentClassName='w-[175px]'
+              <DataTableSortItem
                 items={dropdownColumnIds}
-                selectedItems={[columnSort.id]}
-                setSelectedItems={(newIds) => isArrayOfString(newIds) && handleUpdateSort(columnSort.id, newIds[0])}
-                isMultiSelect={false}
-                buttonChildren={
-                  <div className='w-full flex items-center justify-between'>
-                    <span>{SORTABLE_COLUMNS.find((sc) => sc.id === columnSort.id)?.content}</span>
-                    <ChevronsUpDown />
-                  </div>
-                }
+                columnSort={columnSort}
+                handleUpdateSort={handleUpdateSort}
+                handleChangeSortOrder={handleChangeSortOrder}
+                handleRemoveSort={handleRemoveSort}
+                selectOpen={selectOpen}
+                handleSelectOpenChange={handleSelectOpenChange}
               />
-              <Select
-                open={selectOpen === columnSort.id}
-                onOpenChange={(isOpen) => setSelectOpen(isOpen ? columnSort.id : null)}
-                value={(columnSort.desc ? 'desc' : 'asc') as keyof typeof SORTABLE_ORDERS}
-                onValueChange={(val) => handleChangeSortOrder(columnSort.id, val as keyof typeof SORTABLE_ORDERS)}
-              >
-                <SelectTrigger className='w-[75px]'>
-                  <SelectValue placeholder={columnSort.desc ? SORTABLE_ORDERS['desc'] : SORTABLE_ORDERS['asc']} />
-                </SelectTrigger>
-                <SelectContent className='!w-[75px]'>
-                  {Object.entries(SORTABLE_ORDERS).map(([key, value]) => (
-                    <SelectItem key={key} value={key}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button size='icon' onClick={() => handleRemoveSort(columnSort.id)}>
-                <Trash2 />
-              </Button>
             </li>
           ))}
         </ul>

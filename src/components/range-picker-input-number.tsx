@@ -10,14 +10,16 @@ interface RangePickerInputNumberProps {
   variableMax: number;
   setRange: Dispatch<SetStateAction<number | [number, number] | null>>;
   isIcon?: boolean;
+  disabled?: boolean;
 }
 
-export function RangePickerInputNumber({ min, max, variableMin, variableMax, setRange, isIcon }: RangePickerInputNumberProps) {
+export function RangePickerInputNumber({ min, max, variableMin, variableMax, setRange, isIcon, disabled }: RangePickerInputNumberProps) {
   return (
     <>
       <InputWithIcon
         type='number'
         endIcon={isIcon ? Timer : undefined}
+        disabled={disabled}
         min={min}
         max={variableMax}
         value={variableMin}
@@ -33,6 +35,7 @@ export function RangePickerInputNumber({ min, max, variableMin, variableMax, set
       <InputWithIcon
         type='number'
         endIcon={isIcon ? Timer : undefined}
+        disabled={disabled}
         min={variableMin}
         max={max}
         value={variableMax}

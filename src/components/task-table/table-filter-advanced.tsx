@@ -68,14 +68,28 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
     (filterGroupIndex: number, filterIndex: number, operator: string, filterType: keyof typeof FILTER_TYPES) => {
       table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
         const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
-        const newFilter = new FILTER_TYPES[filterType](oldFilter.columnId, operator);
+        const newFilter = new FILTER_TYPES[filterType](oldFilter.columnId, operator); // for a given column id, filter can be be of multiple types
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
       });
     },
     [table],
   );
 
-  //todo: disable simple filter group
+  const updateFilterValue = useCallback(
+    (filterGroupIndex: number, filterIndex: number, value: unknown) => {
+      table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
+        const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
+        //todo remove debug logs
+        console.log(typeof value);
+        console.log(typeof value === 'function' ? value() : value);
+
+        const newFilter = oldFilter.setValueAndReturnNewFilter((typeof value === 'function' ? value() : value) as any);
+        return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
+      });
+    },
+    [table],
+  );
+
   return (
     <div>
       <Card className='shadow-xs overflow-x-auto'>
@@ -161,9 +175,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         popoverContentClassName='w-full'
                         items={[...ADVANCED_FILTER_COLUMNS]}
                         selectedItems={[filter.columnId]}
-                        setSelectedItems={(newIds) =>
-                          Array.isArray(newIds) && updateFilterColumn(newIds[0] as keyof Task, filterGroupIndex, filterIndex)
-                        }
+                        handleItemSelect={(newColumnId) => updateFilterColumn(newColumnId as keyof Task, filterGroupIndex, filterIndex)}
                         isMultiSelect={false}
                         buttonChildren={
                           <div className='w-full flex items-center justify-between'>
@@ -192,9 +204,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                           ];
                         }, [] as ComboboxItem[])}
                         selectedItems={[filter.operator]}
-                        setSelectedItems={(newIds) => {
-                          if (!Array.isArray(newIds) || newIds.length === 0) return;
-                          const [operator, filterType] = newIds[0].split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_TYPES];
+                        handleItemSelect={(item) => {
+                          const [operator, filterType] = item.split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_TYPES];
                           updateFilterOperator(filterGroupIndex, filterIndex, operator, filterType);
                         }}
                         isMultiSelect={false}
@@ -214,7 +225,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         columnId={filter.columnId}
                         ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE}
                         value={filter.value}
-                        setValue={() => {}}
+                        setValue={(value) => updateFilterValue(filterGroupIndex, filterIndex, value)}
+                        disabled={filterGroup.isSimpleFilterGroup}
                       />
                     </div>
                     <div

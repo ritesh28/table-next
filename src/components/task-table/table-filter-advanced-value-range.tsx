@@ -8,9 +8,10 @@ import { Skeleton } from '../ui/skeleton';
 interface DataTableFilterAdvancedValueRangeProps {
   value: number | [number, number] | null;
   setValue: Dispatch<SetStateAction<number | [number, number] | null>>;
+  disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValueRange({ value, setValue }: DataTableFilterAdvancedValueRangeProps) {
+export function DataTableFilterAdvancedValueRange({ value, setValue, disabled }: DataTableFilterAdvancedValueRangeProps) {
   const { loading, error, data } = useQuery(GET_ESTIMATED_HOUR_MIN_MAX);
 
   if (loading) {
@@ -27,7 +28,7 @@ export function DataTableFilterAdvancedValueRange({ value, setValue }: DataTable
 
   return (
     <div className='flex gap-6'>
-      <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setValue} />
+      <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setValue} disabled={disabled} />
     </div>
   );
 }

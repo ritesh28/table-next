@@ -7,7 +7,7 @@ import { FILTER_TYPES } from '@/model/table-filters';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { Moment } from 'moment';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface DataTableFilterSimpleCreatedAtProps {
   table: Table<Task>;
@@ -17,7 +17,11 @@ export function DataTableFilterSimpleCreatedAt({ table }: DataTableFilterSimpleC
   const [selection, setSelection] = useState<Moment | [Moment, Moment] | null>(null);
   const COLUMN_ID = 'created_at';
 
-  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
+  useSyncSimpleFilterGroupAndSelection(
+    table,
+    COLUMN_ID,
+    useCallback((value: Moment | [Moment, Moment] | null) => setSelection(value), []),
+  );
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {

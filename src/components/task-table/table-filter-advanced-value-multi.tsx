@@ -13,9 +13,10 @@ interface DataTableFilterAdvancedValueMultiProps {
   columnId: keyof Task;
   value: string[] | null;
   setValue: Dispatch<SetStateAction<string[] | null>>;
+  disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue }: DataTableFilterAdvancedValueMultiProps) {
+export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, disabled }: DataTableFilterAdvancedValueMultiProps) {
   const {
     loading: priorityLoading,
     error: priorityError,
@@ -90,7 +91,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue }:
     <Combobox
       items={(priorityMultiSelect || statusMultiSelect || labelMultiSelect) as ComboboxItem[]}
       selectedItems={value}
-      setSelectedItems={setValue}
+      handleItemSelect={(newVal) => setValue([newVal])}
       isMultiSelect
       buttonChildren={
         value ? (
@@ -108,6 +109,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue }:
       }
       buttonClassName='w-full text-ellipsis'
       popoverContentClassName='w-[250px]'
+      disabled={disabled}
     />
   );
 }

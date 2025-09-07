@@ -5,16 +5,18 @@ import { isArrayOfString, isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/c
 import { UiForValue } from '@/model/table-filters';
 import { Task } from '@/model/task';
 import { isMoment } from 'moment';
+import { Dispatch, SetStateAction } from 'react';
 import { DataTableFilterAdvancedValueMulti } from './table-filter-advanced-value-multi';
 
 interface DataTableFilterAdvancedValueProps {
   columnId: keyof Task;
   ui: UiForValue;
   value: unknown | null;
-  setValue: (value: unknown | null) => void;
+  setValue: Dispatch<SetStateAction<unknown | null>>;
+  disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue }: DataTableFilterAdvancedValueProps) {
+export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue, disabled }: DataTableFilterAdvancedValueProps) {
   if (ui === 'noUI') {
     return null;
   }
@@ -26,6 +28,7 @@ export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue }: 
         value={value ? String(value) : ''}
         onChange={(event) => setValue(event.target.value ? event.target.value : null)}
         className='max-w-sm'
+        disabled={disabled}
       />
     );
   }
@@ -38,15 +41,17 @@ export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue }: 
         value={Number(value) || ''}
         onChange={(event) => setValue(event.target.value ? Number(event.target.value) : null)}
         className='max-w-sm'
+        disabled={disabled}
       />
     );
   }
   if (ui === '2numericTextBox') {
     if (isTupleOfTwoNumber(value) || typeof value === 'number' || value === null)
-      return <DataTableFilterAdvancedValueRange value={value} setValue={setValue} />;
+      return <DataTableFilterAdvancedValueRange value={value} setValue={setValue} disabled={disabled} />;
     return null;
   }
   if (ui === 'singleDate') {
+    // todo: disable
     return <DatePickerInputCalendar dateRange={isMoment(value) ? value : null} setDateRange={setValue} calendarMode='single' />;
   }
   if (ui === 'rangeDate') {
@@ -55,7 +60,8 @@ export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue }: 
     );
   }
   if (ui === 'multiSelect') {
-    if (isArrayOfString(value) || value === null) return <DataTableFilterAdvancedValueMulti columnId={columnId} value={value} setValue={setValue} />;
+    if (isArrayOfString(value) || value === null)
+      return <DataTableFilterAdvancedValueMulti columnId={columnId} value={value} setValue={setValue} disabled={disabled} />;
     return null;
   }
   return null;

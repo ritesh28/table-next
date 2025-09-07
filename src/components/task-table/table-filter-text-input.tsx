@@ -5,7 +5,7 @@ import { FilterGroupCollection } from '@/model/table-filter-group-collection';
 import { FILTER_TYPES } from '@/model/table-filters';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface DataTableFilterTextInputProps {
   table: Table<Task>;
@@ -14,7 +14,11 @@ export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProp
   const [selection, setSelection] = useState<string | null>(null);
   const COLUMN_ID = 'title';
 
-  useSyncSimpleFilterGroupAndSelection(table, COLUMN_ID, setSelection);
+  useSyncSimpleFilterGroupAndSelection(
+    table,
+    COLUMN_ID,
+    useCallback((value: string | null) => setSelection(value), []),
+  );
 
   useEffect(() => {
     table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((filterGroupCollection: FilterGroupCollection | undefined) => {
