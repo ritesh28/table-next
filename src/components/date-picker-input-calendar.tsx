@@ -1,44 +1,43 @@
 import { Calendar } from '@/components/ui/calendar';
+import { isTupleOfTwoMoment } from '@/lib/check-type';
 import moment, { type Moment } from 'moment';
-import { Dispatch, SetStateAction } from 'react';
 
 interface DatePickerInputCalendarProps {
-  dateRange: Moment | [Moment, Moment] | null;
-  setDateRange: Dispatch<SetStateAction<Moment | [Moment, Moment] | null>>;
+  selectedDate: Moment | [Moment, Moment] | null;
+  onDateSelect: (range: [Moment, Moment] | Moment) => void;
   calendarMode: 'single' | 'range';
 }
-export function DatePickerInputCalendar({ dateRange, setDateRange, calendarMode }: DatePickerInputCalendarProps) {
+export function DatePickerInputCalendar({ selectedDate, onDateSelect, calendarMode }: DatePickerInputCalendarProps) {
   if (calendarMode === 'single') {
+    const date = selectedDate === null ? undefined : isTupleOfTwoMoment(selectedDate) ? selectedDate[0].toDate() : selectedDate.toDate();
     return (
       <Calendar
         mode='single'
         required
         disabled={{ after: new Date() }}
-        selected={dateRange === null ? undefined : (dateRange as Moment).toDate()}
-        onSelect={(selected) => {
-          if (!selected) return setDateRange(null);
-          setDateRange(moment(selected));
-        }}
+        defaultMonth={date}
+        selected={date}
+        onSelect={(selected) => onDateSelect(moment(selected))}
       />
     );
   }
   if (calendarMode === 'range') {
+    const date =
+      selectedDate === null
+        ? { from: undefined, to: undefined }
+        : moment.isMoment(selectedDate)
+          ? { from: selectedDate.toDate(), to: selectedDate.toDate() }
+          : { from: selectedDate[0].toDate(), to: selectedDate[1].toDate() };
     return (
       <Calendar
         mode='range'
         required
         disabled={{ after: new Date() }}
-        selected={
-          dateRange === null
-            ? { from: undefined, to: undefined }
-            : moment.isMoment(dateRange)
-              ? { from: dateRange.toDate(), to: dateRange.toDate() }
-              : { from: dateRange[0].toDate(), to: dateRange[1].toDate() }
-        }
+        defaultMonth={date.from}
+        selected={date}
         onSelect={(selected) => {
-          if (!selected) return setDateRange(null);
-          if (selected.from?.toDateString() === selected.to?.toDateString()) return setDateRange(moment(selected.to));
-          return setDateRange([moment(selected.from), moment(selected.to)]);
+          if (selected.from?.toDateString() === selected.to?.toDateString()) return onDateSelect(moment(selected.to));
+          return onDateSelect([moment(selected.from), moment(selected.to)]);
         }}
       />
     );

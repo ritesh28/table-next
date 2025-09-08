@@ -42,6 +42,12 @@ export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSim
   }, [selection, table]);
 
   const { loading, error, data } = useQuery(GET_ESTIMATED_HOUR_MIN_MAX);
+  const { min, max } = data?.estimatedHour ?? { min: 0, max: 0 };
+
+  const handleRangeChange = useCallback((range: [number, number]) => {
+    if (range[0] === range[1]) return setSelection(range[0]);
+    return setSelection(range);
+  }, []);
 
   if (loading || data === undefined) {
     return <Skeleton className='h-full basis-[60px] rounded-sm' />;
@@ -51,10 +57,9 @@ export function DataTableFilterSimpleEstimatedHour({ table }: DataTableFilterSim
     return null;
   }
 
-  const { min, max } = data.estimatedHour;
   return (
     <>
-      <RangePicker range={selection} setRange={setSelection} min={min} max={max} />
+      <RangePicker range={selection} min={min} max={max} onRangeChange={handleRangeChange} onRemoveRange={() => setSelection(null)} />
     </>
   );
 }

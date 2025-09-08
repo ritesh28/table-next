@@ -186,7 +186,7 @@ class FilterDateRange extends Filter<[Moment, Moment]> {
 
     const colValue = row[this._columnId] as Moment;
     const [minValue, maxValue] = this.value;
-    if (this._operator === 'is between') return moment(colValue).isBetween(minValue, maxValue);
+    if (this._operator === 'is between') return moment(colValue).isBetween(minValue, maxValue, undefined, '[]');
     return true; // default value
   }
 }

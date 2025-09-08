@@ -79,11 +79,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
     (filterGroupIndex: number, filterIndex: number, value: unknown) => {
       table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
         const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
-        //todo remove debug logs
-        console.log(typeof value);
-        console.log(typeof value === 'function' ? value() : value);
-
-        const newFilter = oldFilter.setValueAndReturnNewFilter((typeof value === 'function' ? value() : value) as any);
+        const newFilter = oldFilter.setValueAndReturnNewFilter(value);
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
       });
     },
@@ -224,8 +220,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       <DataTableFilterAdvancedValue
                         columnId={filter.columnId}
                         ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE}
-                        value={filter.value}
-                        setValue={(value) => updateFilterValue(filterGroupIndex, filterIndex, value)}
+                        filterValue={filter.value}
+                        onFilterValueChange={(value) => updateFilterValue(filterGroupIndex, filterIndex, value)}
                         disabled={filterGroup.isSimpleFilterGroup}
                       />
                     </div>

@@ -1,22 +1,24 @@
 import { DatePickerInputCalendar } from '@/components/date-picker-input-calendar';
+import { DataTableFilterAdvancedValueMulti } from '@/components/task-table/table-filter-advanced-value-multi';
 import { DataTableFilterAdvancedValueRange } from '@/components/task-table/table-filter-advanced-value-range';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { isArrayOfString, isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/check-type';
 import { UiForValue } from '@/model/table-filters';
 import { Task } from '@/model/task';
+import { CalendarIcon } from 'lucide-react';
 import { isMoment } from 'moment';
-import { Dispatch, SetStateAction } from 'react';
-import { DataTableFilterAdvancedValueMulti } from './table-filter-advanced-value-multi';
 
 interface DataTableFilterAdvancedValueProps {
   columnId: keyof Task;
   ui: UiForValue;
-  value: unknown | null;
-  setValue: Dispatch<SetStateAction<unknown | null>>;
+  filterValue: unknown | null;
+  onFilterValueChange: (filterValue: unknown | null) => void;
   disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue, disabled }: DataTableFilterAdvancedValueProps) {
+export function DataTableFilterAdvancedValue({ columnId, ui, filterValue, onFilterValueChange, disabled }: DataTableFilterAdvancedValueProps) {
   if (ui === 'noUI') {
     return null;
   }
@@ -25,8 +27,8 @@ export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue, di
       <Input
         id='advanced-filter-text'
         placeholder='Search titles...'
-        value={value ? String(value) : ''}
-        onChange={(event) => setValue(event.target.value ? event.target.value : null)}
+        value={filterValue ? String(filterValue) : ''}
+        onChange={(event) => onFilterValueChange(event.target.value ? event.target.value : null)}
         className='max-w-sm'
         disabled={disabled}
       />
@@ -38,30 +40,57 @@ export function DataTableFilterAdvancedValue({ columnId, ui, value, setValue, di
         id='advanced-filter-number'
         type='number'
         placeholder='Enter a value...'
-        value={Number(value) || ''}
-        onChange={(event) => setValue(event.target.value ? Number(event.target.value) : null)}
+        value={Number(filterValue) || ''}
+        onChange={(event) => onFilterValueChange(event.target.value ? Number(event.target.value) : null)}
         className='max-w-sm'
         disabled={disabled}
       />
     );
   }
   if (ui === '2numericTextBox') {
-    if (isTupleOfTwoNumber(value) || typeof value === 'number' || value === null)
-      return <DataTableFilterAdvancedValueRange value={value} setValue={setValue} disabled={disabled} />;
+    if (isTupleOfTwoNumber(filterValue) || typeof filterValue === 'number' || filterValue === null)
+      return <DataTableFilterAdvancedValueRange value={filterValue} onValueChange={onFilterValueChange} disabled={disabled} />;
     return null;
   }
   if (ui === 'singleDate') {
-    // todo: disable
-    return <DatePickerInputCalendar dateRange={isMoment(value) ? value : null} setDateRange={setValue} calendarMode='single' />;
+    return (
+      <Popover>
+        <PopoverTrigger asChild disabled={disabled}>
+          <Button variant='outline' className='min-w-40'>
+            <CalendarIcon /> {isMoment(filterValue) ? filterValue.format('ll') : 'Pick a date'}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align='start' className='w-auto p-0'>
+          <DatePickerInputCalendar
+            selectedDate={isMoment(filterValue) ? filterValue : null}
+            onDateSelect={onFilterValueChange}
+            calendarMode='single'
+          />
+        </PopoverContent>
+      </Popover>
+    );
   }
   if (ui === 'rangeDate') {
     return (
-      <DatePickerInputCalendar dateRange={isTupleOfTwoMoment(value) || isMoment(value) ? value : null} setDateRange={setValue} calendarMode='range' />
+      <Popover>
+        <PopoverTrigger asChild disabled={disabled}>
+          <Button variant='outline' className='min-w-40'>
+            <CalendarIcon /> {isTupleOfTwoMoment(filterValue) ? `${filterValue[0].format('ll')} - ${filterValue[1].format('ll')}` : 'Pick a date'}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align='start' className='w-auto p-0'>
+          <DatePickerInputCalendar
+            selectedDate={isTupleOfTwoMoment(filterValue) ? filterValue : null}
+            onDateSelect={(range) => (isTupleOfTwoMoment(range) ? onFilterValueChange(range) : onFilterValueChange([range, range]))}
+            calendarMode='range'
+          />
+        </PopoverContent>
+      </Popover>
     );
   }
   if (ui === 'multiSelect') {
-    if (isArrayOfString(value) || value === null)
-      return <DataTableFilterAdvancedValueMulti columnId={columnId} value={value} setValue={setValue} disabled={disabled} />;
+    if (isArrayOfString(filterValue) || filterValue === null)
+      return <DataTableFilterAdvancedValueMulti columnId={columnId} value={filterValue} onValueChange={onFilterValueChange} disabled={disabled} />;
     return null;
   }
   return null;

@@ -4,14 +4,13 @@ import { Button } from '@/components/ui/button';
 import { isTupleOfTwoMoment } from '@/lib/check-type';
 import { CalendarIcon, CircleX } from 'lucide-react';
 import moment, { Moment } from 'moment';
-import { Dispatch, SetStateAction } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface DatePickerProps {
   dateRange: Moment | [Moment, Moment] | null;
-  setDateRange: Dispatch<SetStateAction<Moment | [Moment, Moment] | null>>;
+  onDateSelect: (range: [Moment, Moment] | Moment | null) => void;
 }
-export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
+export function DatePicker({ dateRange, onDateSelect }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -22,7 +21,7 @@ export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
             </>
           ) : (
             <div className='flex items-center gap-1'>
-              <div className='hover:opacity-60' onClick={() => setDateRange(null)}>
+              <div className='hover:opacity-60' onClick={() => onDateSelect(null)}>
                 <CircleX />
               </div>
               <span>Created At</span>
@@ -37,7 +36,7 @@ export function DatePicker({ dateRange, setDateRange }: DatePickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className='w-auto p-0'>
-        <DatePickerInputCalendar dateRange={dateRange} setDateRange={setDateRange} calendarMode='range' />
+        <DatePickerInputCalendar selectedDate={dateRange} onDateSelect={onDateSelect} calendarMode='range' />
       </PopoverContent>
     </Popover>
   );

@@ -1,22 +1,30 @@
 import { Combobox, ComboboxItem } from '@/components/combobox';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCombobox } from '@/hooks/useCombobox';
 import { GET_LABELS_QUERY } from '@/lib/apollo-query-get-label-and-count';
 import { GET_PRIORITIES_QUERY } from '@/lib/apollo-query-get-priority-and-count';
 import { GET_STATUSES_QUERY } from '@/lib/apollo-query-get-status-and-count';
 import { LABEL_ICONS, PRIORITY_ICONS, STATUS_ICONS, Task } from '@/model/task';
 import { useQuery } from '@apollo/client';
-import { ChevronsUpDown } from 'lucide-react';
-import { Dispatch, SetStateAction } from 'react';
+import { ChevronsUpDown, LucideIcon } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface DataTableFilterAdvancedValueMultiProps {
   columnId: keyof Task;
   value: string[] | null;
-  setValue: Dispatch<SetStateAction<string[] | null>>;
+  onValueChange: (value: string[] | null) => void;
   disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, disabled }: DataTableFilterAdvancedValueMultiProps) {
+export function DataTableFilterAdvancedValueMulti({ columnId, value, onValueChange, disabled }: DataTableFilterAdvancedValueMultiProps) {
+  const IS_MULTI_SELECT = true;
+  const { selectedItems, handleItemSelect } = useCombobox(value, IS_MULTI_SELECT);
+
+  useEffect(() => {
+    onValueChange(selectedItems);
+  }, [selectedItems]);
+
   const {
     loading: priorityLoading,
     error: priorityError,
@@ -52,12 +60,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, d
     return {
       id,
       totalCount,
-      content: (
-        <div className='flex items-center gap-1'>
-          <Icon />
-          <span>{id}</span>
-        </div>
-      ),
+      content: ContentWithIcon(Icon, id),
     };
   });
   const statusMultiSelect = statusData?.statuses.map(({ name: id, count: totalCount }) => {
@@ -65,12 +68,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, d
     return {
       id,
       totalCount,
-      content: (
-        <div className='flex items-center gap-1'>
-          <Icon />
-          <span>{id}</span>
-        </div>
-      ),
+      content: ContentWithIcon(Icon, id),
     };
   });
   const labelMultiSelect = labelData?.labels.map(({ name: id, count: totalCount }) => {
@@ -78,12 +76,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, d
     return {
       id,
       totalCount,
-      content: (
-        <div className='flex items-center gap-1'>
-          <Icon />
-          <span>{id}</span>
-        </div>
-      ),
+      content: ContentWithIcon(Icon, id),
     };
   });
 
@@ -91,7 +84,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, d
     <Combobox
       items={(priorityMultiSelect || statusMultiSelect || labelMultiSelect) as ComboboxItem[]}
       selectedItems={value}
-      handleItemSelect={(newVal) => setValue([newVal])}
+      handleItemSelect={(newVal) => handleItemSelect(newVal)}
       isMultiSelect
       buttonChildren={
         value ? (
@@ -111,5 +104,14 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, setValue, d
       popoverContentClassName='w-[250px]'
       disabled={disabled}
     />
+  );
+}
+
+function ContentWithIcon(Icon: LucideIcon, id: string) {
+  return (
+    <div className='flex items-center gap-1'>
+      <Icon />
+      <span>{id}</span>
+    </div>
   );
 }

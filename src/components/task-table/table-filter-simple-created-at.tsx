@@ -38,5 +38,9 @@ export function DataTableFilterSimpleCreatedAt({ table }: DataTableFilterSimpleC
     });
   }, [selection, table]);
 
-  return <DatePicker dateRange={selection} setDateRange={setSelection} />;
+  const handleDateSelect = (range: Moment | [Moment, Moment] | null) => {
+    setSelection(range);
+  };
+
+  return <DatePicker dateRange={selection} onDateSelect={handleDateSelect} />;
 }

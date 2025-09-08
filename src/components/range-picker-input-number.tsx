@@ -1,19 +1,17 @@
 import { InputWithIcon } from '@/components/ui/input-with-icon';
-import { isTupleOfTwoNumber } from '@/lib/check-type';
 import { Timer } from 'lucide-react';
-import { Dispatch, SetStateAction } from 'react';
 
 interface RangePickerInputNumberProps {
   min: number;
   max: number;
-  variableMin: number;
-  variableMax: number;
-  setRange: Dispatch<SetStateAction<number | [number, number] | null>>;
+  value_1: number | null;
+  value_2?: number | null;
+  onRangeChange: (range: [number, number]) => void;
   isIcon?: boolean;
   disabled?: boolean;
 }
 
-export function RangePickerInputNumber({ min, max, variableMin, variableMax, setRange, isIcon, disabled }: RangePickerInputNumberProps) {
+export function RangePickerInputNumber({ min, max, value_1, value_2, onRangeChange, isIcon, disabled }: RangePickerInputNumberProps) {
   return (
     <>
       <InputWithIcon
@@ -21,32 +19,28 @@ export function RangePickerInputNumber({ min, max, variableMin, variableMax, set
         endIcon={isIcon ? Timer : undefined}
         disabled={disabled}
         min={min}
-        max={variableMax}
-        value={variableMin}
-        onChange={(e) =>
-          setRange((oldRange) => {
-            const value = parseInt(e.target.value, 10);
-            const newVal2 = oldRange === null ? max : isTupleOfTwoNumber(oldRange) ? oldRange[1] : oldRange;
-            const newVal1 = Number.isNaN(value) || value > newVal2 || value < min ? variableMin : value;
-            return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
-          })
-        }
+        max={value_2 ?? undefined}
+        value={value_1 ?? ''}
+        placeholder={String(min)}
+        onChange={(e) => {
+          const val1 = parseInt(e.target.value, 10);
+          const val2 = value_2 ?? max;
+          if (val1 <= val2 && val1 >= min) return onRangeChange([val1, val2]);
+        }}
       />
       <InputWithIcon
         type='number'
         endIcon={isIcon ? Timer : undefined}
         disabled={disabled}
-        min={variableMin}
+        min={value_1 ?? undefined}
         max={max}
-        value={variableMax}
-        onChange={(e) =>
-          setRange((oldRange) => {
-            const newVal1 = oldRange === null ? min : isTupleOfTwoNumber(oldRange) ? oldRange[0] : oldRange;
-            const value = parseInt(e.target.value, 10);
-            const newVal2 = Number.isNaN(value) || value < newVal1 || value > max ? variableMax : value;
-            return newVal1 === newVal2 ? newVal1 : [newVal1, newVal2];
-          })
-        }
+        value={value_2 ?? ''}
+        placeholder={String(max)}
+        onChange={(e) => {
+          const val1 = value_1 ?? min;
+          const val2 = parseInt(e.target.value, 10);
+          if (val1 <= val2 && val2 <= max) return onRangeChange([val1, val2]);
+        }}
       />
     </>
   );

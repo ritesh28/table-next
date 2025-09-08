@@ -9,19 +9,20 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { isTupleOfTwoNumber } from '@/lib/check-type';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 interface RangePickerProps {
   range: number | [number, number] | null;
-  setRange: Dispatch<SetStateAction<number | [number, number] | null>>;
   min: number;
   max: number;
+  onRangeChange: (range: [number, number]) => void;
+  onRemoveRange: () => void;
 }
-export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
+export function RangePicker({ range, min, max, onRangeChange, onRemoveRange }: RangePickerProps) {
   const [open, setOpen] = useState(false);
 
-  const variableMin = range === null ? min : isTupleOfTwoNumber(range) ? range[0] : range;
-  const variableMax = range === null ? max : isTupleOfTwoNumber(range) ? range[1] : range;
+  const value_1 = range === null ? null : isTupleOfTwoNumber(range) ? range[0] : range;
+  const value_2 = range === null ? null : isTupleOfTwoNumber(range) ? range[1] : range;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -33,7 +34,7 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
             </>
           ) : (
             <div className='flex items-center gap-1'>
-              <div className='hover:opacity-60' onClick={() => setRange(null)}>
+              <div className='hover:opacity-60' onClick={onRemoveRange}>
                 <CircleX />
               </div>
               <span>Est. Hours</span>
@@ -52,26 +53,21 @@ export function RangePicker({ range, setRange, min, max }: RangePickerProps) {
       <PopoverContent align='start' className='w-[250px] p-1'>
         <div>Est. Hours</div>
         <div className='flex gap-4'>
-          <RangePickerInputNumber min={min} max={max} variableMin={variableMin} variableMax={variableMax} setRange={setRange} isIcon />
+          <RangePickerInputNumber min={min} max={max} value_1={value_1} value_2={value_2} onRangeChange={onRangeChange} isIcon />
         </div>
         <div className='my-4'>
           <Slider
-            value={[variableMin, variableMax]}
+            value={value_1 === null || value_2 === null ? [min, max] : [value_1, value_2]}
             min={min}
             max={max}
             step={1}
-            onValueChange={(range) => {
-              const val1 = range[0];
-              const val2 = range[1];
-              if (val1 === val2) return setRange(val1);
-              return setRange([val1, val2]);
-            }}
+            onValueChange={(range) => onRangeChange([range[0], range[1]])}
           />
         </div>
-        {isTupleOfTwoNumber(range) && (
+        {range !== null && (
           <>
             <Separator />
-            <Button variant='ghost' className='w-full' onClick={() => setRange(null)}>
+            <Button variant='ghost' className='w-full' onClick={onRemoveRange}>
               Reset
             </Button>
           </>
