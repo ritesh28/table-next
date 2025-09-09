@@ -1,21 +1,23 @@
 'use client';
 
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, ChevronsUpDown, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-import { DataTableSortItem } from '@/components/task-table/table-sort-popover-item';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
 
+import { Combobox } from '@/components/combobox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 const SORTABLE_COLUMNS = Object.values(COLUMN_METADATA)
   .filter((col) => col.sortable)
   .map((col) => ({ id: col.columnId, content: col.content }));
 
-const SORTABLE_ORDERS = {
+const SORT_DIRECTIONS = {
   asc: 'Asc',
   desc: 'Desc',
 } as const;
@@ -23,7 +25,7 @@ const SORTABLE_ORDERS = {
 interface DataTableSortProps {
   table: Table<Task>;
 }
-// todo: maintain the order of the sort
+
 export function DataTableSort({ table }: DataTableSortProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectOpen, setSelectOpen] = useState<string | null>(null); // value can be column id or null. Null means all select components are in close state
@@ -40,31 +42,30 @@ export function DataTableSort({ table }: DataTableSortProps) {
     setSelectOpen(isOpen ? columnId : null);
   }, []);
 
-  const handleAddSort = useCallback(() => {
+  const handleAddColumnId = useCallback(() => {
     if (dropdownColumnIds.length > 0) {
       // add the first element in dropdownItems
       const columnId = dropdownColumnIds[0].id;
-      table.getColumn(columnId)?.toggleSorting(true, true);
+      table.setSorting((sortState) => [...sortState, { id: columnId, desc: true }]);
     }
   }, [dropdownColumnIds, table]);
 
-  const handleRemoveSort = useCallback(
+  const handleRemoveColumnId = useCallback(
     (columnId: string) => {
-      table.getColumn(columnId)?.clearSorting();
+      table.setSorting((sortState) => sortState.filter((ss) => ss.id !== columnId));
     },
     [table],
   );
 
-  const handleUpdateSort = useCallback(
+  const handleUpdateColumnId = useCallback(
     (oldColumnId: string, newColumnId: string) => {
-      table.getColumn(oldColumnId)?.clearSorting();
-      table.getColumn(newColumnId)?.toggleSorting(true, true);
+      table.setSorting((sortState) => sortState.map((ss) => (ss.id === oldColumnId ? { ...ss, id: newColumnId } : ss)));
     },
     [table],
   );
 
-  const handleChangeSortOrder = useCallback(
-    (columnId: string, val: keyof typeof SORTABLE_ORDERS) => {
+  const handleToggleSortDirection = useCallback(
+    (columnId: string, val: keyof typeof SORT_DIRECTIONS) => {
       const idDesc = val === 'desc';
       table.getColumn(columnId)?.toggleSorting(idDesc, true);
     },
@@ -96,20 +97,45 @@ export function DataTableSort({ table }: DataTableSortProps) {
         <ul className='flex flex-col max-h-[300px] gap-2 overflow-y-auto p-1'>
           {sortState.map((columnSort) => (
             <li key={columnSort.id} className='flex items-center justify-between'>
-              <DataTableSortItem
+              <Combobox
+                buttonClassName='w-[175px]'
+                popoverContentClassName='w-[175px]'
                 items={dropdownColumnIds}
-                columnSort={columnSort}
-                handleUpdateSort={handleUpdateSort}
-                handleChangeSortOrder={handleChangeSortOrder}
-                handleRemoveSort={handleRemoveSort}
-                selectOpen={selectOpen}
-                handleSelectOpenChange={handleSelectOpenChange}
+                selectedItems={[columnSort.id]}
+                handleItemSelect={(newColumnId) => handleUpdateColumnId(columnSort.id, newColumnId)}
+                isMultiSelect={false}
+                buttonChildren={
+                  <div className='w-full flex items-center justify-between'>
+                    <span>{SORTABLE_COLUMNS.find((sc) => sc.id === columnSort.id)?.content}</span>
+                    <ChevronsUpDown />
+                  </div>
+                }
               />
+              <Select
+                open={selectOpen === columnSort.id}
+                onOpenChange={(isOpen) => handleSelectOpenChange(isOpen, columnSort.id)}
+                value={(columnSort.desc ? 'desc' : 'asc') as keyof typeof SORT_DIRECTIONS}
+                onValueChange={(val) => handleToggleSortDirection(columnSort.id, val as keyof typeof SORT_DIRECTIONS)}
+              >
+                <SelectTrigger className='w-[75px]'>
+                  <SelectValue placeholder={columnSort.desc ? SORT_DIRECTIONS['desc'] : SORT_DIRECTIONS['asc']} />
+                </SelectTrigger>
+                <SelectContent className='!w-[75px]'>
+                  {Object.entries(SORT_DIRECTIONS).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      {value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button size='icon' onClick={() => handleRemoveColumnId(columnSort.id)}>
+                <Trash2 />
+              </Button>
             </li>
           ))}
         </ul>
         <div className='flex w-full items-center gap-4'>
-          <Button disabled={sortState.length === SORTABLE_COLUMNS.length} onClick={handleAddSort}>
+          <Button disabled={sortState.length === SORTABLE_COLUMNS.length} onClick={handleAddColumnId}>
             Add sort
           </Button>
           {sortState.length > 0 && (

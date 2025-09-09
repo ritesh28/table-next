@@ -14,7 +14,6 @@ webpack loader: csv & graphql
 
 ## TODO
 
-sort order
 In-memory DB
 JWT
 ===crud operation===
