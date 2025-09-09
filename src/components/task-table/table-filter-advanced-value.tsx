@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { isArrayOfString, isTupleOfTwoMoment, isTupleOfTwoNumber } from '@/lib/check-type';
-import { UiForValue } from '@/model/table-filters';
+import { UiVariantForValue } from '@/model/table-filters';
 import { Task } from '@/model/task';
 import { CalendarIcon } from 'lucide-react';
 import { isMoment } from 'moment';
 
 interface DataTableFilterAdvancedValueProps {
   columnId: keyof Task;
-  ui: UiForValue;
+  ui: UiVariantForValue;
   filterValue: unknown | null;
   onFilterValueChange: (filterValue: unknown | null) => void;
   disabled?: boolean;

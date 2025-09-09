@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AndOr, FilterGroup } from '@/model/table-filter-group';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { Filter, FILTER_TYPES } from '@/model/table-filters';
+import { Filter, FILTER_VARIANTS } from '@/model/table-filters';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { ChevronsUpDown, Minus, Plus, X } from 'lucide-react';
@@ -16,7 +16,7 @@ const ADVANCED_FILTER_COLUMNS = Object.values(COLUMN_METADATA)
   .filter((col) => col.advancedFilterable)
   .map((col) => ({ id: col.columnId, content: col.content }));
 
-const COLUMN_FILTER_TYPE_MAP = Object.fromEntries(Object.values(COLUMN_METADATA).map((col) => [col.columnId, col.filterType]));
+const COLUMN_FILTER_TYPE_MAP = Object.fromEntries(Object.values(COLUMN_METADATA).map((col) => [col.columnId, col.filterVariant]));
 
 interface DataTableFilterAdvanceProps {
   table: Table<Task>;
@@ -45,7 +45,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
 
   const addNewFilterGroup = useCallback(() => {
     table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection | undefined) => {
-      const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP.title[0]];
+      const filterClass = FILTER_VARIANTS[COLUMN_FILTER_TYPE_MAP.title[0]];
       const filter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
       const filterGroup = new FilterGroup('advanced', [filter]);
       const newFilterGroupCollection = (oldFilterGroupCollection ?? new FilterGroupCollection()).addNewFilterGroup(filterGroup);
@@ -56,7 +56,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
   const updateFilterColumn = useCallback(
     (columnId: keyof Task, filterGroupIndex: number, filterIndex: number) => {
       table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
-        const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP[columnId][0]];
+        const filterClass = FILTER_VARIANTS[COLUMN_FILTER_TYPE_MAP[columnId][0]];
         const newFilter = new filterClass(columnId, filterClass.OPERATOR_LIST[0]);
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
       });
@@ -65,10 +65,10 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
   );
 
   const updateFilterOperator = useCallback(
-    (filterGroupIndex: number, filterIndex: number, operator: string, filterType: keyof typeof FILTER_TYPES) => {
+    (filterGroupIndex: number, filterIndex: number, operator: string, filterVariant: keyof typeof FILTER_VARIANTS) => {
       table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
         const oldFilter = oldFilterGroupCollection?.filterGroups[filterGroupIndex].filters[filterIndex];
-        const newFilter = new FILTER_TYPES[filterType](oldFilter.columnId, operator); // for a given column id, filter can be be of multiple types
+        const newFilter = new FILTER_VARIANTS[filterVariant](oldFilter.columnId, operator); // for a given column id, filter can be be of multiple types
         return FilterGroupCollection.replaceFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex, filterIndex);
       });
     },
@@ -189,20 +189,20 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         disabled={filterGroup.isSimpleFilterGroup}
                         buttonClassName='w-full'
                         popoverContentClassName='w-full'
-                        items={COLUMN_FILTER_TYPE_MAP[filter.columnId].reduce((accumulator, filterType) => {
+                        items={COLUMN_FILTER_TYPE_MAP[filter.columnId].reduce((accumulator, filterVariant) => {
                           return [
                             ...accumulator,
-                            ...FILTER_TYPES[filterType].OPERATOR_LIST.map((op: string) => ({
-                              id: op + OPERATOR_TYPE_LIMITER + filterType,
+                            ...FILTER_VARIANTS[filterVariant].OPERATOR_LIST.map((op: string) => ({
+                              id: op + OPERATOR_TYPE_LIMITER + filterVariant,
                               content: op[0].toUpperCase() + op.substring(1),
-                              groupHeading: FILTER_TYPES[filterType].OPERATOR_GROUP_NAME,
+                              groupHeading: FILTER_VARIANTS[filterVariant].OPERATOR_GROUP_NAME,
                             })),
                           ];
                         }, [] as ComboboxItem[])}
                         selectedItems={[filter.operator]}
                         handleItemSelect={(item) => {
-                          const [operator, filterType] = item.split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_TYPES];
-                          updateFilterOperator(filterGroupIndex, filterIndex, operator, filterType);
+                          const [operator, filterVariant] = item.split(OPERATOR_TYPE_LIMITER) as [string, keyof typeof FILTER_VARIANTS];
+                          updateFilterOperator(filterGroupIndex, filterIndex, operator, filterVariant);
                         }}
                         isMultiSelect={false}
                         buttonChildren={
@@ -219,7 +219,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                     >
                       <DataTableFilterAdvancedValue
                         columnId={filter.columnId}
-                        ui={(filter.constructor as typeof Filter<unknown>).UI_FOR_VALUE}
+                        ui={(filter.constructor as typeof Filter<unknown>).UI_VARIANT_FOR_VALUE}
                         filterValue={filter.value}
                         onFilterValueChange={(value) => updateFilterValue(filterGroupIndex, filterIndex, value)}
                         disabled={filterGroup.isSimpleFilterGroup}
@@ -262,7 +262,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                         size='icon'
                         onClick={() =>
                           table.getColumn(FILTER_COLUMN_ID)?.setFilterValue((oldFilterGroupCollection: FilterGroupCollection) => {
-                            const filterClass = FILTER_TYPES[COLUMN_FILTER_TYPE_MAP['title'][0]];
+                            const filterClass = FILTER_VARIANTS[COLUMN_FILTER_TYPE_MAP['title'][0]];
                             const newFilter = new filterClass('title', filterClass.OPERATOR_LIST[0]);
                             return FilterGroupCollection.addFilterInFilterGroup(oldFilterGroupCollection, newFilter, filterGroupIndex);
                           })

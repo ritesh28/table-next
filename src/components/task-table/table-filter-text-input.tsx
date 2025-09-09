@@ -2,7 +2,7 @@ import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Input } from '@/components/ui/input';
 import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
 import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FILTER_TYPES } from '@/model/table-filters';
+import { FILTER_VARIANTS } from '@/model/table-filters';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProp
         return newFilterGroupCollection;
       }
       // add or replace filter
-      const filter = new FILTER_TYPES.string(COLUMN_ID, 'contains', selection);
+      const filter = new FILTER_VARIANTS.string(COLUMN_ID, 'contains', selection);
       const newFilterGroupCollection = FilterGroupCollection.addOrReplaceColumnFilterFromSimpleFilterGroup(filterGroupCollection, filter, COLUMN_ID);
       return newFilterGroupCollection;
     });

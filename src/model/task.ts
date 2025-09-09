@@ -1,4 +1,4 @@
-import { FILTER_TYPES } from '@/model/table-filters';
+import { FILTER_VARIANTS } from '@/model/table-filters';
 import {
   AlarmClockCheck,
   ArrowDown,
@@ -81,49 +81,49 @@ export const COLUMN_METADATA = {
     content: 'Task ID',
     sortable: false,
     advancedFilterable: true,
-    filterType: ['string'],
+    filterVariant: ['string'],
   },
   title: {
     columnId: 'title',
     content: 'Title',
     sortable: true,
     advancedFilterable: true,
-    filterType: ['string'],
+    filterVariant: ['string'],
   },
   status: {
     columnId: 'status',
     content: 'Status',
     sortable: true,
     advancedFilterable: true,
-    filterType: ['list', 'empty'],
+    filterVariant: ['list', 'empty'],
   },
   priority: {
     columnId: 'priority',
     content: 'Priority',
     sortable: true,
     advancedFilterable: true,
-    filterType: ['list', 'empty'],
+    filterVariant: ['list', 'empty'],
   },
   label: {
     columnId: 'label',
     content: 'Label',
     sortable: false,
     advancedFilterable: true,
-    filterType: ['list', 'empty'],
+    filterVariant: ['list', 'empty'],
   },
   estimated_hours: {
     columnId: 'estimated_hours',
     content: 'Est. Hours',
     sortable: true,
     advancedFilterable: true,
-    filterType: ['number', 'numberRange', 'empty'],
+    filterVariant: ['number', 'numberRange', 'empty'],
   },
   created_at: {
     columnId: 'created_at',
     content: 'Created At',
     sortable: true,
     advancedFilterable: true,
-    filterType: ['date', 'dateRange', 'dateRelative'],
+    filterVariant: ['date', 'dateRange', 'dateRelative'],
   },
 } as const satisfies Readonly<
   Record<
@@ -133,7 +133,7 @@ export const COLUMN_METADATA = {
       content: ReactNode;
       sortable: boolean;
       advancedFilterable: boolean;
-      filterType: (keyof typeof FILTER_TYPES)[];
+      filterVariant: (keyof typeof FILTER_VARIANTS)[];
     }
   >
 >;

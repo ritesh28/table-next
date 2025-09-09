@@ -14,7 +14,6 @@ webpack loader: csv & graphql
 
 ## TODO
 
-Advanced search
 sort order
 In-memory DB
 JWT
