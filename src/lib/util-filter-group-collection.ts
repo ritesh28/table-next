@@ -1,5 +1,5 @@
-import { AndOr, FilterGroup } from '@/model/table-filter-group';
-import { Filter } from '@/model/table-filters';
+import { AndOr, FilterGroup } from '@/lib/util-filter-group';
+import { Filter } from '@/lib/util-filters';
 import { immerable, produce } from 'immer';
 
 export class FilterGroupCollection {

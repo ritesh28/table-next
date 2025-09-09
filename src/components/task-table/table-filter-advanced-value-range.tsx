@@ -1,6 +1,6 @@
 import { RangePickerInputNumber } from '@/components/range-picker-input-number';
 import { GET_ESTIMATED_HOUR_MIN_MAX } from '@/lib/apollo-query-get-estimated-hour-min-max';
-import { isTupleOfTwoNumber } from '@/lib/check-type';
+import { isTupleOfTwoNumber } from '@/lib/util-check-type';
 import { useQuery } from '@apollo/client';
 import { Skeleton } from '../ui/skeleton';
 

@@ -8,9 +8,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
-import { isTupleOfTwoNumber } from '@/lib/check-type';
-import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FILTER_VARIANTS } from '@/model/table-filters';
+import { isTupleOfTwoNumber } from '@/lib/util-check-type';
+import { FilterGroupCollection } from '@/lib/util-filter-group-collection';
+import { FILTER_VARIANTS } from '@/lib/util-filters';
 
 interface DataTableFilterSimpleEstimatedHourProps {
   table: Table<Task>;

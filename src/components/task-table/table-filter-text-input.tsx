@@ -1,8 +1,8 @@
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
 import { Input } from '@/components/ui/input';
 import { useSyncSimpleFilterGroupAndSelection } from '@/hooks/useSyncSimpleFilterGroupAndSelection';
-import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { FILTER_VARIANTS } from '@/model/table-filters';
+import { FilterGroupCollection } from '@/lib/util-filter-group-collection';
+import { FILTER_VARIANTS } from '@/lib/util-filters';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useCallback, useEffect, useState } from 'react';

@@ -1,6 +1,6 @@
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
-import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { Filter } from '@/model/table-filters';
+import { FilterGroupCollection } from '@/lib/util-filter-group-collection';
+import { Filter } from '@/lib/util-filters';
 import { Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { useEffect } from 'react';

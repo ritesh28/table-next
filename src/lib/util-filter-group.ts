@@ -1,4 +1,4 @@
-import { Filter } from '@/model/table-filters';
+import { Filter } from '@/lib/util-filters';
 import { immerable, produce } from 'immer';
 
 export type AndOr = 'And' | 'Or';

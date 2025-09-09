@@ -1,4 +1,4 @@
-import { FILTER_VARIANTS } from '@/model/table-filters';
+import { FILTER_VARIANTS } from '@/lib/util-filters';
 import {
   AlarmClockCheck,
   ArrowDown,

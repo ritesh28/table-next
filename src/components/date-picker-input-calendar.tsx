@@ -1,5 +1,5 @@
 import { Calendar } from '@/components/ui/calendar';
-import { isTupleOfTwoMoment } from '@/lib/check-type';
+import { isTupleOfTwoMoment } from '@/lib/util-check-type';
 import moment, { type Moment } from 'moment';
 
 interface DatePickerInputCalendarProps {

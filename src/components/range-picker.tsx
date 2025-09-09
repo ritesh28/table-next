@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
-import { isTupleOfTwoNumber } from '@/lib/check-type';
+import { isTupleOfTwoNumber } from '@/lib/util-check-type';
 import { useState } from 'react';
 
 interface RangePickerProps {

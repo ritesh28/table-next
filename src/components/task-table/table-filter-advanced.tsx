@@ -4,9 +4,9 @@ import { DataTableFilterAdvancedValue } from '@/components/task-table/table-filt
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AndOr, FilterGroup } from '@/model/table-filter-group';
-import { FilterGroupCollection } from '@/model/table-filter-group-collection';
-import { Filter, FILTER_VARIANTS } from '@/model/table-filters';
+import { AndOr, FilterGroup } from '@/lib/util-filter-group';
+import { FilterGroupCollection } from '@/lib/util-filter-group-collection';
+import { Filter, FILTER_VARIANTS } from '@/lib/util-filters';
 import { COLUMN_METADATA, Task } from '@/model/task';
 import { Table } from '@tanstack/react-table';
 import { ChevronsUpDown, Minus, Plus, X } from 'lucide-react';

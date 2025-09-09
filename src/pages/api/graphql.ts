@@ -1,4 +1,4 @@
-import { getCsvRecords, transformSerializableTasks } from '@/lib/get-csv-records';
+import { getCsvRecords, transformSerializableTasks } from '@/lib/util-get-csv-records';
 import { Resolvers } from '@/model/gql-server-resolvers-types';
 import typeDefs from '@/model/schema.graphql';
 import { ApolloServer } from '@apollo/server';

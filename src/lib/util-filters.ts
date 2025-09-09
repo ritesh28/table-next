@@ -1,6 +1,6 @@
 import { immerable, produce } from 'immer';
 import moment, { Moment } from 'moment';
-import { Task } from './task';
+import { Task } from '../model/task';
 
 export type UiVariantForValue = 'textBox' | 'numericTextBox' | '2numericTextBox' | 'singleDate' | 'rangeDate' | 'multiSelect' | 'noUI';
 

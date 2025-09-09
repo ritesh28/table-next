@@ -11,6 +11,8 @@ graphql
 immer
 moment
 webpack loader: csv & graphql
+RxDB - A fast, local-first, reactive Database for JavaScript Applications
+jsonwebtoken - jwt
 
 ## TODO
 

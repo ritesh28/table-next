@@ -1,7 +1,7 @@
 import { DatePickerInputCalendar } from '@/components/date-picker-input-calendar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { isTupleOfTwoMoment } from '@/lib/check-type';
+import { isTupleOfTwoMoment } from '@/lib/util-check-type';
 import { CalendarIcon, CircleX } from 'lucide-react';
 import moment, { Moment } from 'moment';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';

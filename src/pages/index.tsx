@@ -1,6 +1,6 @@
 import { columns } from '@/components/task-table/columns';
 import { DataTable } from '@/components/task-table/table';
-import { getCsvRecords, transformSerializableTasks } from '@/lib/get-csv-records';
+import { getCsvRecords, transformSerializableTasks } from '@/lib/util-get-csv-records';
 import { SerializableTask } from '@/model/task';
 import type { GetStaticProps, InferGetStaticPropsType } from 'next';
 
