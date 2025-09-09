@@ -92,6 +92,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
         <CardContent>
           <div className='grid grid-cols-[10rem_6rem_12rem_14rem_18rem_6rem_3rem_3rem_1fr] gap-3'>
             {filterGroupCollection?.filterGroups.map((filterGroup, filterGroupIndex) => (
+              // add unique key to each filter (AVOID filterIndex)
               <Fragment key={filterGroupIndex}>
                 <div
                   className='col-start-1'
@@ -160,6 +161,8 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                   <p className='text-sm font-medium'>And / Or</p>
                 </div>
                 {filterGroup.filters.map((filter, filterIndex) => (
+                  // todo: add unique key to each filter (AVOID filterIndex)
+                  // try: first add some value for status, then add values for priority. Make sure values from status are not appended
                   <Fragment key={filterIndex}>
                     <div
                       className='col-start-3'
@@ -257,7 +260,7 @@ export function DataTableFilterAdvanced({ table }: DataTableFilterAdvanceProps) 
                       style={{ gridRowStart: getFilterGroupGridRow(filterGroupCollection, filterGroupIndex).gridRowStart + filterIndex + 1 }}
                     >
                       <Button
-                        disabled={filterGroup.isSimpleFilterGroup}
+                        disabled={filterGroup.isSimpleFilterGroup || filterIndex !== filterGroup.filters.length - 1}
                         variant='outline'
                         size='icon'
                         onClick={() =>

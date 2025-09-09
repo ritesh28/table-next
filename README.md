@@ -20,6 +20,7 @@ In-memory DB
 JWT
 ===crud operation===
 auth rbac - web-simplified
+Advanced filter
 
 ### To run a ts file in a standalone fashion
 

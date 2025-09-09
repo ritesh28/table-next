@@ -23,7 +23,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, onValueChan
 
   useEffect(() => {
     onValueChange(selectedItems);
-  }, [selectedItems]);
+  }, [selectedItems]); // todo: adding onValueChange breaks multi select. Fix it
 
   const {
     loading: priorityLoading,
