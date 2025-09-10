@@ -2,19 +2,24 @@ import { Filter } from '@/lib/util-filters';
 import { immerable, produce } from 'immer';
 
 export type AndOr = 'And' | 'Or';
-type FilterGroupType = 'simple' | 'advanced';
+type FilterGroupVariant = 'simple' | 'advanced';
 
 export class FilterGroup {
   [immerable] = true;
+  private _id: string = crypto.randomUUID();
 
   constructor(
-    private _type: FilterGroupType = 'advanced',
+    private _variant: FilterGroupVariant = 'advanced',
     private _filters: Filter<unknown>[] = [],
     private _filterListAndOr: AndOr = 'And',
   ) {}
 
-  get type() {
-    return this._type;
+  get id() {
+    return this._id;
+  }
+
+  get variant() {
+    return this._variant;
   }
   get filters() {
     return Object.freeze(this._filters);
@@ -23,7 +28,7 @@ export class FilterGroup {
     return this._filterListAndOr;
   }
   get isSimpleFilterGroup() {
-    return this._type === 'simple';
+    return this._variant === 'simple';
   }
 
   setFilterListAndOr(value: AndOr) {

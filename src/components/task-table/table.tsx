@@ -31,6 +31,8 @@ interface DataTableProps {
   data: Task[];
 }
 
+const HEADER_WIDTH = 40;
+const CELL_WIDTH = 49;
 export function DataTable({ columns, data }: DataTableProps) {
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                   <TableHead
                     key={header.id}
                     className='bg-background'
-                    style={{ ...getCommonPinningStyles(header.column), ...getHeaderPinningStyles() }}
+                    style={{ ...getCommonPinningStyles(header.column, true, header.id === 'task_id' ? 3 : 2, 0) }}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
@@ -116,17 +118,34 @@ export function DataTable({ columns, data }: DataTableProps) {
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        <TableBody className='relative'>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className='bg-background' style={{ ...getCommonPinningStyles(cell.column) }}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            <>
+              {table.getTopRows().map((row, rowIndex) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className='bg-amber-200 dark:bg-amber-800'
+                      style={{
+                        ...getCommonPinningStyles(cell.column, true, cell.column.id === 'task_id' ? 3 : 2, HEADER_WIDTH + CELL_WIDTH * rowIndex),
+                      }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+              {table.getCenterRows().map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className='bg-background' style={{ ...getCommonPinningStyles(cell.column) }}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </>
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className='h-24 text-center'>
@@ -143,8 +162,8 @@ export function DataTable({ columns, data }: DataTableProps) {
   );
 }
 
-function getCommonPinningStyles(column: Column<Task>): CSSProperties {
-  const isPinned = column.getIsPinned();
+function getCommonPinningStyles(column: Column<Task>, isRowPinned: boolean = false, zIndex: number = 1, top: number = 1): CSSProperties {
+  const isPinned = column.getIsPinned() || isRowPinned;
   const isLastLeftPinnedColumn = isPinned === 'left' && column.getIsLastColumn('left');
   const isFirstRightPinnedColumn = isPinned === 'right' && column.getIsFirstColumn('right');
 
@@ -152,18 +171,11 @@ function getCommonPinningStyles(column: Column<Task>): CSSProperties {
     boxShadow: isLastLeftPinnedColumn ? '-4px 0 4px -4px gray inset' : isFirstRightPinnedColumn ? '4px 0 4px -4px gray inset' : undefined,
     left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
     right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+    top: isPinned ? top : undefined,
     opacity: isPinned ? 0.95 : 1,
     position: isPinned ? 'sticky' : 'relative',
     width: column.getSize(),
     marginInline: '5px',
-    zIndex: isPinned ? 1 : 0,
-  };
-}
-
-function getHeaderPinningStyles(): CSSProperties {
-  return {
-    position: 'sticky',
-    top: 0,
-    zIndex: 2,
+    zIndex: isPinned ? zIndex : 0,
   };
 }

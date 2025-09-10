@@ -2,23 +2,15 @@
 
 import { PRIORITY_ICONS, PRIORITY_ORDER, STATUS_ICONS, STATUS_ORDER, Task } from '@/model/task';
 import { ColumnDef, Row } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
 
 import { DataTableColumnHeader } from '@/components/task-table/column-header';
 import { DataTableColumnHeaderCheckbox } from '@/components/task-table/column-header-checkbox';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
+import { DataTableCellAction } from '@/components/task-table/table-cell-action';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FilterGroupCollection } from '@/lib/util-filter-group-collection';
-import { Badge } from '../ui/badge';
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -145,27 +137,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     id: 'actions',
     header: ({ table, header, column }) => <DataTableColumnHeader table={table} header={header} column={column} title='' pinningPosition='right' />,
-    cell: ({ row }) => {
-      const task = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(task.task_id)}>Copy Task ID</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <DataTableCellAction row={row} />,
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,

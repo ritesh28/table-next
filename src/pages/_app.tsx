@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/theme-toggle';
+import { Toaster } from '@/components/ui/sonner';
 import '@/globals.css';
 import { useApollo } from '@/lib/apollo';
 import { ApolloProvider } from '@apollo/client';
@@ -13,6 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ModeToggle />
       <ApolloProvider client={apolloClient}>
         <Component {...pageProps} />
+        <Toaster richColors position='top-right' />
       </ApolloProvider>
     </ThemeProvider>
   );

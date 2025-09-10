@@ -12,18 +12,18 @@ import { useEffect } from 'react';
 
 interface DataTableFilterAdvancedValueMultiProps {
   columnId: keyof Task;
-  value: string[] | null;
-  onValueChange: (value: string[] | null) => void;
+  values: string[] | null;
+  onValuesChange: (value: string[] | null) => void;
   disabled?: boolean;
 }
 
-export function DataTableFilterAdvancedValueMulti({ columnId, value, onValueChange, disabled }: DataTableFilterAdvancedValueMultiProps) {
+export function DataTableFilterAdvancedValueMulti({ columnId, values, onValuesChange, disabled }: DataTableFilterAdvancedValueMultiProps) {
   const IS_MULTI_SELECT = true;
-  const { selectedItems, handleItemSelect } = useCombobox(value, IS_MULTI_SELECT);
+  const { selectedItems, handleItemSelect } = useCombobox(values, IS_MULTI_SELECT);
 
   useEffect(() => {
-    onValueChange(selectedItems);
-  }, [selectedItems]); // todo: adding onValueChange breaks multi select. Fix it
+    onValuesChange(selectedItems);
+  }, [selectedItems]); // todo: adding onValuesChange breaks multi select. Fix it
 
   const {
     loading: priorityLoading,
@@ -83,13 +83,13 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, onValueChan
   return (
     <Combobox
       items={(priorityMultiSelect || statusMultiSelect || labelMultiSelect) as ComboboxItem[]}
-      selectedItems={value}
+      selectedItems={values}
       handleItemSelect={(newVal) => handleItemSelect(newVal)}
       isMultiSelect
       buttonChildren={
-        value ? (
+        values ? (
           <div className='w-full flex items-center gap-1'>
-            {value.map((item) => (
+            {values.map((item) => (
               <Badge key={item}>{item}</Badge>
             ))}
           </div>
@@ -100,7 +100,7 @@ export function DataTableFilterAdvancedValueMulti({ columnId, value, onValueChan
           </div>
         )
       }
-      buttonClassName='w-full text-ellipsis'
+      buttonClassName='w-full overflow-clip'
       popoverContentClassName='w-[250px]'
       disabled={disabled}
     />

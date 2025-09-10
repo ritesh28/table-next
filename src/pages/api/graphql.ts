@@ -57,10 +57,3 @@ const server = new ApolloServer({
 });
 
 export default startServerAndCreateNextHandler(server);
-
-// todo : add context when use plan to manipulate table data
-// use user session
-// import { NextRequest } from 'next/server';
-// export default startServerAndCreateNextHandler<NextRequest>(server, {
-//   context: async (req, res) => ({ req, res, user: await getLoggedInUser(req) }),
-// });

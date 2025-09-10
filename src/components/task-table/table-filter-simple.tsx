@@ -11,13 +11,6 @@ interface DataTableFilterSimpleProps {
 }
 
 export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
-  // todo: mutation
-  //  const [addSign] = useMutation(ADD_SIGN, {
-  //   onCompleted() {
-  //     router.push('/');
-  //   },
-  // });
-
   return (
     <div className='flex-row md:flex justify-between gap-2'>
       <DataTableFilterTextInput table={table} />

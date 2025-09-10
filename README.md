@@ -1,3 +1,5 @@
+# todo - write good readme.md
+
 nextjs
 zod
 
@@ -11,16 +13,6 @@ graphql
 immer
 moment
 webpack loader: csv & graphql
-RxDB - A fast, local-first, reactive Database for JavaScript Applications
-jsonwebtoken - jwt
-
-## TODO
-
-In-memory DB
-JWT
-===crud operation===
-auth rbac - web-simplified
-Advanced filter
 
 ### To run a ts file in a standalone fashion
 

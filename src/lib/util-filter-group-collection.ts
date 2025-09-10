@@ -17,10 +17,10 @@ export class FilterGroupCollection {
     return this._filterGroupListAndOr;
   }
   get simpleFilterGroup() {
-    return this._filterGroups.find((fg) => fg.type === 'simple');
+    return this._filterGroups.find((fg) => fg.variant === 'simple');
   }
   get advancedFilterGroupCount() {
-    return this._filterGroups.filter((fg) => fg.type === 'advanced').length;
+    return this._filterGroups.filter((fg) => fg.variant === 'advanced').length;
   }
 
   static removeColumnFilterFromSimpleFilterGroup(filterGroupCollection: FilterGroupCollection | undefined, columnId: string) {
@@ -108,7 +108,7 @@ export class FilterGroupCollection {
 
   addNewFilterGroup(filterGroup: FilterGroup) {
     return produce(this, (draft: this) => {
-      if (filterGroup.type === 'simple') {
+      if (filterGroup.variant === 'simple') {
         // simple filter group are stored at the start of the list
         draft._filterGroups.splice(0, 0, filterGroup);
       } else {

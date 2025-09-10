@@ -90,7 +90,7 @@ export function DataTableFilterAdvancedValue({ columnId, ui, filterValue, onFilt
   }
   if (ui === 'multiSelect') {
     if (isArrayOfString(filterValue) || filterValue === null)
-      return <DataTableFilterAdvancedValueMulti columnId={columnId} value={filterValue} onValueChange={onFilterValueChange} disabled={disabled} />;
+      return <DataTableFilterAdvancedValueMulti columnId={columnId} values={filterValue} onValuesChange={onFilterValueChange} disabled={disabled} />;
     return null;
   }
   return null;

@@ -11,12 +11,17 @@ export abstract class Filter<TValue> {
   static readonly OPERATOR_LIST: readonly string[];
   static readonly UI_VARIANT_FOR_VALUE: UiVariantForValue;
 
+  private _id: string = crypto.randomUUID();
+
   constructor(
     protected _columnId: keyof Task,
     protected _operator: string,
     protected _value: TValue | null = null,
   ) {}
   abstract filterRow(row: any): boolean;
+  get id() {
+    return this._id;
+  }
   get columnId() {
     return this._columnId;
   }
