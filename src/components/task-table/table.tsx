@@ -14,9 +14,11 @@ import { DataTablePagination } from '@/components/task-table/table-pagination';
 import { DataTableToggleColumn } from '@/components/task-table/table-toggle-column';
 
 import { FILTER_COLUMN_ID } from '@/components/task-table/columns';
+import { DataTableRowSelectedAction } from '@/components/task-table/row-selected-action';
 import { DataTableFilterAdvanced } from '@/components/task-table/table-filter-advanced';
 import { DataTableFilterSimple } from '@/components/task-table/table-filter-simple';
 import { DataTableSort } from '@/components/task-table/table-sort-popover';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useSize } from '@/hooks/useSize';
@@ -25,7 +27,6 @@ import { cn } from '@/lib/utils';
 import { Task } from '@/model/task';
 import { ChevronDown } from 'lucide-react';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
-import { Badge } from '../ui/badge';
 interface DataTableProps {
   columns: ColumnDef<Task>[];
   data: Task[];
@@ -157,6 +158,7 @@ export function DataTable({ columns, data }: DataTableProps) {
       </Table>
       <div className='my-4'>
         <DataTablePagination table={table} />
+        <DataTableRowSelectedAction selectedRows={table.getFilteredSelectedRowModel().rows} />
       </div>
     </div>
   );
