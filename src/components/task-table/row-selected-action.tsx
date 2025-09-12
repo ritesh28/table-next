@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Task } from '@/model/task';
 import { Row } from '@tanstack/react-table';
 import { Download, Pin, PinOff, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Separator } from '../ui/separator';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface DataTableRowSelectedActionProps {
   selectedRows: Row<Task>[];
