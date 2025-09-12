@@ -12,12 +12,12 @@ interface DataTableFilterSimpleProps {
 
 export function DataTableFilterSimple({ table }: DataTableFilterSimpleProps) {
   return (
-    <div className='flex-row md:flex justify-between gap-2'>
+    <>
       <DataTableFilterTextInput table={table} />
       <DataTableFilterSimpleStatus table={table} />
       <DataTableFilterSimplePriority table={table} />
       <DataTableFilterSimpleEstimatedHour table={table} />
       <DataTableFilterSimpleCreatedAt table={table} />
-    </div>
+    </>
   );
 }

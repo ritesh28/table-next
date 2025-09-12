@@ -11,12 +11,12 @@ interface DataTablePaginationProps {
 
 export function DataTablePagination({ table }: DataTablePaginationProps) {
   return (
-    <div className='flex items-center justify-between px-2'>
+    <div className='flex flex-wrap items-center justify-between px-2'>
       <div className='text-muted-foreground flex-1 text-sm'>
         {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
       <div className='flex items-center space-x-6 lg:space-x-8'>
-        <div className='flex items-center space-x-2'>
+        <div className='hidden md:flex items-center space-x-2'>
           <p className='text-sm font-medium'>Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -43,7 +43,7 @@ export function DataTablePagination({ table }: DataTablePaginationProps) {
           <Button
             variant='outline'
             size='icon'
-            className='hidden size-8 lg:flex'
+            className='hidden size-8 md:flex'
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >

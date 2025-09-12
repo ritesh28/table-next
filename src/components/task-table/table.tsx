@@ -67,8 +67,8 @@ export function DataTable({ columns, data }: DataTableProps) {
 
   return (
     <div ref={containerRef}>
-      <div className='flex items-center justify-between gap-2 py-4'>
-        <div className='flex gap-2'>
+      <div className='flex flex-wrap items-start justify-between gap-2 py-4'>
+        <div className='flex flex-wrap gap-2'>
           <DataTableFilterSimple table={table} />
           <Button variant='secondary' onClick={() => setShowAdvancedFilter((val) => !val)}>
             Advanced Search

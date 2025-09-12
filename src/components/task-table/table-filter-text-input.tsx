@@ -38,7 +38,7 @@ export function DataTableFilterTextInput({ table }: DataTableFilterTextInputProp
       placeholder='Search titles...'
       value={selection ?? ''}
       onChange={(event) => setSelection(event.target.value ? event.target.value : null)}
-      className='min-w-3xs'
+      className='max-w-xs'
     />
   );
 }
