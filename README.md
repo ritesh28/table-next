@@ -1,24 +1,44 @@
-# todo - write good readme.md
+<p align="center">
+  <a href="https://github.com/ritesh28/table-next" target="_blank">
+    <img data-source="github" loading="lazy" alt="TanStack Table Demo" src="https://github.com/ritesh28/table-next/raw/main/public/page_home.png" width="750"/>
+  </a>
+</p>
 
-nextjs
-zod
+# TanStack Table Demo
 
-- use it to check data coming from the external source.
-- Support class (but not interface) as a type to property. Do not use it. Instead use `z.transform()` to convert the input
-- For un-serialized object - first create serialized schema, then transform
-- in zod, optional and undefined are different
+This website showcases the advanced features of TanStack Table, including multi-sorting, column ordering, row pinning, column visibility, and both basic and advanced filtering. It also demonstrates row selection and pagination, offering a comprehensive look at how TanStack Table can handle complex data grid interactions with ease.
 
-shadCN
-graphql
-immer
-moment
-webpack loader: csv & graphql
+<h3 align="center">
+  <a href="https://table-next-mauve.vercel.app/" target="_blank">View Demo</a>
+  <span> · </span>
+  <a href="https://github.com/ritesh28/table-next/issues" target="_blank">Report Bug</a>
+</h3>
 
-### To run a ts file in a standalone fashion
+## Libraries and Tools
+
+![Next.js@15.4.6](https://img.shields.io/badge/Next.js-15.3.5-blue?logo=nextdotjs)
+![Zod@4.0.17](https://img.shields.io/badge/Zod-4.0.17-blue?logo=zod)
+![graphql@16.11.0](https://img.shields.io/badge/Apollo_GraphQL-16.11.0-blue?logo=apollographql)
+![immer@10.1.1](https://img.shields.io/badge/Immer-10.1.1-blue?logo=immer)
+![moment@2.30.1](https://img.shields.io/badge/Moment-2.30.1-blue)
+![csv-loader@3.0.5](https://img.shields.io/badge/Csv_Loader-grey)
+![graphql-tag/loader](https://img.shields.io/badge/Graphql_Tag_Loader-grey)
+![tailwindcss@4.1.11](https://img.shields.io/badge/Tailwindcss-4.1.11-blue?logo=tailwindcss)
+![ShadCN@2.6.4](https://img.shields.io/badge/ShadCN-2.6.4-blue?logo=shadcnui)
+
+## Run Locally
 
 ```bash
-# convert .ts to .js
-node_modules/.bin/tsc src/model/task.ts --moduleResolution nodenext --module nodenext
-# run .js file
-node src/model/task.js
+git clone https://github.com/ritesh28/table-next.git
+npm install
+npm run dev
+```
+
+Create `.env` file in root folder with following variables:
+
+```env
+NEXT_PUBLIC_GITHUB_REPO_LINK=
+NEXT_PUBLIC_GITHUB_CODE_LINK=
+NEXT_PUBLIC_LINKEDIN_LINK=
+NEXT_PUBLIC_PORTFOLIO_LINK=
 ```
