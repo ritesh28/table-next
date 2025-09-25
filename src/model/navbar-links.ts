@@ -9,7 +9,7 @@ interface NavbarLink {
 export const navbarLinks: NavbarLink[] = [
   {
     title: 'Github Code',
-    url: process.env.NEXT_PUBLIC_GITHUB_CODE_LINK || '#',
+    url: process.env.NEXT_PUBLIC_GITHUB_REPO_LINK || '#',
     icon: Github,
   },
   {

@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   Ritesh
                 </a>
                 . Check out my other{' '}
-                <a href={process.env.NEXT_PUBLIC_GITHUB_REPO_LINK || '#'} target='_blank' className='underline hover:text-link-hover-foreground'>
+                <a href={process.env.NEXT_PUBLIC_GITHUB_LINK || '#'} target='_blank' className='underline hover:text-link-hover-foreground'>
                   Github Codes
                 </a>
                 .

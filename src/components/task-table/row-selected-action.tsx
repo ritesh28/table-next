@@ -36,78 +36,66 @@ export function DataTableRowSelectedAction({ selectedRows }: DataTableRowSelecte
   const anyPinned = selectedRows.some((row) => row.getIsPinned());
 
   return (
-    <div className='relative mt-4'>
-      <div
-        className={cn(
-          'absolute left-1/2 -translate-x-1/2 transition-all duration-300',
-          visible ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-8 pointer-events-none',
-        )}
-      >
-        <Card className='rounded-sm py-1'>
-          <CardContent className='flex items-center gap-2 px-2'>
-            <Card className='rounded-sm py-0'>
-              <CardContent className='flex items-center gap-2 px-2'>
-                <div>{selectedRows.length} selected</div>
-                <Separator orientation='vertical' className='self-stretch h-auto!' />
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant='ghost' size='icon' onClick={() => selectedRows.map((row) => row.toggleSelected())} aria-label='Deselect all'>
-                      <X />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Clear selection</p>
-                  </TooltipContent>
-                </Tooltip>
-              </CardContent>
-            </Card>
-            <Separator orientation='vertical' className='self-stretch h-auto!' />
+    <div
+      className={cn(
+        'fixed bottom-10 left-1/2 -translate-x-1/2 transition-all duration-300',
+        visible ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-8 pointer-events-none',
+      )}
+    >
+      <Card className='rounded-sm py-1'>
+        <CardContent className='flex items-center gap-2 px-2'>
+          <Card className='rounded-sm py-0'>
+            <CardContent className='flex items-center gap-2 px-2'>
+              <div className='text-sm'>{selectedRows.length} selected</div>
+              <Separator orientation='vertical' className='self-stretch h-auto!' />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant='ghost' size='sm' onClick={() => selectedRows.map((row) => row.toggleSelected())} aria-label='Deselect all'>
+                    <X />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear selection</p>
+                </TooltipContent>
+              </Tooltip>
+            </CardContent>
+          </Card>
+          <Separator orientation='vertical' className='self-stretch h-auto!' />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant='secondary' size='sm' onClick={() => exportTasks(selectedRows)} aria-label='Export tasks'>
+                <Download />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export tasks</p>
+            </TooltipContent>
+          </Tooltip>
+          {!anyPinned ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant='secondary' size='icon' onClick={() => exportTasks(selectedRows)} aria-label='Export tasks'>
-                  <Download />
+                <Button variant='secondary' size='sm' onClick={() => selectedRows.map((row) => row.pin('top'))} className='flex items-center gap-2'>
+                  <Pin />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export tasks</p>
+                <p>Pin</p>
               </TooltipContent>
             </Tooltip>
-            {!anyPinned ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant='secondary'
-                    size='icon'
-                    onClick={() => selectedRows.map((row) => row.pin('top'))}
-                    className='flex items-center gap-2'
-                  >
-                    <Pin />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Pin</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant='secondary'
-                    size='icon'
-                    onClick={() => selectedRows.map((row) => row.pin(false))}
-                    className='flex items-center gap-2'
-                  >
-                    <PinOff />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Unpin</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant='secondary' size='sm' onClick={() => selectedRows.map((row) => row.pin(false))} className='flex items-center gap-2'>
+                  <PinOff />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Unpin</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

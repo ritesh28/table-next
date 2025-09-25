@@ -37,8 +37,8 @@ npm run dev
 Create `.env` file in root folder with following variables:
 
 ```env
+NEXT_PUBLIC_GITHUB_LINK=
 NEXT_PUBLIC_GITHUB_REPO_LINK=
-NEXT_PUBLIC_GITHUB_CODE_LINK=
 NEXT_PUBLIC_LINKEDIN_LINK=
 NEXT_PUBLIC_PORTFOLIO_LINK=
 ```
